@@ -5,6 +5,7 @@ import { Footer } from './components/Footer';
 import { AIChatbot } from './components/AIChatbot';
 import { ScrollToTop } from './components/ScrollToTop';
 import { ScrollToTopOnRouteChange } from './components/ScrollToTopOnRouteChange';
+import { ReadingProgressBar } from './components/ReadingProgressBar';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
@@ -43,6 +44,9 @@ function AppContent() {
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
       {/* Resets window scroll position on page transition */}
       <ScrollToTopOnRouteChange />
+
+      {/* Smooth, thin reading progress bar for long-form content pages */}
+      <ReadingProgressBar />
 
       {/* Persistent Navigation Bar */}
       <Navbar />

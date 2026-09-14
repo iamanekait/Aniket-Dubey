@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="logoNavy" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#0F2147" />
+    </linearGradient>
+    <linearGradient id="logoGold" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FBBF24" />
+    </linearGradient>
+    <filter id="logoShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.2" />
+    </filter>
+  </defs>
+
+  <g transform="translate(100, 30) scale(3)" filter="url(#logoShadow)">
+    <!-- Navy 'A' structure -->
+    <path
+      d="M 46 14 L 56 14 L 20 84 L 8 84 Z"
+      fill="#1E3A8A"
+    />
+    <path
+      d="M 48 14 L 55 14 L 66 38 L 57 41 Z"
+      fill="#1E40AF"
+    />
+    <path
+      d="M 52 54 L 68 84 L 56 84 L 46 64 Z"
+      fill="#0F2147"
+    />
+
+    <!-- Golden 'D' loop -->
+    <path
+      d="M 56 46 C 72 46, 84 54, 84 66 C 84 76, 73 84, 58 84 C 54 84, 51 83, 48 81 L 52 73 C 54 75, 56 76, 59 76 C 68 76, 74 71, 74 65 C 74 58, 66 53, 55 53 Z"
+      fill="url(#logoGold)"
+    />
+
+    <!-- Golden Ascending Growth Arrow Swoosh -->
+    <path
+      d="M 12 56 C 24 57, 36 53, 46 44 C 54 36, 62 26, 72 16 L 68 12 L 88 12 L 88 32 L 83 27 C 74 37, 65 48, 54 55 C 41 64, 27 67, 12 63 Z"
+      fill="url(#logoGold)"
+    />
+  </g>
+
+  <!-- Brand Typography -->
+  <!-- ANIKET DUBEY -->
+  <text
+    x="250"
+    y="360"
+    text-anchor="middle"
+    font-family="'Outfit', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+    font-size="38"
+    font-weight="800"
+    letter-spacing="4"
+    fill="#FFFFFF"
+  >
+    ANIKET DUBEY
+  </text>
+
+  <!-- Subtitle: • BUSINESS CONSULTANT • -->
+  <g transform="translate(250, 400)">
+    <!-- Left gold dot -->
+    <circle cx="-160" cy="-6" r="4.5" fill="#F59E0B" />
+    
+    <text
+      x="0"
+      y="0"
+      text-anchor="middle"
+      font-family="'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
+      font-size="18"
+      font-weight="700"
+      letter-spacing="5"
+      fill="#94A3B8"
+    >
+      BUSINESS CONSULTANT
+    </text>
+
+    <!-- Right gold dot -->
+    <circle cx="160" cy="-6" r="4.5" fill="#F59E0B" />
+  </g>
+
+  <!-- Delicate accent divider line -->
+  <line
+    x1="120"
+    y1="428"
+    x2="380"
+    y2="428"
+    stroke="#334155"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+</svg>

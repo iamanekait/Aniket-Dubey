@@ -121,12 +121,15 @@ export const HomePage: React.FC = () => {
             >
               Explore Services
             </Link>
-            <Link
-              to="/contact"
-              className="px-6 py-3.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg"
+            <a
+              href={CONSULTANT_INFO.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-6 py-3.5 bg-slate-950 hover:bg-slate-900 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-lg inline-flex items-center gap-2"
             >
-              Schedule a Consultation
-            </Link>
+              <span>Book Consultation</span>
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
         </div>
       </section>

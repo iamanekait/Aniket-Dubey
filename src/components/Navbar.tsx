@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { Menu, X, Phone, Mail, ArrowUpRight } from 'lucide-react';
 import { CONSULTANT_INFO } from '../data';
+import { BrandMark } from './BrandLogo';
 
 interface NavbarProps {
   onBookConsultation?: () => void;
@@ -46,9 +47,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
             id="nav-brand-link"
             className="group flex items-center gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1"
           >
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-bold text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-              <span className="text-lg tracking-tight font-extrabold">AD</span>
-            </div>
+            <BrandMark size={40} className="group-hover:scale-105 transition-transform" />
             <div className="flex flex-col">
               <span className="text-lg font-bold text-white tracking-tight leading-none group-hover:text-blue-400 transition-colors">
                 Aniket Dubey
@@ -91,14 +90,16 @@ export const Navbar: React.FC<NavbarProps> = () => {
               <span>{CONSULTANT_INFO.formattedPhone}</span>
             </a>
 
-            <button
-              onClick={() => navigate('/contact')}
+            <a
+              href={CONSULTANT_INFO.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               id="nav-book-consultation-btn"
               className="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-lg transition-all shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 cursor-pointer"
             >
               <span>Book Consultation</span>
               <ArrowUpRight className="w-4 h-4" />
-            </button>
+            </a>
           </div>
 
           {/* Mobile menu button */}
@@ -159,16 +160,16 @@ export const Navbar: React.FC<NavbarProps> = () => {
               <span>Call: {CONSULTANT_INFO.formattedPhone}</span>
             </a>
 
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                navigate('/contact');
-              }}
+            <a
+              href={CONSULTANT_INFO.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl shadow-md shadow-blue-600/25 cursor-pointer"
             >
-              <span>Schedule a Consultation</span>
+              <span>Book Consultation</span>
               <ArrowUpRight className="w-4 h-4" />
-            </button>
+            </a>
           </div>
         </div>
       )}

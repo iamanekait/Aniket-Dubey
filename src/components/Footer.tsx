@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, ArrowUpRight } from 'lucide-react';
 import { CONSULTANT_INFO } from '../data';
+import { BrandMark } from './BrandLogo';
 
 export const Footer: React.FC = () => {
   return (
@@ -11,9 +12,7 @@ export const Footer: React.FC = () => {
           {/* Brand & Overview */}
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-sm group-hover:scale-105 transition-transform">
-                AD
-              </div>
+              <BrandMark size={40} className="group-hover:scale-105 transition-transform" />
               <div>
                 <span className="text-base font-bold text-white tracking-tight block group-hover:text-blue-400 transition-colors">
                   {CONSULTANT_INFO.name}

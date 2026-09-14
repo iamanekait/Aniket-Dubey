@@ -179,6 +179,28 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                 <span className="font-semibold text-slate-300">Local Presence in Durgapur:</span>{' '}
                 Situated in Uttarpally, Benachity, providing local businesses and founders direct access to experienced strategic advisory.
               </div>
+
+              {/* Instant Zoom Scheduler Card */}
+              <div className="p-5 bg-gradient-to-br from-blue-950/70 to-slate-900 border border-blue-500/40 rounded-xl space-y-3 shadow-lg">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">Direct Calendar</span>
+                  <span className="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30 font-semibold">Live Calendar</span>
+                </div>
+                <h4 className="text-sm font-bold text-white">Book Your 1-on-1 Video Consultation</h4>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Select an available date and time that fits your schedule directly via Aniket Dubey's Zoom scheduler.
+                </p>
+                <a
+                  href={CONSULTANT_INFO.bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  id="contact-zoom-scheduler-cta"
+                  className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold text-xs rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                >
+                  <span>Book Consultation via Zoom</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
             </div>
           </div>
 

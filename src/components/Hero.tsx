@@ -6,7 +6,7 @@ import heroBgPoster from '../assets/images/hero_consulting_bg_1789358194495.jpg'
 const HERO_VIDEO_URL = 'https://xd92d5z735f07l9p.public.blob.vercel-storage.com/AD.mp4';
 
 interface HeroProps {
-  onBookConsultation: () => void;
+  onBookConsultation?: () => void;
   onGetInTouch: () => void;
 }
 
@@ -103,14 +103,17 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
 
           {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto mb-10">
-            <button
-              onClick={onBookConsultation}
+            <a
+              href={CONSULTANT_INFO.bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               id="hero-book-consultation-cta"
+              onClick={() => onBookConsultation?.()}
               className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm sm:text-base font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 cursor-pointer w-full sm:w-auto"
             >
-              <span>Book a Private Consultation</span>
+              <span>Book Consultation</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </a>
 
             <button
               onClick={onGetInTouch}

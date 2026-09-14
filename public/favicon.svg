@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- Background subtle gradient if needed -->
+    <linearGradient id="adNavyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="100%" stop-color="#0F2147" />
+    </linearGradient>
+    <linearGradient id="adGoldGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D97706" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#FBBF24" />
+    </linearGradient>
+    <filter id="subtleShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Circular background for favicon visibility on any tab theme (dark or light) -->
+  <rect width="100" height="100" rx="22" fill="#0B1329" />
+  <rect width="98" height="98" x="1" y="1" rx="21" fill="none" stroke="#1E293B" stroke-width="1.5" />
+
+  <!-- Monogram Group -->
+  <g transform="translate(6, 6) scale(0.88)" filter="url(#subtleShadow)">
+    <!-- Navy 'A' structure (Apex and Left Leg) -->
+    <path
+      d="M 46 14 L 56 14 L 20 84 L 8 84 Z"
+      fill="#2563EB"
+    />
+    <path
+      d="M 48 14 L 55 14 L 66 38 L 57 41 Z"
+      fill="#1D4ED8"
+    />
+    <path
+      d="M 52 54 L 68 84 L 56 84 L 46 64 Z"
+      fill="#1E40AF"
+    />
+
+    <!-- Golden 'D' lower semi-circle loop -->
+    <path
+      d="M 56 46 C 72 46, 84 54, 84 66 C 84 76, 73 84, 58 84 C 54 84, 51 83, 48 81 L 52 73 C 54 75, 56 76, 59 76 C 68 76, 74 71, 74 65 C 74 58, 66 53, 55 53 Z"
+      fill="url(#adGoldGrad)"
+    />
+
+    <!-- Golden Ascending Arrow Swoosh -->
+    <path
+      d="M 12 56 C 24 57, 36 53, 46 44 C 54 36, 62 26, 72 16 L 68 12 L 88 12 L 88 32 L 83 27 C 74 37, 65 48, 54 55 C 41 64, 27 67, 12 63 Z"
+      fill="url(#adGoldGrad)"
+    />
+  </g>
+</svg>

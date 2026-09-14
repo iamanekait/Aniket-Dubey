@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, X, Send, Bot, User, Sparkles, Loader2, Minimize2, ExternalLink } from 'lucide-react';
 import { ChatMessage } from '../types';
+import { CONSULTANT_INFO } from '../data';
 
 interface AIChatbotProps {
   onOpenConsultationForm: () => void;
@@ -219,18 +220,16 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
               </button>
             </form>
             <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-800/60 text-[10px] text-slate-400">
-              <span>Direct Booking:</span>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsOpen(false);
-                  onOpenConsultationForm();
-                }}
-                className="text-blue-400 hover:underline flex items-center gap-1 cursor-pointer"
+              <span>Book Consultation:</span>
+              <a
+                href={CONSULTANT_INFO.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:underline flex items-center gap-1 cursor-pointer font-medium"
               >
-                <span>Open Consultation Form</span>
+                <span>Zoom Scheduler</span>
                 <ExternalLink className="w-2.5 h-2.5" />
-              </button>
+              </a>
             </div>
           </div>
         </div>

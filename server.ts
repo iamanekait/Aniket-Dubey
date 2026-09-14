@@ -126,6 +126,7 @@ Key Information about Aniket Dubey:
 - Location / Office: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India
 - Direct Phone: +91 9932979875
 - Direct Email: email@aniketdubey.com
+- Direct Booking Link: https://scheduler.zoom.us/aniketdubey/consultation (Online Zoom Scheduler for 1-on-1 consultations)
 - Services Offered:
   1. Business Consulting: Business strategy, growth planning, strategic decision-making, operational improvement.
   2. Strategic Content Marketing: Content strategy, brand positioning, audience-focused content, digital content planning, content-led business growth.
@@ -138,7 +139,7 @@ Key Information about Aniket Dubey:
 Tone & Rules:
 - Professional, consultative, articulate, warm, and strategic.
 - Do NOT invent awards, named clients, or exaggerated metrics (no fake "guaranteed 500% ROI").
-- Encourage the user to schedule a consultation with Aniket or leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / 9932979875.
+- Encourage the user to schedule a direct consultation with Aniket via his Zoom Scheduler (https://scheduler.zoom.us/aniketdubey/consultation), leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / 9932979875.
 - Keep responses concise (2-4 paragraphs maximum, clear and easy to read).`;
 
     if (!ai) {
@@ -146,16 +147,18 @@ Tone & Rules:
       const queryLower = message.toLowerCase();
       let reply = "";
 
-      if (queryLower.includes("service") || queryLower.includes("what do you do") || queryLower.includes("offer")) {
-        reply = `Aniket Dubey provides four core advisory pillars tailored to growing businesses:\n\n1. **Business Consulting**: Growth roadmaps, strategic decision frameworks, and operational refinement.\n2. **Strategic Content Marketing**: High-impact brand positioning, editorial strategy, and audience-focused content.\n3. **Managed IT Services**: Reliable infrastructure guidance, ongoing tech support, and digital security management.\n4. **Business & Technology Strategy**: Bridging operational objectives with modern digital workflows and scalable tools.\n\nWould you like to discuss how these services can be tailored to your specific business model?`;
+      if (queryLower.includes("book") || queryLower.includes("schedule") || queryLower.includes("consultation") || queryLower.includes("call") || queryLower.includes("meeting")) {
+        reply = `You can book a consultation directly with Aniket Dubey:\n\n- **Online Zoom Scheduler**: [Click to schedule a 1-on-1 meeting](https://scheduler.zoom.us/aniketdubey/consultation)\n- **Direct Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also submit an enquiry through the contact form on this website.`;
+      } else if (queryLower.includes("service") || queryLower.includes("what do you do") || queryLower.includes("offer")) {
+        reply = `Aniket Dubey provides four core advisory pillars tailored to growing businesses:\n\n1. **Business Consulting**: Growth roadmaps, strategic decision frameworks, and operational refinement.\n2. **Strategic Content Marketing**: High-impact brand positioning, editorial strategy, and audience-focused content.\n3. **Managed IT Services**: Reliable infrastructure guidance, ongoing tech support, and digital security management.\n4. **Business & Technology Strategy**: Bridging operational objectives with modern digital workflows and scalable tools.\n\nWould you like to discuss how these services can be tailored to your specific business model? You can book a direct consultation anytime at: https://scheduler.zoom.us/aniketdubey/consultation`;
       } else if (queryLower.includes("contact") || queryLower.includes("email") || queryLower.includes("phone") || queryLower.includes("address") || queryLower.includes("location") || queryLower.includes("durgapur")) {
-        reply = `You can connect directly with Aniket Dubey:\n\n- **Office**: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India\n- **Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also use the enquiry form on this page to request an initial consultation!`;
+        reply = `You can connect directly with Aniket Dubey:\n\n- **Zoom Scheduler**: https://scheduler.zoom.us/aniketdubey/consultation\n- **Office**: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India\n- **Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also use the enquiry form on this page to request an initial consultation!`;
       } else if (queryLower.includes("experience") || queryLower.includes("about") || queryLower.includes("who is")) {
         reply = `Aniket Dubey brings over 10 years of cross-industry consulting experience. His philosophy is strictly consultative and execution-focused: first understanding your unique operating model and challenges, then formulating pragmatic strategies combining business acumen, content marketing, and managed IT systems.`;
       } else if (queryLower.includes("cost") || queryLower.includes("pricing") || queryLower.includes("fee") || queryLower.includes("rate")) {
-        reply = `Because Aniket's consulting engagements are strictly customized to the scope, industry, and specific operational needs of each client, pricing is determined after an initial exploratory discussion. Please submit an enquiry via the form or email email@aniketdubey.com to schedule a consultation.`;
+        reply = `Because Aniket's consulting engagements are strictly customized to the scope, industry, and specific operational needs of each client, pricing is determined after an initial exploratory discussion. You can book an introductory discovery consultation directly via Zoom: https://scheduler.zoom.us/aniketdubey/consultation or email email@aniketdubey.com.`;
       } else {
-        reply = `Thank you for your interest in strategic consulting with Aniket Dubey. With 10+ years of experience in business growth, strategic content marketing, and managed IT infrastructure, Aniket works closely with founders and business owners to build resilient, scalable operations.\n\nFeel free to ask about specific services, Aniket's 4-step consulting approach, or submit your details via the form below to book a consultation.`;
+        reply = `Thank you for your interest in strategic consulting with Aniket Dubey. With 10+ years of experience in business growth, strategic content marketing, and managed IT infrastructure, Aniket works closely with founders and business owners to build resilient, scalable operations.\n\nFeel free to ask about specific services, Aniket's 4-step consulting approach, or book a consultation directly at https://scheduler.zoom.us/aniketdubey/consultation.`;
       }
 
       return res.status(200).json({

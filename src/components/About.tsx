@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserCheck, Compass, Target, CheckCircle2, Shield, ArrowRight } from 'lucide-react';
 import { CONSULTANT_INFO, TARGET_AUDIENCE_PILLARS } from '../data';
+import { BrandMark } from './BrandLogo';
 
 interface AboutProps {
   onScheduleClick: () => void;
@@ -29,9 +30,7 @@ export const About: React.FC<AboutProps> = ({ onScheduleClick }) => {
 
               {/* Consultant Emblem */}
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-blue-600/30">
-                  AD
-                </div>
+                <BrandMark size={56} />
                 <div>
                   <h3 className="text-xl font-bold text-white leading-tight">{CONSULTANT_INFO.name}</h3>
                   <p className="text-sm font-medium text-blue-400">{CONSULTANT_INFO.title}</p>

@@ -10,6 +10,7 @@ export const CONSULTANT_INFO = {
   email: "email@aniketdubey.com",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=Road+No.+36,+Uttarpally,+Benachity,+Durgapur,+West+Bengal,+India",
   locationName: "Benachity, Durgapur, West Bengal",
+  bookingUrl: "https://scheduler.zoom.us/aniketdubey/consultation",
 };
 
 export const SERVICES: ServiceItem[] = [
