@@ -1,7 +1,9 @@
-import React from 'react';
-import { ArrowRight, ShieldCheck, CheckCircle2, Briefcase, Sparkles, UserCheck } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { ArrowRight, ShieldCheck, CheckCircle2, Briefcase, Sparkles, UserCheck, Volume2, VolumeX } from 'lucide-react';
 import { CONSULTANT_INFO } from '../data';
-import heroBgImage from '../assets/images/hero_consulting_bg_1789358194495.jpg';
+import heroBgPoster from '../assets/images/hero_consulting_bg_1789358194495.jpg';
+
+const HERO_VIDEO_URL = 'https://xd92d5z735f07l9p.public.blob.vercel-storage.com/AD.mp4';
 
 interface HeroProps {
   onBookConsultation: () => void;
@@ -9,23 +11,69 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) => {
+  const [isMuted, setIsMuted] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const toggleMute = () => {
+    if (videoRef.current) {
+      const nextMuted = !videoRef.current.muted;
+      videoRef.current.muted = nextMuted;
+      setIsMuted(nextMuted);
+      if (!nextMuted) {
+        videoRef.current.play().catch(() => {});
+      }
+    } else {
+      setIsMuted((prev) => !prev);
+    }
+  };
+
   return (
     <section
       id="hero"
       className="relative min-h-[92vh] flex items-center pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-slate-950"
     >
-      {/* Background Image with Layered Gradient Overlays for High Legibility */}
+      {/* Background Video with Layered Gradient Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <img
-          src={heroBgImage}
-          alt="Executive Advisory Background"
-          referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center opacity-30 scale-105 transition-transform duration-1000 ease-out"
+        <video
+          ref={videoRef}
+          src={HERO_VIDEO_URL}
+          poster={heroBgPoster}
+          autoPlay
+          loop
+          muted={isMuted}
+          playsInline
+          className="w-full h-full object-cover object-center opacity-65 scale-105 transition-opacity duration-700"
         />
-        {/* Deep navy and dark slate vignette overlays */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/80 to-slate-950" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-transparent to-slate-950/80" />
-        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+        {/* Balanced deep navy and dark slate vignette overlays for 50% more video visibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/45 to-slate-950/85" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
+        <div className="absolute inset-0 bg-grid-pattern opacity-15" />
+      </div>
+
+      {/* Floating Audio Control Widget */}
+      <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 z-20">
+        <button
+          onClick={toggleMute}
+          id="hero-audio-toggle-btn"
+          aria-label={isMuted ? "Unmute hero video audio" : "Mute hero video audio"}
+          className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full border transition-all shadow-xl backdrop-blur-md cursor-pointer ${
+            isMuted
+              ? 'bg-slate-900/85 hover:bg-slate-850 text-slate-300 border-slate-700/80 hover:border-slate-600 hover:text-white shadow-black/40'
+              : 'bg-blue-600/90 hover:bg-blue-500 text-white border-blue-400/60 shadow-blue-600/25 ring-2 ring-blue-500/20'
+          }`}
+        >
+          {isMuted ? (
+            <>
+              <VolumeX className="w-4 h-4 text-slate-400" />
+              <span className="text-xs font-semibold">Unmute Video</span>
+            </>
+          ) : (
+            <>
+              <Volume2 className="w-4 h-4 text-white animate-pulse" />
+              <span className="text-xs font-semibold">Sound Active</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Subtle ambient glows */}
@@ -41,7 +89,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
           </div>
 
           {/* Main Personal Headline */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.14] mb-6 max-w-4xl">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.14] mb-6 max-w-4xl drop-shadow-md">
             Helping Founders & Growing Businesses Turn Strategic Vision Into{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300">
               Sustainable Reality.
@@ -49,7 +97,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
           </h1>
 
           {/* Personal Subtitle / Statement */}
-          <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed max-w-3xl mb-8 mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-slate-200 leading-relaxed max-w-3xl mb-8 mx-auto drop-shadow-sm">
             I'm <strong className="text-white font-bold">Aniket Dubey</strong>, a Business Consultant with over 10 years of experience. I work directly with entrepreneurs and executives to solve operational friction, build high-authority <strong className="text-white font-semibold">content marketing engines</strong>, and deploy resilient <strong className="text-white font-semibold">managed IT infrastructure</strong>.
           </p>
 
