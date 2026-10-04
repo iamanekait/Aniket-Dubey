@@ -23,7 +23,7 @@ export const Footer: React.FC = () => {
               </div>
             </Link>
             <p className="text-xs text-slate-400 leading-relaxed">
-              Strategic consulting, content marketing, and managed IT services tailored to small and medium businesses, startups, and growing enterprises.
+              A founder-first strategic business advisory partner helping entrepreneurs, owner-operators, and scaling businesses solve operational friction, establish commercial authority, and deploy resilient managed IT systems.
             </p>
             <div className="text-xs text-slate-500">
               10+ Years Cross-Industry Advisory
@@ -43,7 +43,10 @@ export const Footer: React.FC = () => {
                 <Link to="/about" className="hover:text-blue-400 transition-colors">About Aniket</Link>
               </li>
               <li>
-                <Link to="/services" className="hover:text-blue-400 transition-colors">Core Services</Link>
+                <Link to="/capabilities" className="hover:text-blue-400 transition-colors">Capabilities & Services</Link>
+              </li>
+              <li>
+                <Link to="/insights" className="hover:text-blue-400 transition-colors">Insights & Case Studies</Link>
               </li>
               <li>
                 <Link to="/approach" className="hover:text-blue-400 transition-colors">Consulting Approach</Link>

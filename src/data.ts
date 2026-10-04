@@ -1,8 +1,10 @@
-import { ServiceItem, ApproachStep } from './types';
+import { ServiceItem, ApproachStep, PortfolioProject } from './types';
 
 export const CONSULTANT_INFO = {
   name: "Aniket Dubey",
-  title: "Business Consultant",
+  title: "Founder-First Strategic Business Advisory Partner",
+  roleTagline: "A founder-first strategic business advisory partner",
+  shortTitle: "Business Advisory Partner",
   experience: "10+ Years",
   address: "Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India",
   phone: "9932979875",
@@ -11,26 +13,55 @@ export const CONSULTANT_INFO = {
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=Road+No.+36,+Uttarpally,+Benachity,+Durgapur,+West+Bengal,+India",
   locationName: "Benachity, Durgapur, West Bengal",
   bookingUrl: "https://scheduler.zoom.us/aniketdubey/consultation",
+  bioHeadline: "A founder-first strategic business advisory partner guiding entrepreneurs and scaling enterprises.",
+  bioSummary: "Aniket Dubey is a founder-first strategic business advisory partner with over a decade of hands-on experience. He works directly alongside entrepreneurs and founders to eliminate operational friction, build trust-driven content marketing engines, and deploy resilient managed IT infrastructure.",
 };
+
+export const FOUNDER_FIRST_ADVANTAGES = [
+  {
+    icon: "ShieldCheck",
+    title: "Founder Bandwidth Protection",
+    tagline: "Exit the Firefighting Trap",
+    description: "Founders get trapped in day-to-day tactical crises. I re-architect operational workflows and managerial accountability so you can focus on high-leverage growth and vision.",
+  },
+  {
+    icon: "Compass",
+    title: "Radical Commercial Candor",
+    tagline: "An Objective Co-Pilot, Not a 'Yes-Man'",
+    description: "You don't need corporate platitudes or 100-page academic decks. You need an unvarnished audit of where revenue is leaking, which tools are bloat, and how to scale sustainably.",
+  },
+  {
+    icon: "Layers",
+    title: "Unified Business & IT Synergy",
+    tagline: "Strategy Meets Technical Backbone",
+    description: "Most consultants understand business or IT, rarely both. I bridge commercial growth with content positioning and resilient, secure managed IT infrastructure.",
+  },
+  {
+    icon: "Target",
+    title: "Durable Founder Independence",
+    tagline: "Capability Built Within Your Firm",
+    description: "My success is defined by leaving your business self-sustaining and disciplined — not by engineering open-ended, dependency-driven consulting retainers.",
+  },
+];
 
 export const SERVICES: ServiceItem[] = [
   {
     id: "business-consulting",
-    title: "Business Consulting",
-    subtitle: "Strategic Direction & Sustainable Growth",
-    description: "Holistic business guidance designed to help entrepreneurs and business owners clarify their vision, overcome operational friction, and build resilient growth models.",
+    title: "Founder & Business Advisory",
+    subtitle: "Strategic Direction, Operational Flow & Scalable Growth",
+    description: "Founder-first business guidance designed to help entrepreneurs untangle operational chaos, clarify business models, and execute high-impact growth roadmaps.",
     tag: "Core Strategic Pillar",
     features: [
-      "Business strategy",
-      "Growth planning",
-      "Strategic decision-making",
-      "Operational improvement"
+      "Founder executive advisory",
+      "Operational bottleneck removal",
+      "90-day growth sprint planning",
+      "Managerial governance & KPI cadences"
     ],
     benefits: [
-      "Objective analysis of business models and revenue bottlenecks",
-      "Pragmatic roadmap prioritizing high-impact growth initiatives",
-      "Streamlined workflows to reduce overhead and improve execution",
-      "Strategic accountability tailored to founder and executive priorities"
+      "Objective audit of revenue bottlenecks and operational leakage",
+      "Pragmatic roadmap prioritizing high-leverage commercial initiatives",
+      "Streamlined workflows to free up founder bandwidth and overhead",
+      "Strategic accountability tailored directly to founder priorities"
     ]
   },
   {
@@ -40,15 +71,15 @@ export const SERVICES: ServiceItem[] = [
     description: "Structured content positioning that turns your company's subject matter expertise into consistent, trust-driven business inquiries and customer loyalty.",
     tag: "Market Positioning",
     features: [
-      "Content strategy",
-      "Brand positioning",
-      "Audience-focused content",
-      "Digital content planning",
-      "Content-led business growth"
+      "Founder-led content strategy",
+      "Brand authority positioning",
+      "Inbound consultation funnels",
+      "Audience persona architecture",
+      "Sustainable editorial workflows"
     ],
     benefits: [
       "Position your brand as an undeniable market authority",
-      "Attract qualified decision-makers through tailored value-driven messaging",
+      "Attract qualified decision-makers through value-driven messaging",
       "Systematic editorial workflows that scale with your team",
       "Content assets designed directly for long-term customer acquisition"
     ]
@@ -60,11 +91,11 @@ export const SERVICES: ServiceItem[] = [
     description: "Dedicated technology oversight and proactive support tailored to your business needs, ensuring stability, cybersecurity, and zero downtime as you expand.",
     tag: "Technology Infrastructure",
     features: [
-      "Ongoing IT support",
-      "Technology management",
-      "IT infrastructure guidance",
-      "Proactive technology support",
-      "IT solutions tailored to business requirements"
+      "Proactive 24/7 IT oversight",
+      "Automated disaster recovery backups",
+      "Cloud infrastructure management",
+      "Fast-response technical support",
+      "Cybersecurity baseline enforcement"
     ],
     benefits: [
       "Prevent costly outages with continuous monitoring and proactive maintenance",
@@ -81,9 +112,9 @@ export const SERVICES: ServiceItem[] = [
     tag: "Digital Modernization",
     features: [
       "Align business objectives with technology",
-      "Identify technology opportunities",
-      "Improve digital workflows",
-      "Build scalable technology strategies"
+      "SaaS stack & subscription audit",
+      "Digital workflow automation",
+      "Future-proof architecture planning"
     ],
     benefits: [
       "Eliminate software redundancies and reduce recurring SaaS overhead",
@@ -96,27 +127,27 @@ export const SERVICES: ServiceItem[] = [
 
 export const WHY_WORK_WITH_ANIKET = [
   {
-    title: "10+ Years of Experience",
-    description: "A decade of hands-on advisory experience guiding businesses through growth phases, market shifts, and operational transitions."
+    title: "A Founder-First Advisory Partner",
+    description: "Every engagement is anchored in empathy for founder realities: cash-flow discipline, operational speed, and the necessity of high-leverage execution."
   },
   {
-    title: "Cross-Industry Perspective",
-    description: "Breadth of exposure across varied business models and verticals allows cross-pollination of tested strategies and fresh insights."
+    title: "10+ Years of Hands-On Experience",
+    description: "A decade of battle-tested advisory experience guiding founders and owner-operators through scaling phases, pivot points, and operational transitions."
   },
   {
-    title: "Customized Strategies",
-    description: "Zero generic templates or canned playbooks. Every engagement begins with an objective assessment of your unique situation and objectives."
+    title: "Direct Principal Engagement",
+    description: "You work directly with Aniket Dubey. No junior account handlers, no delegation, and zero generic corporate slide decks."
   },
   {
-    title: "Business + Technology Expertise",
+    title: "Business + Technology Synergies",
     description: "A rare combination of commercial acumen, content positioning mastery, and hands-on managed IT infrastructure know-how."
   },
   {
-    title: "Practical, Execution-Focused Approach",
-    description: "Strategy is useless without implementation. Recommendations are grounded in realistic timelines, resource constraints, and measurable checkpoints."
+    title: "Practical, Execution-Focused Roadmaps",
+    description: "Strategy without execution is useless. Blueprints are grounded in realistic timelines, resource constraints, and measurable milestones."
   },
   {
-    title: "Long-Term Client-Oriented Thinking",
+    title: "Long-Term Client Independence",
     description: "Focused on building durable capability within your business rather than creating dependent, open-ended consulting retainers."
   }
 ];
@@ -125,9 +156,9 @@ export const CONSULTING_APPROACH: ApproachStep[] = [
   {
     number: "01",
     title: "Understand",
-    description: "Understand the business, objectives, challenges, and current situation.",
+    description: "Deep discovery into founder vision, operational bottlenecks, revenue drivers, and current market realities.",
     deliverables: [
-      "In-depth stakeholder discovery sessions",
+      "In-depth founder & executive discovery sessions",
       "Assessment of existing market positioning and customer touchpoints",
       "Audit of operational bottlenecks and technology infrastructure"
     ]
@@ -135,7 +166,7 @@ export const CONSULTING_APPROACH: ApproachStep[] = [
   {
     number: "02",
     title: "Analyze",
-    description: "Identify gaps, opportunities, priorities, and potential growth areas.",
+    description: "Diagnose friction points, root-cause inefficiencies, and high-impact commercial opportunities.",
     deliverables: [
       "Gap analysis between current performance and target scale",
       "Identification of under-leveraged market or digital opportunities",
@@ -145,7 +176,7 @@ export const CONSULTING_APPROACH: ApproachStep[] = [
   {
     number: "03",
     title: "Strategize",
-    description: "Develop a practical strategy tailored to the client's specific requirements.",
+    description: "Formulate a custom founder-first execution roadmap tailored to your specific commercial objectives.",
     deliverables: [
       "Customized growth blueprint with prioritized milestones",
       "Integrated content marketing & lead generation framework",
@@ -155,7 +186,7 @@ export const CONSULTING_APPROACH: ApproachStep[] = [
   {
     number: "04",
     title: "Scale",
-    description: "Support implementation and continuous improvement as the business grows.",
+    description: "Provide hands-on implementation governance and continuous improvement as the business expands.",
     deliverables: [
       "Hands-on execution guidance and phased milestone reviews",
       "Proactive IT support and workflow optimization",
@@ -165,6 +196,11 @@ export const CONSULTING_APPROACH: ApproachStep[] = [
 ];
 
 export const PERSONAL_MANIFESTO = [
+  {
+    principle: "Founder-First Strategic Partnership",
+    tagline: "Shoulder-to-Shoulder With the Founder",
+    description: "I act as an objective strategic co-pilot for founders. Whether tackling cash-flow bottlenecks, commercial positioning, or technology debt, my advice is direct, empathetic, and uncompromised by corporate politics."
+  },
   {
     principle: "Direct Principal Engagement",
     tagline: "You Work Directly With Me",
@@ -179,15 +215,26 @@ export const PERSONAL_MANIFESTO = [
     principle: "Unified Business & IT Synergy",
     tagline: "Technology Built for Commercial Growth",
     description: "Strategy without technical capability creates bottlenecks, and IT without business direction is just overhead. I align your commercial goals with robust technology and high-converting content marketing."
-  },
-  {
-    principle: "Durable Client Independence",
-    tagline: "Building Your Internal Capability",
-    description: "My success is defined by leaving your business stronger, more disciplined, and capable of operating smoothly without perpetual reliance on outside advisors."
   }
 ];
 
-export const PORTFOLIO_PROJECTS: import('./types').PortfolioProject[] = [
+export const PORTFOLIO_PROJECTS: PortfolioProject[] = [
+  {
+    id: "founder-strategic-advisory",
+    title: "Founder Mentorship & 90-Day Scaling Blueprint",
+    category: "Business Consulting",
+    clientType: "Early-Stage Venture & Tech Startup",
+    tag: "Founder Advisory",
+    context: "First-time founders with strong product capabilities struggling to transition from product development to systematic commercial scaling and capital discipline.",
+    challenge: "Lack of commercial market validation frameworks, unfocused marketing spending, and uncertainty over prioritization.",
+    solution: "Served as an executive sounding board and strategic advisor, establishing unit economic clarity, defining target customer profiles, and orchestrating a focused 90-day execution sprint.",
+    keyOutcomes: [
+      "Focused founder bandwidth on highest-leverage revenue-generating activities",
+      "Clarified go-to-market messaging and customer validation criteria",
+      "Instituted disciplined financial tracking and resource allocation protocols"
+    ],
+    toolsAndFrameworks: ["Unit Economics Audit", "90-Day Execution Sprint", "Founder Sounding Board"]
+  },
   {
     id: "b2b-growth-operations",
     title: "Operational Streamlining & Commercial Growth Alignment",
@@ -251,40 +298,24 @@ export const PORTFOLIO_PROJECTS: import('./types').PortfolioProject[] = [
       "Accelerated internal task completion speed through synchronized tooling"
     ],
     toolsAndFrameworks: ["SaaS Stack Audit", "CRM Workflow Automation", "Digital SOP Development"]
-  },
-  {
-    id: "founder-strategic-advisory",
-    title: "Founder Mentorship & 90-Day Scaling Blueprint",
-    category: "Business Consulting",
-    clientType: "Early-Stage Venture & Tech Startup",
-    tag: "Founder Advisory",
-    context: "First-time founders with strong product capabilities struggling to transition from product development to systematic commercial scaling and capital discipline.",
-    challenge: "Lack of commercial market validation frameworks, unfocused marketing spending, and uncertainty over prioritization.",
-    solution: "Served as an executive sounding board and strategic advisor, establishing unit economic clarity, defining target customer profiles, and orchestrating a focused 90-day execution sprint.",
-    keyOutcomes: [
-      "Focused founder bandwidth on highest-leverage revenue-generating activities",
-      "Clarified go-to-market messaging and customer validation criteria",
-      "Instituted disciplined financial tracking and resource allocation protocols"
-    ],
-    toolsAndFrameworks: ["Unit Economics Audit", "90-Day Execution Sprint", "Founder Sounding Board"]
   }
 ];
 
 export const TARGET_AUDIENCE_PILLARS = [
   {
-    title: "Small & Medium Business Owners",
-    description: "Seeking to untangle daily operational firefighting, professionalize internal systems, and build predictable client acquisition channels."
+    title: "Bootstrapped & Scaling Founders",
+    description: "Seeking an experienced strategic co-pilot to navigate operational bottlenecks, clarify capital allocation, and build predictable client acquisition channels."
   },
   {
-    title: "Startup Founders & Entrepreneurs",
-    description: "Needing structured strategic direction, early-stage brand authority, and dependable technology infrastructure that scales smoothly."
+    title: "Owner-Operators & SME Leaders",
+    description: "Trapped in daily business firefighting, looking to institutionalize operational systems and delegate execution without sacrificing quality."
   },
   {
-    title: "Companies Improving Marketing",
-    description: "Frustrated by vanity metrics and seeking content strategies designed to build authentic market trust and direct revenue impact."
+    title: "Firms Building Inbound Authority",
+    description: "Frustrated by vanity marketing metrics and seeking content positioning designed to convert executive domain expertise into high-ticket pipeline."
   },
   {
-    title: "Businesses Requiring Managed IT",
-    description: "Requiring proactive technical maintenance, security guidance, and reliable support without the overhead of an in-house IT department."
+    title: "Enterprises Requiring Managed IT",
+    description: "Needing proactive technology maintenance, cloud resilience, and security governance without the exorbitant overhead of an internal IT department."
   }
 ];

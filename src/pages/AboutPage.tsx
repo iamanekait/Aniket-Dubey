@@ -1,23 +1,58 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { About } from '../components/About';
+import { SEO } from '../components/SEO';
 import { Award, Target, Users, ArrowRight, BookOpen, ShieldCheck, HeartHandshake, Sparkles } from 'lucide-react';
 import { CONSULTANT_INFO, PERSONAL_MANIFESTO } from '../data';
 
 export const AboutPage: React.FC = () => {
   const navigate = useNavigate();
 
+  const aboutStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    mainEntity: {
+      '@type': 'Person',
+      name: CONSULTANT_INFO.name,
+      jobTitle: CONSULTANT_INFO.title,
+      description:
+        'Business consultant with 10+ years of advisory experience helping founders and enterprises scale through strategic consulting, content marketing, and managed IT.',
+      telephone: CONSULTANT_INFO.phone,
+      email: CONSULTANT_INFO.email,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Road No. 36, Uttarpally, Benachity',
+        addressLocality: 'Durgapur',
+        addressRegion: 'West Bengal',
+        addressCountry: 'IN',
+      },
+    },
+  };
+
   return (
     <div className="pt-24 pb-20 bg-slate-950">
+      {/* React Helmet SEO Meta Tags */}
+      <SEO
+        title="About Aniket Dubey | Founder-First Strategic Business Advisory Partner"
+        description="Meet Aniket Dubey: a founder-first strategic business advisory partner with 10+ years of experience helping founders untangle operational friction and build resilient, scalable businesses."
+        keywords="About Aniket Dubey, Founder-First Advisory Partner, Business Consultant Biography, Advisory Philosophy, Strategic Business Advisor, Durgapur, West Bengal"
+        canonicalPath="/about"
+        ogType="profile"
+        jsonLd={aboutStructuredData}
+      />
+
       {/* Page Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
-            Personal Brand & Advisory Bio
+            Founder-First Advisory Partner
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Hi, I'm Aniket Dubey.
           </h1>
+          <p className="text-base sm:text-xl font-medium text-blue-300 mb-4">
+            A founder-first strategic business advisory partner.
+          </p>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
             I help business owners, founders, and growing enterprises untangle operational chaos, establish market authority through strategic content marketing, and build resilient managed IT systems.
           </p>

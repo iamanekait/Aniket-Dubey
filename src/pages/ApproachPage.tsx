@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Approach } from '../components/Approach';
 import { StrategicAssessment } from '../components/StrategicAssessment';
+import { SEO } from '../components/SEO';
+import { CONSULTING_APPROACH } from '../data';
 import { ArrowRight } from 'lucide-react';
 
 interface ApproachPageProps {
@@ -16,8 +18,31 @@ export const ApproachPage: React.FC<ApproachPageProps> = ({ onPreFillEnquiry }) 
     navigate('/contact');
   };
 
+  const approachStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Aniket Dubey Consulting Methodology',
+    description: 'Disciplined 4-step consulting framework: Understand, Analyze, Strategize, and Scale.',
+    itemListElement: CONSULTING_APPROACH.map((step, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: `Step ${step.number}: ${step.title}`,
+      description: step.description,
+    })),
+  };
+
   return (
     <div className="pt-24 pb-20 bg-slate-950">
+      {/* React Helmet SEO Meta Tags */}
+      <SEO
+        title="Consulting Methodology & Approach | Aniket Dubey"
+        description="Discover our structured 4-step consulting framework: Understand, Analyze, Strategize, and Scale to engineer durable commercial and operational success."
+        keywords="Consulting Methodology, Business Advisory Process, Growth Strategy Framework, Workflow Optimization, 4-Step Consulting Approach, Aniket Dubey"
+        canonicalPath="/approach"
+        ogType="website"
+        jsonLd={approachStructuredData}
+      />
+
       {/* Page Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4">
         <div className="max-w-3xl">

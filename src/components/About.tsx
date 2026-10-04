@@ -14,11 +14,14 @@ export const About: React.FC<AboutProps> = ({ onScheduleClick }) => {
         {/* Section Heading */}
         <div className="max-w-3xl mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
-            About Aniket Dubey
+            Founder-First Advisory Partnership
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            A Strategic Partner for Businesses Seeking Sustainable Growth.
+            A Founder-First Strategic Business Advisory Partner.
           </h2>
+          <p className="text-base sm:text-lg text-slate-400 mt-4 leading-relaxed">
+            Navigating the intersection of founder vision, commercial revenue, and technical capability with radical candor and execution discipline.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-12 gap-12 items-start">
@@ -97,13 +100,13 @@ export const About: React.FC<AboutProps> = ({ onScheduleClick }) => {
             {/* The Consulting Philosophy */}
             <div className="space-y-4 text-slate-300 text-base sm:text-lg leading-relaxed">
               <h3 className="text-2xl font-bold text-white tracking-tight">
-                Consulting Built Around Understanding First, Executing Second.
+                An Advisory Partnership Built Around the Founder's Reality.
               </h3>
               <p>
-                Aniket Dubey is an experienced Business Consultant with more than a decade of experience working across multiple industries and verticals. Rather than applying pre-packaged templates or superficial advice, Aniket practices a strictly personalized consulting philosophy.
+                Aniket Dubey is a founder-first strategic business advisory partner with more than a decade of experience guiding entrepreneurs, scaling enterprises, and owner-operators. Rather than imposing detached academic theories or generic slides, Aniket steps into the founder's corner as an experienced, pragmatic co-pilot.
               </p>
               <p className="text-slate-400 text-base">
-                Every business possesses distinct operational dynamics, team capabilities, and market friction points. Aniket works intimately with business leaders to understand their operating realities, diagnose root opportunities and challenges, and architect practical strategies aligned directly to their specific revenue and organizational objectives.
+                Every business possesses distinct founder dynamics, team capabilities, and operational bottlenecks. Aniket works shoulder-to-shoulder with leadership to diagnose core constraints, protect founder bandwidth from endless firefighting, and architect practical roadmaps uniting strategic direction, content marketing authority, and secure managed IT infrastructure.
               </p>
             </div>
 

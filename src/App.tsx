@@ -12,6 +12,7 @@ import { ServicesPage } from './pages/ServicesPage';
 import { ApproachPage } from './pages/ApproachPage';
 import { WhyAniketPage } from './pages/WhyAniketPage';
 import { ContactPage } from './pages/ContactPage';
+import { InsightsPage } from './pages/InsightsPage';
 import { ContactFormData } from './types';
 
 function AppContent() {
@@ -61,10 +62,19 @@ function AppContent() {
             element={<ServicesPage onSelectService={handleSelectService} />}
           />
           <Route
+            path="/capabilities"
+            element={<ServicesPage onSelectService={handleSelectService} />}
+          />
+          <Route
+            path="/insights"
+            element={<InsightsPage onOpenConsultation={() => navigate('/contact')} />}
+          />
+          <Route
             path="/approach"
             element={<ApproachPage onPreFillEnquiry={handlePreFillEnquiry} />}
           />
           <Route path="/why-aniket" element={<WhyAniketPage />} />
+          <Route path="/why" element={<Navigate to="/why-aniket" replace />} />
           <Route
             path="/contact"
             element={<ContactPage formData={formData} setFormData={setFormData} />}

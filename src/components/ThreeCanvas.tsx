@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { Layers, ShieldCheck, Compass } from 'lucide-react';
 
 interface ThreeCanvasProps {
   className?: string;
@@ -7,10 +8,24 @@ interface ThreeCanvasProps {
 
 export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
+  const [webGLSupported, setWebGLSupported] = useState(true);
 
   useEffect(() => {
     const container = mountRef.current;
     if (!container) return;
+
+    // Check WebGL availability
+    try {
+      const testCanvas = document.createElement('canvas');
+      const gl = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!gl) {
+        setWebGLSupported(false);
+        return;
+      }
+    } catch {
+      setWebGLSupported(false);
+      return;
+    }
 
     // Dimensions
     let width = container.clientWidth || 400;
@@ -19,15 +34,26 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     // Scene
     const scene = new THREE.Scene();
 
-    // Camera
+    // Camera with responsive FOV
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.z = 6;
+    camera.position.z = width < 480 ? 7.2 : 6;
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance',
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      container.appendChild(renderer.domElement);
+    } catch (err) {
+      console.warn('WebGL initialization failed, rendering fallback:', err);
+      setWebGLSupported(false);
+      return;
+    }
 
     // Group to hold all 3D strategic elements
     const strategicGroup = new THREE.Group();
@@ -109,7 +135,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     pointLight2.position.set(-5, -5, 2);
     scene.add(pointLight2);
 
-    // Mouse interaction tracking
+    // Pointer & Touch interaction tracking
     let targetRotationX = 0;
     let targetRotationY = 0;
     let currentRotationX = 0;
@@ -124,7 +150,30 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
       targetRotationX = -mouseY * 0.6;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    // Touch interaction for mobile/tablet devices
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        const deltaX = e.touches[0].clientX - touchStartX;
+        const deltaY = e.touches[0].clientY - touchStartY;
+        targetRotationY += deltaX * 0.005;
+        targetRotationX += deltaY * 0.004;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    };
+
+    container.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // Scroll interaction
     let scrollY = 0;
@@ -133,21 +182,35 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
 
+    // IntersectionObserver to pause rendering when off-screen (saves battery & GPU on mobile)
+    let isVisible = true;
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+      },
+      { threshold: 0.05 }
+    );
+    visibilityObserver.observe(container);
+
     // Animation Loop
     let animationFrameId: number;
     const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+
+      // Skip render if off-screen to preserve device battery and CPU
+      if (!isVisible) return;
+
       const elapsedTime = clock.getElapsedTime();
 
-      // Smooth mouse interpolation
-      currentRotationX += (targetRotationX - currentRotationX) * 0.05;
-      currentRotationY += (targetRotationY - currentRotationY) * 0.05;
+      // Smooth mouse/touch interpolation
+      currentRotationX += (targetRotationX - currentRotationX) * 0.06;
+      currentRotationY += (targetRotationY - currentRotationY) * 0.06;
 
       // Base autonomous rotation + scroll interaction
-      strategicGroup.rotation.y = elapsedTime * 0.25 + currentRotationY + scrollY * 0.001;
-      strategicGroup.rotation.x = Math.sin(elapsedTime * 0.2) * 0.15 + currentRotationX;
+      strategicGroup.rotation.y = elapsedTime * 0.22 + currentRotationY + scrollY * 0.0008;
+      strategicGroup.rotation.x = Math.sin(elapsedTime * 0.2) * 0.12 + currentRotationX;
 
       // Pulse outer wireframe slightly
       const pulse = 1 + Math.sin(elapsedTime * 1.5) * 0.04;
@@ -162,28 +225,42 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
 
     animate();
 
-    // Resize handling using ResizeObserver
+    // Resize handling using ResizeObserver + fallback
+    const updateSize = (newWidth: number, newHeight: number) => {
+      if (newWidth > 0 && newHeight > 0) {
+        camera.aspect = newWidth / newHeight;
+        camera.position.z = newWidth < 480 ? 7.2 : 6;
+        camera.updateProjectionMatrix();
+        renderer.setSize(newWidth, newHeight);
+      }
+    };
+
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        const { width: newWidth, height: newHeight } = entry.contentRect;
-        if (newWidth > 0 && newHeight > 0) {
-          camera.aspect = newWidth / newHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(newWidth, newHeight);
-        }
+        updateSize(entry.contentRect.width, entry.contentRect.height);
       }
     });
-
     resizeObserver.observe(container);
+
+    const handleWindowResize = () => {
+      if (container) {
+        updateSize(container.clientWidth, container.clientHeight);
+      }
+    };
+    window.addEventListener('resize', handleWindowResize, { passive: true });
 
     // Cleanup
     return () => {
       cancelAnimationFrame(animationFrameId);
-      window.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleWindowResize);
+      visibilityObserver.disconnect();
       resizeObserver.disconnect();
 
-      if (container.contains(renderer.domElement)) {
+      if (container && renderer && container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
 
@@ -198,14 +275,30 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
       ringMaterial2.dispose();
       nodeGeometry.dispose();
       nodeMaterial.dispose();
-      renderer.dispose();
+      renderer?.dispose();
     };
   }, []);
+
+  if (!webGLSupported) {
+    return (
+      <div
+        className={`relative w-full h-full min-h-[300px] flex flex-col items-center justify-center p-6 bg-slate-900/50 border border-slate-800 rounded-2xl text-center ${className}`}
+      >
+        <div className="w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 mb-4 animate-pulse">
+          <Layers className="w-8 h-8" />
+        </div>
+        <h4 className="text-base font-bold text-white mb-1">Interactive Strategic Architecture</h4>
+        <p className="text-xs text-slate-400 max-w-xs">
+          Tri-pillar alignment uniting Business Strategy, Content Marketing Authority, and Managed IT Infrastructure.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div
       ref={mountRef}
-      className={`relative w-full h-full min-h-[320px] sm:min-h-[420px] flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing ${className}`}
+      className={`relative w-full h-full min-h-[300px] sm:min-h-[400px] flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing select-none [touch-action:pan-y] ${className}`}
       id="threejs-strategic-canvas"
       aria-label="3D Interactive Business & Technology Strategic Model"
     />

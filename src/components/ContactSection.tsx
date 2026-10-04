@@ -256,7 +256,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="e.g. Rahul Sharma"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
                       />
                     </div>
 
@@ -272,7 +272,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.business}
                         onChange={handleChange}
                         placeholder="e.g. Apex Tech Solutions"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
                       />
                     </div>
                   </div>
@@ -291,7 +291,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="name@company.com"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
                       />
                     </div>
 
@@ -307,7 +307,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+91 98765 43210"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
                       />
                     </div>
                   </div>
@@ -322,7 +322,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
                     >
                       <option value="General Strategic Consulting">General Strategic Consulting / Exploratory</option>
                       {SERVICES.map((s) => (
@@ -347,7 +347,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="Briefly describe your company, your key growth challenges, and what you hope to achieve through consulting..."
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-y"
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-y"
                     />
                   </div>
 

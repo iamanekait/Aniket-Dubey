@@ -30,7 +30,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
   return (
     <section
       id="hero"
-      className="relative min-h-[92vh] flex items-center pt-28 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-slate-950"
+      className="relative min-h-[90vh] min-h-[90dvh] flex items-center pt-24 pb-16 sm:pt-28 sm:pb-20 lg:pt-36 lg:pb-24 overflow-hidden bg-slate-950"
     >
       {/* Background Video with Layered Gradient Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -44,33 +44,33 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
           playsInline
           className="w-full h-full object-cover object-center opacity-65 scale-105 transition-opacity duration-700"
         />
-        {/* Balanced deep navy and dark slate vignette overlays for 50% more video visibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/75 via-slate-950/45 to-slate-950/85" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
+        {/* Balanced deep navy and dark slate vignette overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/50 to-slate-950/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-transparent to-slate-950/70" />
         <div className="absolute inset-0 bg-grid-pattern opacity-15" />
       </div>
 
-      {/* Floating Audio Control Widget */}
-      <div className="absolute bottom-6 right-6 sm:bottom-8 sm:right-8 z-20">
+      {/* Floating Audio Control Widget - positioned bottom-left to never collide with fixed bottom-right AI Chatbot */}
+      <div className="absolute bottom-6 left-4 sm:bottom-8 sm:left-8 z-20">
         <button
           onClick={toggleMute}
           id="hero-audio-toggle-btn"
           aria-label={isMuted ? "Unmute hero video audio" : "Mute hero video audio"}
-          className={`inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full border transition-all shadow-xl backdrop-blur-md cursor-pointer ${
+          className={`inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full border transition-all shadow-xl backdrop-blur-md cursor-pointer text-xs font-semibold ${
             isMuted
-              ? 'bg-slate-900/85 hover:bg-slate-850 text-slate-300 border-slate-700/80 hover:border-slate-600 hover:text-white shadow-black/40'
+              ? 'bg-slate-900/90 hover:bg-slate-850 text-slate-300 border-slate-700/80 hover:border-slate-600 hover:text-white shadow-black/40'
               : 'bg-blue-600/90 hover:bg-blue-500 text-white border-blue-400/60 shadow-blue-600/25 ring-2 ring-blue-500/20'
           }`}
         >
           {isMuted ? (
             <>
-              <VolumeX className="w-4 h-4 text-slate-400" />
-              <span className="text-xs font-semibold">Unmute Video</span>
+              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
+              <span>Unmute Video</span>
             </>
           ) : (
             <>
-              <Volume2 className="w-4 h-4 text-white animate-pulse" />
-              <span className="text-xs font-semibold">Sound Active</span>
+              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white animate-pulse" />
+              <span>Sound Active</span>
             </>
           )}
         </button>
@@ -85,7 +85,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
           {/* Personal Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-blue-500/30 text-blue-300 text-xs sm:text-sm font-semibold mb-6 shadow-sm shadow-blue-500/10">
             <UserCheck className="w-4 h-4 text-blue-400" />
-            <span>Strategic Business Advisory • Aniket Dubey</span>
+            <span>A Founder-First Strategic Business Advisory Partner</span>
           </div>
 
           {/* Main Personal Headline */}
@@ -98,7 +98,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
 
           {/* Personal Subtitle / Statement */}
           <p className="text-base sm:text-lg lg:text-xl text-slate-200 leading-relaxed max-w-3xl mb-8 mx-auto drop-shadow-sm">
-            I'm <strong className="text-white font-bold">Aniket Dubey</strong>, a Business Consultant with over 10 years of experience. I work directly with entrepreneurs and executives to solve operational friction, build high-authority <strong className="text-white font-semibold">content marketing engines</strong>, and deploy resilient <strong className="text-white font-semibold">managed IT infrastructure</strong>.
+            I'm <strong className="text-white font-bold">Aniket Dubey</strong>, a founder-first strategic business advisory partner with over 10 years of hands-on experience. I work shoulder-to-shoulder with entrepreneurs and founders to solve operational friction, build high-authority <strong className="text-white font-semibold">content marketing engines</strong>, and deploy resilient <strong className="text-white font-semibold">managed IT infrastructure</strong>.
           </p>
 
           {/* Action CTAs */}
@@ -111,7 +111,7 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
               onClick={() => onBookConsultation?.()}
               className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm sm:text-base font-semibold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl transition-all shadow-lg shadow-blue-600/25 hover:shadow-blue-600/35 cursor-pointer w-full sm:w-auto"
             >
-              <span>Book Consultation</span>
+              <span>Book Founder Consultation</span>
               <ArrowRight className="w-4 h-4" />
             </a>
 
@@ -128,11 +128,11 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
           <div className="pt-6 border-t border-slate-800/80 w-full flex flex-wrap items-center justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-slate-400 mb-6">
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-              <span className="text-slate-300">10+ Years Hands-On Experience</span>
+              <span className="text-slate-300">Founder-First Strategic Partnership</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
-              <span className="text-slate-300">Direct 1-on-1 Advisory (No Junior Staff)</span>
+              <span className="text-slate-300">Direct 1-on-1 Principal Advisory</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 text-blue-400 shrink-0" />
