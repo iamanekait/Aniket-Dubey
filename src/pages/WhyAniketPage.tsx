@@ -15,6 +15,8 @@ import {
   Quote,
   Check,
   X,
+  Linkedin,
+  Instagram,
 } from 'lucide-react';
 import { WhyWorkWithAniket } from '../components/WhyWorkWithAniket';
 import { CrossIndustry } from '../components/CrossIndustry';
@@ -170,6 +172,33 @@ export const WhyAniketPage: React.FC = () => {
                     <Mail className="w-4 h-4" />
                     <span>Email</span>
                   </a>
+                </div>
+
+                {/* Direct Social Channels */}
+                <div className="pt-3 border-t border-slate-800/80">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
+                    Social & Professional Connect
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <a
+                      href={CONSULTANT_INFO.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-950/40 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-all group"
+                    >
+                      <Linkedin className="w-4 h-4 text-blue-400 shrink-0" />
+                      <span className="truncate">LinkedIn</span>
+                    </a>
+                    <a
+                      href={CONSULTANT_INFO.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500/50 hover:bg-pink-950/30 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-all group"
+                    >
+                      <Instagram className="w-4 h-4 text-pink-400 shrink-0" />
+                      <span className="truncate">Instagram</span>
+                    </a>
+                  </div>
                 </div>
               </div>
 

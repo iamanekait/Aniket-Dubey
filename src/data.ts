@@ -15,6 +15,22 @@ export const CONSULTANT_INFO = {
   bookingUrl: "https://scheduler.zoom.us/aniketdubey/consultation",
   bioHeadline: "A founder-first strategic business advisory partner guiding entrepreneurs and scaling enterprises.",
   bioSummary: "Aniket Dubey is a founder-first strategic business advisory partner with over a decade of hands-on experience. He works directly alongside entrepreneurs and founders to eliminate operational friction, build trust-driven content marketing engines, and deploy resilient managed IT infrastructure.",
+  linkedin: "https://www.linkedin.com/in/aniketdubey1996/?isSelfProfile=true",
+  instagram: "https://www.instagram.com/iamaniketdubey",
+  socialLinks: [
+    {
+      name: "LinkedIn",
+      url: "https://www.linkedin.com/in/aniketdubey1996/?isSelfProfile=true",
+      handle: "aniketdubey1996",
+      label: "Connect on LinkedIn",
+    },
+    {
+      name: "Instagram",
+      url: "https://www.instagram.com/iamaniketdubey",
+      handle: "@iamaniketdubey",
+      label: "Follow on Instagram",
+    },
+  ],
 };
 
 export const FOUNDER_FIRST_ADVANTAGES = [
