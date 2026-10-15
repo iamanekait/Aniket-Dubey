@@ -125,30 +125,58 @@ export const SERVICES: ServiceItem[] = [
   }
 ];
 
+export const WHY_ANIKET_CONTENT = {
+  headline: "Choosing the Right Technology & Business Advisory Partner",
+  subheadline: "Turning Business Challenges Into Opportunities for Sustainable Growth",
+  paragraphs: [
+    "Choosing the right technology and business advisory partner can make all the difference in turning business challenges into opportunities for growth. With over 10 years of professional experience working with iWebNext, the North American brand of Technext Technosoft Pvt. Ltd., Aniket Dubey brings a wealth of industry experience, technical understanding, and business-oriented thinking to every engagement. As an independent IT contractor and Business Advisory Partner, he combines technology expertise with a practical understanding of business needs to help organizations identify opportunities, overcome challenges, and build strategies aligned with their long-term objectives.",
+    "Aniket believes that technology should do more than support day-to-day operations; it should create meaningful business value, improve efficiency, and open doors to new possibilities. His approach focuses on understanding each client's unique goals, evaluating their requirements, and identifying practical, scalable solutions that align with their business priorities. By bridging the gap between technical capabilities and strategic decision-making, he helps businesses make more informed choices, optimize their processes, and navigate an increasingly technology-driven marketplace with greater confidence.",
+    "What sets Aniket apart is his commitment to building relationships based on trust, transparency, and collaboration. He understands that every business has its own challenges, ambitions, and constraints, which is why he values a personalized approach rather than a one-size-fits-all solution. Whether supporting IT initiatives, advising on business direction, or helping organizations evaluate opportunities for improvement, Aniket strives to deliver thoughtful guidance and solutions that address real-world needs. His emphasis on clear communication, dependable collaboration, and long-term value ensures that the focus remains on outcomes that matter to each client.",
+    "With a strong foundation built through more than a decade of professional experience, Aniket is committed to helping businesses connect their vision with the right technology and strategic direction. His goal is to serve not just as an independent IT contractor or business advisor, but as a trusted partner who understands the bigger picture, recognizes the importance of sustainable growth, and works collaboratively toward meaningful progress. For businesses seeking a reliable, forward-thinking partner to help them make smarter technology decisions and pursue their next stage of growth, Aniket Dubey offers a blend of experience, personalized attention, and a results-oriented mindset."
+  ],
+  keyQuotes: [
+    "Technology should do more than support day-to-day operations; it should create meaningful business value, improve efficiency, and open doors to new possibilities.",
+    "Bridging the gap between technical capabilities and strategic decision-making to help businesses make more informed choices.",
+    "A personalized approach rather than a one-size-fits-all solution, anchored in trust, transparency, and collaborative progress."
+  ],
+  credentials: [
+    { label: "Track Record", value: "10+ Years", detail: "With iWebNext (North American brand of Technext Technosoft Pvt. Ltd.)" },
+    { label: "Role", value: "Independent IT Contractor", detail: "& Business Advisory Partner" },
+    { label: "Core Focus", value: "Value-Driven Tech", detail: "Connecting vision with technology and strategic growth" },
+    { label: "Partnership Model", value: "Personalized & Trust-Based", detail: "Direct collaboration, clear communication & real outcomes" }
+  ]
+};
+
 export const WHY_WORK_WITH_ANIKET = [
   {
-    title: "A Founder-First Advisory Partner",
-    description: "Every engagement is anchored in empathy for founder realities: cash-flow discipline, operational speed, and the necessity of high-leverage execution."
+    title: "10+ Years Experience with iWebNext",
+    subtitle: "Technext Technosoft North American Brand",
+    description: "Brings over a decade of hands-on professional industry experience with iWebNext, delivering deep technical mastery and seasoned business thinking to every engagement."
   },
   {
-    title: "10+ Years of Hands-On Experience",
-    description: "A decade of battle-tested advisory experience guiding founders and owner-operators through scaling phases, pivot points, and operational transitions."
+    title: "Dual IT Contractor & Business Advisory Partner",
+    subtitle: "Technology Depth Meets Commercial Acumen",
+    description: "Combines technical execution capabilities with practical understanding of business realities to pinpoint opportunities, solve operational friction, and execute long-term goals."
   },
   {
-    title: "Direct Principal Engagement",
-    description: "You work directly with Aniket Dubey. No junior account handlers, no delegation, and zero generic corporate slide decks."
+    title: "Technology That Drives Meaningful Value",
+    subtitle: "Beyond Routine Day-to-Day Support",
+    description: "Believes technology should do far more than support basic operations: it must generate measurable business value, elevate team efficiency, and unlock new market growth."
   },
   {
-    title: "Business + Technology Synergies",
-    description: "A rare combination of commercial acumen, content positioning mastery, and hands-on managed IT infrastructure know-how."
+    title: "Bridging Technical & Strategic Decision-Making",
+    subtitle: "Informed Choices in a Tech-Driven World",
+    description: "Translates complex technical architectures into strategic executive choices, optimizing processes and empowering founders to navigate digital transformation with confidence."
   },
   {
-    title: "Practical, Execution-Focused Roadmaps",
-    description: "Strategy without execution is useless. Blueprints are grounded in realistic timelines, resource constraints, and measurable milestones."
+    title: "Trust, Transparency & Collaboration",
+    subtitle: "No One-Size-Fits-All Formulas",
+    description: "Every organization has unique constraints and ambitions. Aniket builds relationships grounded in radical transparency, clear communication, and tailored advisory."
   },
   {
-    title: "Long-Term Client Independence",
-    description: "Focused on building durable capability within your business rather than creating dependent, open-ended consulting retainers."
+    title: "A Trusted Partner for Sustainable Growth",
+    subtitle: "Results-Oriented & Vision-Aligned",
+    description: "Understands the bigger picture. Helps businesses connect their long-term vision with the right technology and strategic roadmap for durable, compounding progress."
   }
 ];
 

@@ -6,7 +6,7 @@ import { BrandMark } from './BrandLogo';
 
 export const Footer: React.FC = () => {
   return (
-    <footer id="main-footer" className="bg-slate-950 border-t border-slate-800/80 pt-16 pb-12 text-slate-400 text-sm">
+    <footer id="main-footer" className="bg-[#08090E] border-t border-amber-500/15 pt-16 pb-12 text-slate-400 text-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand & Overview */}
@@ -14,10 +14,10 @@ export const Footer: React.FC = () => {
             <Link to="/" className="flex items-center gap-3 group">
               <BrandMark size={40} className="group-hover:scale-105 transition-transform" />
               <div>
-                <span className="text-base font-bold text-white tracking-tight block group-hover:text-blue-400 transition-colors">
+                <span className="text-base font-bold text-white tracking-tight block group-hover:text-amber-300 transition-colors">
                   {CONSULTANT_INFO.name}
                 </span>
-                <span className="text-xs text-blue-400 font-medium block">
+                <span className="text-xs text-amber-400/90 font-medium block">
                   {CONSULTANT_INFO.title}
                 </span>
               </div>
@@ -25,44 +25,44 @@ export const Footer: React.FC = () => {
             <p className="text-xs text-slate-400 leading-relaxed">
               A founder-first strategic business advisory partner helping entrepreneurs, owner-operators, and scaling businesses solve operational friction, establish commercial authority, and deploy resilient managed IT systems.
             </p>
-            <div className="text-xs text-slate-500">
+            <div className="text-xs text-amber-500/70 font-medium">
               10+ Years Cross-Industry Advisory
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-4">
               Navigation
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/" className="hover:text-blue-400 transition-colors">Home</Link>
+                <Link to="/" className="hover:text-amber-300 transition-colors">Home</Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-blue-400 transition-colors">About Aniket</Link>
+                <Link to="/about" className="hover:text-amber-300 transition-colors">About Aniket</Link>
               </li>
               <li>
-                <Link to="/capabilities" className="hover:text-blue-400 transition-colors">Capabilities & Services</Link>
+                <Link to="/capabilities" className="hover:text-amber-300 transition-colors">Capabilities & Services</Link>
               </li>
               <li>
-                <Link to="/insights" className="hover:text-blue-400 transition-colors">Insights & Case Studies</Link>
+                <Link to="/insights" className="hover:text-amber-300 transition-colors">Insights & Case Studies</Link>
               </li>
               <li>
-                <Link to="/approach" className="hover:text-blue-400 transition-colors">Consulting Approach</Link>
+                <Link to="/approach" className="hover:text-amber-300 transition-colors">Consulting Approach</Link>
               </li>
               <li>
-                <Link to="/why-aniket" className="hover:text-blue-400 transition-colors">Why Work With Aniket</Link>
+                <Link to="/why-aniket" className="hover:text-amber-300 transition-colors">Why Work With Aniket</Link>
               </li>
               <li>
-                <Link to="/contact" className="hover:text-blue-400 transition-colors">Contact & Location</Link>
+                <Link to="/contact" className="hover:text-amber-300 transition-colors">Contact & Location</Link>
               </li>
             </ul>
           </div>
 
           {/* Practice Areas */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-4">
               Advisory Pillars
             </h4>
             <ul className="space-y-2 text-xs">
@@ -87,23 +87,23 @@ export const Footer: React.FC = () => {
 
           {/* Direct Office & Contact */}
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-4">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-4">
               Direct Contact
             </h4>
             <div className="space-y-3 text-xs">
               <div className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>{CONSULTANT_INFO.address}</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-blue-400 shrink-0" />
-                <a href={`tel:${CONSULTANT_INFO.phone}`} className="hover:text-blue-400 transition-colors">
+                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
+                <a href={`tel:${CONSULTANT_INFO.phone}`} className="hover:text-amber-300 transition-colors">
                   {CONSULTANT_INFO.formattedPhone}
                 </a>
               </div>
               <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-blue-400 shrink-0" />
-                <a href={`mailto:${CONSULTANT_INFO.email}`} className="hover:text-blue-400 transition-colors">
+                <Mail className="w-4 h-4 text-amber-400 shrink-0" />
+                <a href={`mailto:${CONSULTANT_INFO.email}`} className="hover:text-amber-300 transition-colors">
                   {CONSULTANT_INFO.email}
                 </a>
               </div>
@@ -112,7 +112,7 @@ export const Footer: React.FC = () => {
                   href={CONSULTANT_INFO.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300"
+                  className="inline-flex items-center gap-1 text-xs text-amber-400 hover:text-amber-300 font-medium"
                 >
                   <span>Google Maps Directions</span>
                   <ArrowUpRight className="w-3 h-3" />
@@ -123,14 +123,14 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Bottom divider and center-aligned credit */}
-        <div className="pt-8 border-t border-slate-800/80 text-center space-y-3">
+        <div className="pt-8 border-t border-amber-500/15 text-center space-y-3">
           <p className="text-xs text-slate-400">
             Developed by{' '}
             <a
               href="https://dubeyconglomerate.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-400 hover:text-blue-300 font-semibold underline underline-offset-4 decoration-blue-500/40 hover:decoration-blue-400 transition-colors"
+              className="text-amber-400 hover:text-amber-300 font-semibold underline underline-offset-4 decoration-amber-500/40 hover:decoration-amber-300 transition-colors"
             >
               Dubey Conglomerate
             </a>

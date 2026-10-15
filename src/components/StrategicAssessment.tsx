@@ -58,25 +58,25 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
   const rec = getRecommendation();
 
   return (
-    <section className="py-20 bg-slate-950 border-t border-slate-800/80 relative">
+    <section className="py-20 bg-[#08090E] border-t border-amber-500/15 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
             Interactive Diagnostic
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Identify Your Highest-Leverage Growth Priority.
           </h2>
-          <p className="text-base text-slate-400">
+          <p className="text-base text-slate-300">
             Select your current business stage and primary operational focus to view the recommended consulting framework.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* Controls */}
-          <div className="lg:col-span-6 bg-slate-900/70 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="lg:col-span-6 bg-[#0E1017]/90 border border-amber-500/20 rounded-2xl p-6 sm:p-8 space-y-6">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-300/90 mb-3">
                 1. What is your current business stage?
               </label>
               <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -91,8 +91,8 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
                     onClick={() => setStage(s.key as any)}
                     className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       stage === s.key
-                        ? 'bg-blue-600/20 border-blue-500 text-white shadow-sm'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        ? 'bg-amber-500/15 border-amber-400 text-amber-200 shadow-sm shadow-amber-500/10'
+                        : 'bg-[#08090E] border-amber-500/20 text-slate-400 hover:border-amber-400/40'
                     }`}
                   >
                     <div className="text-xs font-bold leading-tight">{s.label}</div>
@@ -103,7 +103,7 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-amber-300/90 mb-3">
                 2. Where is your biggest current bottleneck or priority?
               </label>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -135,13 +135,13 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
                     onClick={() => setPriority(p.key as any)}
                     className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                       priority === p.key
-                        ? 'bg-blue-600/15 border-blue-500 text-white ring-1 ring-blue-500'
-                        : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'bg-amber-500/15 border-amber-400 text-white ring-1 ring-amber-400/50 shadow-sm shadow-amber-500/10'
+                        : 'bg-[#08090E] border-amber-500/20 text-slate-300 hover:border-amber-400/40'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-xs font-bold">{p.title}</span>
-                      {priority === p.key && <CheckCircle className="w-3.5 h-3.5 text-blue-400" />}
+                      {priority === p.key && <CheckCircle className="w-3.5 h-3.5 text-amber-400" />}
                     </div>
                     <span className="text-[11px] text-slate-400">{p.desc}</span>
                   </button>
@@ -151,15 +151,15 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
           </div>
 
           {/* Diagnostic Result Card */}
-          <div className="lg:col-span-6 bg-slate-900 border border-blue-500/30 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#121520] to-[#0E1017] border border-amber-500/35 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-amber-500/15 pb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-400" />
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                <Sparkles className="w-5 h-5 text-amber-400" />
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">
                   Recommended Consulting Alignment
                 </span>
               </div>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-medium">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#151824] text-amber-200 border border-amber-500/25 font-semibold">
                 Stage: {stage.toUpperCase()}
               </span>
             </div>
@@ -170,27 +170,27 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-400/90 mb-3">
                 Key Strategic Focus in Engagement:
               </h4>
               <ul className="space-y-2.5">
                 {rec.focus.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                    <CheckCircle className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                    <CheckCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="pt-4 border-t border-slate-800/80">
+            <div className="pt-4 border-t border-amber-500/15">
               <button
                 type="button"
                 onClick={() => {
                   const summary = `Priority: ${priority.toUpperCase()} at ${stage} stage. Interested in discussing ${rec.service}.`;
                   onPreFillEnquiry(rec.service, summary);
                 }}
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 hover:brightness-105 active:scale-95 text-slate-950 text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-amber-500/25 cursor-pointer"
               >
                 <span>Discuss This Priority With Aniket</span>
                 <ArrowRight className="w-4 h-4" />

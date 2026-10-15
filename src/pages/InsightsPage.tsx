@@ -159,28 +159,28 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
       {/* Header Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
         <div className="text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/80 border border-blue-800/60 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/60 border border-amber-500/35 text-amber-300 text-xs font-semibold uppercase tracking-wider mb-4">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>Founder-First Field Notes & Proven Results</span>
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight mb-4">
             Strategic Insights & Founder Case Studies
           </h1>
-          <p className="text-base sm:text-lg text-slate-400 leading-relaxed">
+          <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
             Real-world transformations, pragmatic frameworks, and field-tested blueprints from a founder-first strategic business advisory partner with 10+ years of proven impact.
           </p>
         </div>
 
         {/* Filter Controls & Search */}
-        <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 p-3 bg-slate-900/60 border border-slate-800 rounded-2xl">
+        <div className="mt-10 flex flex-col md:flex-row items-center justify-between gap-4 p-3 bg-[#0E1017] border border-amber-500/20 rounded-2xl shadow-xl">
           {/* Tabs */}
           <div className="overflow-x-auto no-scrollbar flex items-center gap-2 w-full md:w-auto pb-1 md:pb-0 shrink-0">
             <button
               onClick={() => setSelectedFilter('all')}
               className={`px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap min-h-[40px] shrink-0 ${
                 selectedFilter === 'all'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 text-slate-950 font-bold shadow-md shadow-amber-500/25'
+                  : 'text-slate-400 hover:text-white hover:bg-[#151824]'
               }`}
             >
               All Content ({PORTFOLIO_PROJECTS.length + STRATEGIC_ARTICLES.length})
@@ -189,8 +189,8 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
               onClick={() => setSelectedFilter('case-studies')}
               className={`px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap min-h-[40px] shrink-0 ${
                 selectedFilter === 'case-studies'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 text-slate-950 font-bold shadow-md shadow-amber-500/25'
+                  : 'text-slate-400 hover:text-white hover:bg-[#151824]'
               }`}
             >
               Case Studies ({PORTFOLIO_PROJECTS.length})
@@ -199,8 +199,8 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
               onClick={() => setSelectedFilter('articles')}
               className={`px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl transition-all cursor-pointer whitespace-nowrap min-h-[40px] shrink-0 ${
                 selectedFilter === 'articles'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 text-slate-950 font-bold shadow-md shadow-amber-500/25'
+                  : 'text-slate-400 hover:text-white hover:bg-[#151824]'
               }`}
             >
               Executive Insights ({STRATEGIC_ARTICLES.length})
@@ -209,13 +209,13 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
 
           {/* Search Bar */}
           <div className="relative w-full md:w-72">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-amber-500/60 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search topics, categories..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-950/80 border border-slate-800 text-base sm:text-sm text-white placeholder-slate-500 pl-9 pr-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all min-h-[40px]"
+              className="w-full bg-[#08090E] border border-amber-500/20 text-base sm:text-sm text-white placeholder-slate-500 pl-9 pr-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all min-h-[40px]"
             />
           </div>
         </div>
@@ -227,7 +227,7 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
         {filteredProjects.length > 0 && (
           <section>
             <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30">
+              <div className="p-2 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
@@ -242,34 +242,34 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
               {filteredProjects.map((project) => (
                 <div
                   key={project.id}
-                  className="bg-slate-900/40 border border-slate-800 hover:border-blue-500/40 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 group"
+                  className="bg-[#0E1017]/90 border border-amber-500/20 hover:border-amber-400/40 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-amber-950/20 group"
                 >
                   <div>
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-950/80 text-blue-300 border border-blue-800/60">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-950/70 text-amber-300 border border-amber-500/30">
                         {project.category}
                       </span>
-                      <span className="text-xs text-slate-500 font-medium">{project.clientType}</span>
+                      <span className="text-xs text-slate-400 font-medium">{project.clientType}</span>
                     </div>
 
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-amber-200 transition-colors">
                       {project.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-slate-400 mb-6 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-300 mb-6 leading-relaxed">
                       {project.context}
                     </p>
 
                     <div className="space-y-4 mb-6">
-                      <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800/80">
-                        <span className="text-xs font-bold text-rose-400 block mb-1 uppercase tracking-wider">
+                      <div className="p-4 bg-[#08090E] rounded-xl border border-amber-500/15">
+                        <span className="text-xs font-bold text-amber-400 block mb-1 uppercase tracking-wider">
                           The Challenge
                         </span>
                         <p className="text-xs sm:text-sm text-slate-300">{project.challenge}</p>
                       </div>
 
-                      <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800/80">
-                        <span className="text-xs font-bold text-emerald-400 block mb-1 uppercase tracking-wider">
+                      <div className="p-4 bg-[#08090E] rounded-xl border border-amber-500/15">
+                        <span className="text-xs font-bold text-amber-300 block mb-1 uppercase tracking-wider">
                           The Strategic Intervention
                         </span>
                         <p className="text-xs sm:text-sm text-slate-300">{project.solution}</p>
@@ -278,13 +278,13 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
 
                     {/* Key Outcomes */}
                     <div className="mb-6">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-3">
+                      <span className="text-xs font-bold uppercase tracking-wider text-amber-400/90 block mb-3">
                         Measurable Outcomes
                       </span>
                       <ul className="space-y-2">
                         {project.keyOutcomes.map((outcome, idx) => (
                           <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                             <span>{outcome}</span>
                           </li>
                         ))}
@@ -293,12 +293,12 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
                   </div>
 
                   {/* Footing Tools */}
-                  <div className="pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
+                  <div className="pt-4 border-t border-amber-500/15 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex flex-wrap gap-1.5">
                       {project.toolsAndFrameworks.map((tool, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800/70 text-slate-300 border border-slate-700/60"
+                          className="px-2 py-0.5 rounded text-[11px] font-medium bg-[#151824] text-amber-200 border border-amber-500/25"
                         >
                           {tool}
                         </span>
@@ -306,7 +306,7 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
                     </div>
                     <button
                       onClick={handleBooking}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 hover:text-amber-200 transition-colors cursor-pointer"
                     >
                       <span>Discuss Similar Case</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -322,7 +322,7 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
         {filteredArticles.length > 0 && (
           <section>
             <div className="flex items-center gap-3 mb-8">
-              <div className="p-2 rounded-xl bg-indigo-600/20 text-indigo-400 border border-indigo-500/30">
+              <div className="p-2 rounded-xl bg-amber-500/15 text-amber-400 border border-amber-500/30">
                 <BookOpen className="w-5 h-5" />
               </div>
               <div>
@@ -337,41 +337,41 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
               {filteredArticles.map((article) => (
                 <div
                   key={article.id}
-                  className="bg-slate-900/40 border border-slate-800 hover:border-indigo-500/40 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/5 group"
+                  className="bg-[#0E1017]/90 border border-amber-500/20 hover:border-amber-400/40 rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-300 hover:shadow-xl hover:shadow-amber-950/20 group"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-4 text-xs">
-                      <span className="px-3 py-1 rounded-full font-semibold bg-indigo-950/80 text-indigo-300 border border-indigo-800/60">
+                      <span className="px-3 py-1 rounded-full font-semibold bg-amber-950/70 text-amber-300 border border-amber-500/30">
                         {article.category}
                       </span>
-                      <div className="flex items-center gap-3 text-slate-500">
+                      <div className="flex items-center gap-3 text-slate-400">
                         <span className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
+                          <Calendar className="w-3 h-3 text-amber-500/70" />
                           {article.publishDate}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
+                          <Clock className="w-3 h-3 text-amber-500/70" />
                           {article.readTime}
                         </span>
                       </div>
                     </div>
 
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-indigo-400 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-amber-300 transition-colors">
                       {article.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-slate-400 mb-6 leading-relaxed">
+                    <p className="text-xs sm:text-sm text-slate-300 mb-6 leading-relaxed">
                       {article.summary}
                     </p>
 
-                    <div className="p-4 bg-slate-950/70 rounded-xl border border-slate-800 mb-6">
-                      <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 block mb-2">
+                    <div className="p-4 bg-[#08090E] rounded-xl border border-amber-500/15 mb-6">
+                      <span className="text-xs font-bold uppercase tracking-wider text-amber-400 block mb-2">
                         Core Takeaways
                       </span>
                       <ul className="space-y-2">
                         {article.takeaways.map((takeaway, idx) => (
                           <li key={idx} className="flex items-start gap-2 text-xs text-slate-300">
-                            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
                             <span>{takeaway}</span>
                           </li>
                         ))}
@@ -379,11 +379,11 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between">
-                    <span className="text-xs text-slate-500">By {article.author}</span>
+                  <div className="pt-4 border-t border-amber-500/15 flex items-center justify-between">
+                    <span className="text-xs text-slate-400">By {article.author}</span>
                     <button
                       onClick={handleBooking}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-400 hover:text-amber-200 transition-colors cursor-pointer"
                     >
                       <span>Explore Advisory Engagement</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -396,24 +396,24 @@ export const InsightsPage: React.FC<InsightsPageProps> = ({ onOpenConsultation }
         )}
 
         {/* Bottom CTA Banner */}
-        <div className="bg-gradient-to-br from-blue-950/60 via-slate-900 to-slate-950 border border-blue-500/30 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-gradient-to-br from-[#17140B] via-[#12141D] to-[#0E1017] border border-amber-500/35 rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-4">
             Need a Tailored Strategy for Your Enterprise?
           </h2>
-          <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto mb-8">
+          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto mb-8">
             Every business has unique operational dynamics and market opportunities. Book a confidential 1-on-1 discovery consultation directly with Aniket Dubey.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               onClick={handleBooking}
-              className="w-full sm:w-auto px-8 py-3.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl transition-all shadow-lg shadow-blue-600/30 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-3.5 text-sm font-bold text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 hover:brightness-105 active:scale-95 rounded-xl transition-all shadow-lg shadow-amber-500/25 cursor-pointer"
             >
               Book Strategic Consultation
             </button>
             <Link
               to="/services"
-              className="w-full sm:w-auto px-8 py-3.5 text-sm font-semibold text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-700 rounded-xl transition-all"
+              className="w-full sm:w-auto px-8 py-3.5 text-sm font-semibold text-amber-200 hover:text-white bg-[#0E1017] hover:bg-[#151824] border border-amber-500/30 rounded-xl transition-all"
             >
               View Full Capabilities
             </Link>

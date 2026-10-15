@@ -60,8 +60,8 @@ export const Navbar: React.FC<NavbarProps> = () => {
         id="main-navbar"
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-slate-950/95 backdrop-blur-md border-b border-slate-800/80 shadow-lg shadow-black/30 py-3'
-            : 'bg-slate-950/85 backdrop-blur-sm border-b border-slate-900/80 py-3.5 sm:py-4'
+            ? 'bg-[#08090E]/95 backdrop-blur-md border-b border-amber-500/20 shadow-lg shadow-black/40 py-3'
+            : 'bg-[#08090E]/85 backdrop-blur-sm border-b border-amber-500/10 py-3.5 sm:py-4'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,15 +71,15 @@ export const Navbar: React.FC<NavbarProps> = () => {
               to="/"
               id="nav-brand-link"
               onClick={() => setMobileMenuOpen(false)}
-              className="group flex items-center gap-2.5 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg p-1 min-w-0"
+              className="group flex items-center gap-2.5 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded-lg p-1 min-w-0"
             >
               <BrandMark size={36} className="sm:w-10 sm:h-10 group-hover:scale-105 transition-transform shrink-0" />
               <div className="flex flex-col min-w-0">
-                <span className="text-base sm:text-lg font-bold text-white tracking-tight leading-none group-hover:text-blue-400 transition-colors truncate">
+                <span className="text-base sm:text-lg font-bold text-white tracking-tight leading-none group-hover:text-amber-300 transition-colors truncate">
                   Aniket Dubey
                 </span>
-                <span className="text-[10px] sm:text-xs font-medium text-slate-400 tracking-wider uppercase mt-1 truncate">
-                  Strategic Advisory Partner
+                <span className="text-[10px] sm:text-xs font-medium text-amber-400/80 tracking-wider uppercase mt-1 truncate">
+                  Business Advisory Partner
                 </span>
               </div>
             </Link>
@@ -94,8 +94,8 @@ export const Navbar: React.FC<NavbarProps> = () => {
                   className={({ isActive }) =>
                     `px-3 xl:px-3.5 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all ${
                       isActive
-                        ? 'bg-blue-600/15 text-blue-400 border border-blue-500/30 font-semibold'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-900/80'
+                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/35 font-semibold shadow-sm shadow-amber-500/10'
+                        : 'text-slate-300 hover:text-amber-200 hover:bg-[#121520]'
                     }`
                   }
                 >
@@ -111,7 +111,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 id="nav-book-consultation-btn"
-                className="inline-flex items-center justify-center gap-2 px-3.5 xl:px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-lg transition-all shadow-md shadow-blue-600/20 hover:shadow-blue-600/30 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-3.5 xl:px-4 py-2 text-xs font-bold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 hover:brightness-105 active:scale-95 rounded-lg transition-all shadow-md shadow-amber-500/25 hover:shadow-amber-500/35 cursor-pointer"
               >
                 <span>Book Consultation</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -123,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
               <a
                 href={`tel:${CONSULTANT_INFO.phone}`}
                 id="mobile-nav-call-btn"
-                className="p-2.5 text-blue-400 hover:text-white bg-slate-900 border border-slate-800 rounded-lg active:scale-95 transition-transform"
+                className="p-2.5 text-amber-400 hover:text-white bg-[#0E1017] border border-amber-500/20 hover:border-amber-400/50 rounded-lg active:scale-95 transition-all shadow-sm"
                 aria-label="Call directly"
               >
                 <Phone className="w-4 h-4" />
@@ -131,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 id="nav-mobile-toggle-btn"
-                className="p-2.5 text-slate-300 hover:text-white bg-slate-900 border border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer active:scale-95 transition-transform"
+                className="p-2.5 text-slate-300 hover:text-white bg-[#0E1017] border border-amber-500/20 hover:border-amber-400/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 cursor-pointer active:scale-95 transition-all"
                 aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
                 aria-expanded={mobileMenuOpen}
               >
@@ -145,7 +145,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
         {mobileMenuOpen && (
           <div
             id="mobile-navigation-drawer"
-            className="lg:hidden bg-slate-950/98 border-b border-slate-800 px-4 pt-3 pb-6 mt-3 shadow-2xl backdrop-blur-xl animate-in slide-in-from-top-3 duration-200 max-h-[calc(100dvh-4.5rem)] overflow-y-auto"
+            className="lg:hidden bg-[#08090E]/98 border-b border-amber-500/20 px-4 pt-3 pb-6 mt-3 shadow-2xl backdrop-blur-xl animate-in slide-in-from-top-3 duration-200 max-h-[calc(100dvh-4.5rem)] overflow-y-auto"
           >
             <div className="flex flex-col space-y-1">
               {navLinks.map((link) => (
@@ -156,23 +156,23 @@ export const Navbar: React.FC<NavbarProps> = () => {
                   className={({ isActive }) =>
                     `px-4 py-3 text-sm font-medium rounded-xl transition-colors flex items-center justify-between min-h-[44px] ${
                       isActive
-                        ? 'bg-blue-600/20 text-blue-400 font-semibold border border-blue-500/30'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-900'
+                        ? 'bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/35'
+                        : 'text-slate-300 hover:text-white hover:bg-[#121520]'
                     }`
                   }
                 >
                   <span>{link.label}</span>
-                  <ArrowUpRight className="w-3.5 h-3.5 opacity-60" />
+                  <ArrowUpRight className="w-3.5 h-3.5 opacity-60 text-amber-400" />
                 </NavLink>
               ))}
             </div>
 
-            <div className="pt-4 mt-2 border-t border-slate-800/80 space-y-3 pb-safe">
+            <div className="pt-4 mt-2 border-t border-amber-500/15 space-y-3 pb-safe">
               <a
                 href={`tel:${CONSULTANT_INFO.phone}`}
-                className="flex items-center gap-3 px-4 py-3 text-xs text-slate-300 bg-slate-900 rounded-xl border border-slate-800 min-h-[44px]"
+                className="flex items-center gap-3 px-4 py-3 text-xs text-slate-300 bg-[#0E1017] rounded-xl border border-amber-500/20 min-h-[44px]"
               >
-                <Phone className="w-4 h-4 text-blue-400" />
+                <Phone className="w-4 h-4 text-amber-400" />
                 <span>Call: {CONSULTANT_INFO.formattedPhone}</span>
               </a>
 
@@ -181,7 +181,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 rounded-xl shadow-md shadow-blue-600/25 cursor-pointer min-h-[44px]"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 text-xs font-bold uppercase tracking-wider text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 hover:brightness-105 active:scale-95 rounded-xl shadow-md shadow-amber-500/25 cursor-pointer min-h-[44px]"
               >
                 <span>Book Consultation</span>
                 <ArrowUpRight className="w-4 h-4" />
