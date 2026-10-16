@@ -51,14 +51,14 @@ export const ReadingProgressBar: React.FC = () => {
         <motion.div
           id="reading-progress-bar"
           style={{ scaleX, transformOrigin: '0%' }}
-          className="h-full w-full bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.9)]"
+          className="h-full w-full bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-500 shadow-[0_0_12px_rgba(59,130,246,0.9)]"
         />
       </div>
 
       {/* Optional micro indicator badge that appears when reading deep into long content */}
       {readPercent > 5 && readPercent < 98 && (
-        <div className="hidden sm:flex absolute top-2 right-4 items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#0E1017]/90 border border-amber-500/30 text-[10px] font-semibold text-amber-300 shadow-md backdrop-blur-md">
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+        <div className="hidden sm:flex absolute top-2 right-4 items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-900/90 border border-blue-500/30 text-[10px] font-semibold text-blue-300 shadow-md backdrop-blur-md">
+          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
           <span>{readPercent}% read</span>
         </div>
       )}

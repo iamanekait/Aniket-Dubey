@@ -59,21 +59,21 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     const strategicGroup = new THREE.Group();
     scene.add(strategicGroup);
 
-    // 1. Central Icosahedron (Core Business Nucleus - Lustrous Obsidian Bronze)
+    // 1. Central Icosahedron (Core Business Nucleus - Deep Slate & Navy)
     const coreGeometry = new THREE.IcosahedronGeometry(1.4, 1);
     const coreMaterial = new THREE.MeshStandardMaterial({
-      color: 0x1c170d, // Lustrous obsidian bronze
-      roughness: 0.18,
-      metalness: 0.92,
+      color: 0x0f172a, // Deep slate navy
+      roughness: 0.25,
+      metalness: 0.85,
       wireframe: false,
     });
     const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
     strategicGroup.add(coreMesh);
 
-    // 2. Outer Wireframe Cage (Strategic Execution Shell - Gilded 24K Gold)
+    // 2. Outer Wireframe Cage (Strategic Execution Shell - Vibrant Tech Blue)
     const wireGeometry = new THREE.IcosahedronGeometry(1.65, 1);
     const wireMaterial = new THREE.MeshBasicMaterial({
-      color: 0xd4af37, // Burnished Champagne Gold
+      color: 0x3b82f6, // Royal Blue
       wireframe: true,
       transparent: true,
       opacity: 0.55,
@@ -81,10 +81,10 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
     strategicGroup.add(wireMesh);
 
-    // 3. Orbital Rings (Business & IT Synergy Rings - Platinum & Gold)
+    // 3. Orbital Rings (Business & IT Synergy Rings - Sky & Indigo)
     const ringGeometry1 = new THREE.TorusGeometry(2.1, 0.02, 16, 100);
     const ringMaterial1 = new THREE.MeshBasicMaterial({
-      color: 0xf5e5be, // Liquid Champagne
+      color: 0x60a5fa, // Sky Blue
       transparent: true,
       opacity: 0.45,
     });
@@ -94,7 +94,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
 
     const ringGeometry2 = new THREE.TorusGeometry(2.35, 0.02, 16, 100);
     const ringMaterial2 = new THREE.MeshBasicMaterial({
-      color: 0xc5a059, // Classic Bronze Gold
+      color: 0x818cf8, // Indigo Accent
       transparent: true,
       opacity: 0.35,
     });
@@ -102,9 +102,9 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     ringMesh2.rotation.y = Math.PI / 4;
     strategicGroup.add(ringMesh2);
 
-    // 4. Strategic Nodes (Pillars of growth - Glowing Amber Gold)
+    // 4. Strategic Nodes (Pillars of growth - Glowing Cyan Blue)
     const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-    const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0xfde68a });
+    const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
     const nodes: THREE.Mesh[] = [];
 
     const positions = [
@@ -123,15 +123,15 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
       nodes.push(node);
     });
 
-    // Lighting with warm luxury illumination
-    const ambientLight = new THREE.AmbientLight(0xfffaed, 1.4);
+    // Lighting with crisp tech illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
-    const pointLight1 = new THREE.PointLight(0xf59e0b, 3.5, 50);
+    const pointLight1 = new THREE.PointLight(0x3b82f6, 3.5, 50);
     pointLight1.position.set(5, 5, 5);
     scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0xd4af37, 2.5, 50);
+    const pointLight2 = new THREE.PointLight(0x06b6d4, 2.5, 50);
     pointLight2.position.set(-5, -5, 2);
     scene.add(pointLight2);
 
@@ -282,9 +282,9 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
   if (!webGLSupported) {
     return (
       <div
-        className={`relative w-full h-full min-h-[300px] flex flex-col items-center justify-center p-6 bg-[#0E1017]/80 border border-amber-500/25 rounded-2xl text-center shadow-xl ${className}`}
+        className={`relative w-full h-full min-h-[300px] flex flex-col items-center justify-center p-6 bg-slate-900/80 border border-slate-800 rounded-2xl text-center shadow-xl ${className}`}
       >
-        <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center text-amber-300 mb-4 animate-pulse">
+        <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/40 flex items-center justify-center text-blue-400 mb-4 animate-pulse">
           <Layers className="w-8 h-8" />
         </div>
         <h4 className="text-base font-bold text-white mb-1">Interactive Strategic Architecture</h4>

@@ -8,13 +8,13 @@ interface CallToActionProps {
 
 export const CallToAction: React.FC<CallToActionProps> = ({ onScheduleClick }) => {
   return (
-    <section className="py-20 lg:py-24 bg-gradient-to-b from-[#08090E] to-[#0E1017] border-t border-amber-500/15 relative overflow-hidden">
+    <section className="py-20 lg:py-24 bg-gradient-to-b from-slate-900 to-slate-950 border-t border-slate-800 relative overflow-hidden">
       <div className="absolute inset-0 bg-dot-pattern opacity-40 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-950/60 border border-amber-500/35 text-amber-300 text-xs font-semibold mb-6">
-          <ShieldCheck className="w-4 h-4 text-amber-400" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-semibold mb-6">
+          <ShieldCheck className="w-4 h-4 text-blue-400" />
           <span>Confidential, High-Value Strategic Consultation</span>
         </div>
 
@@ -30,7 +30,7 @@ export const CallToAction: React.FC<CallToActionProps> = ({ onScheduleClick }) =
           <button
             onClick={onScheduleClick}
             id="cta-schedule-consultation-btn"
-            className="w-full sm:w-auto sm:min-w-[260px] inline-flex items-center justify-center gap-2.5 px-10 py-4 text-sm sm:text-base font-bold text-slate-950 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-600 hover:brightness-105 active:scale-95 rounded-xl transition-all shadow-xl shadow-amber-500/25 cursor-pointer"
+            className="w-full sm:w-auto sm:min-w-[260px] inline-flex items-center justify-center gap-2.5 px-10 py-4 text-sm sm:text-base font-bold text-white bg-blue-600 hover:bg-blue-500 active:bg-blue-700 active:scale-95 rounded-xl transition-all shadow-xl shadow-blue-600/25 cursor-pointer"
           >
             <span>Schedule a Consultation</span>
             <ArrowRight className="w-4 h-4" />
@@ -39,9 +39,9 @@ export const CallToAction: React.FC<CallToActionProps> = ({ onScheduleClick }) =
           <a
             href={`tel:${CONSULTANT_INFO.phone}`}
             id="cta-direct-call-btn"
-            className="w-full sm:w-auto sm:min-w-[260px] inline-flex items-center justify-center gap-2 px-10 py-4 text-sm sm:text-base font-semibold text-amber-200 hover:text-white bg-[#0E1017] border border-amber-500/30 hover:border-amber-400/60 rounded-xl transition-all hover:bg-amber-950/30"
+            className="w-full sm:w-auto sm:min-w-[260px] inline-flex items-center justify-center gap-2 px-10 py-4 text-sm sm:text-base font-semibold text-slate-200 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl transition-all hover:bg-slate-800"
           >
-            <Phone className="w-4 h-4 text-amber-400" />
+            <Phone className="w-4 h-4 text-blue-400" />
             <span>{CONSULTANT_INFO.formattedPhone}</span>
           </a>
         </div>

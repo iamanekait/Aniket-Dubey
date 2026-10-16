@@ -22,7 +22,7 @@ export const BrandMark: React.FC<{ size?: number; className?: string }> = ({
     return (
       <div
         style={{ width: size, height: size }}
-        className={`relative shrink-0 rounded-xl overflow-hidden bg-white p-0.5 border border-amber-500/35 shadow-sm shadow-amber-500/20 flex items-center justify-center ${className}`}
+        className={`relative shrink-0 rounded-xl overflow-hidden bg-white p-0.5 border border-blue-500/30 shadow-sm shadow-blue-500/10 flex items-center justify-center ${className}`}
       >
         <img
           src={USER_LOGO_URL}
@@ -116,10 +116,10 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
             Aniket Dubey
           </span>
           <div className="flex items-center gap-1.5 mt-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
             <span
               className={`text-[10px] sm:text-xs font-semibold tracking-wider uppercase ${
-                textColor === 'light' ? 'text-amber-400/90' : 'text-amber-800'
+                textColor === 'light' ? 'text-blue-400' : 'text-blue-700'
               }`}
             >
               Business Consultant

@@ -12,7 +12,6 @@ import {
   Mail,
   Calendar,
   Building2,
-  Quote,
   Check,
   X,
   Linkedin,
@@ -224,125 +223,30 @@ export const WhyAniketPage: React.FC = () => {
                 </h2>
               </div>
 
-              {/* Theme 1: Experience & Dual Perspective (Paragraph 1) */}
-              <div className="p-7 sm:p-8 rounded-2xl bg-slate-950/90 border border-slate-800/90 hover:border-slate-700/80 transition-colors space-y-4 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-blue-950/80 border border-blue-800/50 flex items-center justify-center text-blue-400 font-bold text-sm">
-                    01
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    Industry Experience & Business-Oriented Thinking
-                  </h3>
-                </div>
+              {/* Single Symmetrical Paragraph Narrative */}
+              <div className="p-7 sm:p-9 rounded-2xl bg-slate-950/90 border border-slate-800/90 hover:border-slate-700/80 transition-colors shadow-2xl space-y-6">
                 <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-                  Choosing the right technology and business advisory partner can make all the difference in turning business challenges into opportunities for growth. With over 10 years of professional experience working with <span className="text-white font-medium">iWebNext</span>, the North American brand of <span className="text-white font-medium">Technext Technosoft Pvt. Ltd.</span>, Aniket Dubey brings a wealth of industry experience, technical understanding, and business-oriented thinking to every engagement. As an independent IT contractor and Business Advisory Partner, he combines technology expertise with a practical understanding of business needs to help organizations identify opportunities, overcome challenges, and build strategies aligned with their long-term objectives.
-                </p>
-                <div className="pt-2 flex flex-wrap gap-2 text-xs">
-                  <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
-                    Over 10 Years Professional Experience
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-blue-400">
-                    iWebNext & Technext Technosoft
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
-                    Independent IT Contractor
-                  </span>
-                </div>
-              </div>
-
-              {/* Theme 2: Value-Driven Technology (Paragraph 2 + Pull Quote) */}
-              <div className="p-7 sm:p-8 rounded-2xl bg-slate-950/90 border border-slate-800/90 hover:border-slate-700/80 transition-colors space-y-5 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-sky-950/80 border border-sky-800/50 flex items-center justify-center text-sky-400 font-bold text-sm">
-                    02
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    Creating Meaningful Business Value Beyond Day-to-Day Operations
-                  </h3>
-                </div>
-                
-                {/* Featured Pull Quote */}
-                <div className="p-5 rounded-xl bg-gradient-to-r from-blue-950/40 to-slate-900/60 border-l-4 border-blue-500 border-y border-r border-slate-800 text-slate-200">
-                  <Quote className="w-6 h-6 text-blue-400 mb-2 opacity-70" />
-                  <p className="text-base sm:text-lg font-medium italic text-blue-100 leading-snug">
-                    "Technology should do more than support day-to-day operations; it should create meaningful business value, improve efficiency, and open doors to new possibilities."
-                  </p>
-                </div>
-
-                <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-                  Aniket believes that technology should do more than support day-to-day operations; it should create meaningful business value, improve efficiency, and open doors to new possibilities. His approach focuses on understanding each client's unique goals, evaluating their requirements, and identifying practical, scalable solutions that align with their business priorities. By bridging the gap between technical capabilities and strategic decision-making, he helps businesses make more informed choices, optimize their processes, and navigate an increasingly technology-driven marketplace with greater confidence.
+                  Choosing the right technology and business advisory partner can make all the difference in turning business challenges into opportunities for growth. With over 10 years of professional experience working with <span className="text-white font-medium">iWebNext</span>, the North American brand of <span className="text-white font-medium">Technext Technosoft Pvt. Ltd.</span>, Aniket Dubey brings a wealth of industry experience, technical understanding, and business-oriented thinking to every engagement. As an independent IT contractor and Business Advisory Partner, he combines technology expertise with a practical understanding of business needs to help organizations identify opportunities, overcome challenges, and build strategies aligned with their long-term objectives. Aniket believes that technology should do more than support day-to-day operations; it should create meaningful business value, improve efficiency, and open doors to new possibilities. His approach focuses on understanding each client's unique goals, evaluating their requirements, and identifying practical, scalable solutions that align with their business priorities. By bridging the gap between technical capabilities and strategic decision-making, he helps businesses make more informed choices, optimize their processes, and navigate an increasingly technology-driven marketplace with greater confidence. What sets Aniket apart is his commitment to building relationships based on trust, transparency, and collaboration. He understands that every business has its own challenges, ambitions, and constraints, which is why he values a personalized approach rather than a one-size-fits-all solution. Whether supporting IT initiatives, advising on business direction, or helping organizations evaluate opportunities for improvement, Aniket strives to deliver thoughtful guidance and solutions that address real-world needs, with an emphasis on clear communication, dependable collaboration, and long-term value to ensure that the focus remains on outcomes that matter to each client. With a strong foundation built through more than a decade of professional experience, Aniket is committed to helping businesses connect their vision with the right technology and strategic direction, serving as a trusted partner who understands the bigger picture, recognizes the importance of sustainable growth, and offers an unmatched blend of experience, personalized attention, and a results-oriented mindset.
                 </p>
 
-                <div className="grid sm:grid-cols-2 gap-3 pt-2 text-xs">
-                  <div className="flex items-start gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Evaluate unique goals & operational requirements</span>
+                <div className="pt-2 flex flex-wrap items-center justify-between gap-4 border-t border-slate-800/80">
+                  <div className="flex flex-wrap gap-2 text-xs">
+                    <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
+                      10+ Years Professional Experience
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-blue-400">
+                      iWebNext & Technext Technosoft
+                    </span>
+                    <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-emerald-400">
+                      Direct Advisory
+                    </span>
                   </div>
-                  <div className="flex items-start gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Scalable solutions aligned with business priorities</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Bridge technical tools & executive decision-making</span>
-                  </div>
-                  <div className="flex items-start gap-2 text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>Confident navigation of tech-driven marketplaces</span>
-                  </div>
-                </div>
-              </div>
 
-              {/* Theme 3: Trust, Transparency & Collaboration (Paragraph 3) */}
-              <div className="p-7 sm:p-8 rounded-2xl bg-slate-950/90 border border-slate-800/90 hover:border-slate-700/80 transition-colors space-y-4 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-emerald-950/80 border border-emerald-800/50 flex items-center justify-center text-emerald-400 font-bold text-sm">
-                    03
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    Trust, Transparency & Personalized Solutions
-                  </h3>
-                </div>
-                <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-                  What sets Aniket apart is his commitment to building relationships based on trust, transparency, and collaboration. He understands that every business has its own challenges, ambitions, and constraints, which is why he values a personalized approach rather than a one-size-fits-all solution. Whether supporting IT initiatives, advising on business direction, or helping organizations evaluate opportunities for improvement, Aniket strives to deliver thoughtful guidance and solutions that address real-world needs. His emphasis on clear communication, dependable collaboration, and long-term value ensures that the focus remains on outcomes that matter to each client.
-                </p>
-
-                <div className="p-4 rounded-xl bg-slate-900/50 border border-slate-800/80 grid sm:grid-cols-3 gap-3 text-center">
-                  <div className="p-2">
-                    <div className="text-sm font-bold text-white">Trust & Transparency</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">Radical honesty & clear communication</div>
-                  </div>
-                  <div className="p-2 border-y sm:border-y-0 sm:border-x border-slate-800">
-                    <div className="text-sm font-bold text-white">No One-Size-Fits-All</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">Personalized to real constraints</div>
-                  </div>
-                  <div className="p-2">
-                    <div className="text-sm font-bold text-white">Outcome-Focused</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">Long-term value that matters to you</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Theme 4: Vision & Sustainable Growth (Paragraph 4) */}
-              <div className="p-7 sm:p-8 rounded-2xl bg-slate-950/90 border border-slate-800/90 hover:border-slate-700/80 transition-colors space-y-4 shadow-xl">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-indigo-950/80 border border-indigo-800/50 flex items-center justify-center text-indigo-400 font-bold text-sm">
-                    04
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                    Connecting Vision with Technology & Strategic Direction
-                  </h3>
-                </div>
-                <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-                  With a strong foundation built through more than a decade of professional experience, Aniket is committed to helping businesses connect their vision with the right technology and strategic direction. His goal is to serve not just as an independent IT contractor or business advisor, but as a trusted partner who understands the bigger picture, recognizes the importance of sustainable growth, and works collaboratively toward meaningful progress. For businesses seeking a reliable, forward-thinking partner to help them make smarter technology decisions and pursue their next stage of growth, Aniket Dubey offers a blend of experience, personalized attention, and a results-oriented mindset.
-                </p>
-
-                <div className="pt-2">
                   <button
                     onClick={() => navigate('/contact')}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-300 group cursor-pointer"
+                    className="inline-flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-300 group cursor-pointer transition-colors"
                   >
-                    <span>Connect with Aniket to discuss your growth roadmap</span>
+                    <span>Connect with Aniket</span>
                     <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                   </button>
                 </div>

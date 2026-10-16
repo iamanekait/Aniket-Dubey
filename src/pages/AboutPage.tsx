@@ -30,7 +30,7 @@ export const AboutPage: React.FC = () => {
   };
 
   return (
-    <div className="pt-24 pb-20 bg-[#08090E]">
+    <div className="pt-24 pb-20 bg-slate-950">
       {/* React Helmet SEO Meta Tags */}
       <SEO
         title="About Aniket Dubey | Founder-First Strategic Business Advisory Partner"
@@ -44,13 +44,13 @@ export const AboutPage: React.FC = () => {
       {/* Page Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-950/60 border border-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
             Founder-First Advisory Partner
           </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight mb-4">
             Hi, I'm Aniket Dubey.
           </h1>
-          <p className="text-base sm:text-xl font-medium text-amber-300 mb-4">
+          <p className="text-base sm:text-xl font-medium text-blue-400 mb-4">
             A founder-first strategic business advisory partner.
           </p>
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
@@ -63,10 +63,10 @@ export const AboutPage: React.FC = () => {
       <About onScheduleClick={() => navigate('/contact')} />
 
       {/* Personal Manifesto Section */}
-      <section className="py-16 bg-[#0B0D14]/80 border-t border-amber-500/15">
+      <section className="py-16 bg-slate-900/60 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-10">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-400 mb-2 block">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-2 block">
               Core Convictions
             </span>
             <h2 className="text-2xl sm:text-3xl font-bold text-white">
@@ -81,13 +81,13 @@ export const AboutPage: React.FC = () => {
             {PERSONAL_MANIFESTO.map((item, idx) => (
               <div
                 key={idx}
-                className="bg-[#08090E] border border-amber-500/20 hover:border-amber-400/40 rounded-2xl p-6 sm:p-7 space-y-3 transition-all shadow-lg"
+                className="bg-slate-950 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 sm:p-7 space-y-3 transition-all shadow-lg"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
                     Principle 0{idx + 1}
                   </span>
-                  <span className="text-xs font-semibold text-amber-200 px-2 py-0.5 rounded bg-[#151824] border border-amber-500/25">
+                  <span className="text-xs font-semibold text-blue-300 px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
                     {item.tagline}
                   </span>
                 </div>
@@ -102,7 +102,7 @@ export const AboutPage: React.FC = () => {
       </section>
 
       {/* Deep Dive on Experience & Audience */}
-      <section className="py-16 bg-[#08090E] border-t border-amber-500/15">
+      <section className="py-16 bg-slate-950 border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div className="space-y-4">
@@ -114,44 +114,44 @@ export const AboutPage: React.FC = () => {
               </p>
               <ul className="space-y-3 text-sm text-slate-300">
                 <li className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-amber-950/80 border border-amber-500/40 flex items-center justify-center shrink-0 mt-0.5 text-amber-400 text-xs">✓</div>
+                  <div className="w-5 h-5 rounded-full bg-blue-950/80 border border-blue-800/40 flex items-center justify-center shrink-0 mt-0.5 text-blue-400 text-xs">✓</div>
                   <span><strong>SMB Owners & Entrepreneurs:</strong> Needing structured strategic direction, revenue systems, or operational sanity as they scale.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-amber-950/80 border border-amber-500/40 flex items-center justify-center shrink-0 mt-0.5 text-amber-400 text-xs">✓</div>
+                  <div className="w-5 h-5 rounded-full bg-blue-950/80 border border-blue-800/40 flex items-center justify-center shrink-0 mt-0.5 text-blue-400 text-xs">✓</div>
                   <span><strong>Early-Stage & Growth Startups:</strong> Seeking clear market positioning, sustainable unit economics, and reliable digital infrastructure.</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-amber-950/80 border border-amber-500/40 flex items-center justify-center shrink-0 mt-0.5 text-amber-400 text-xs">✓</div>
+                  <div className="w-5 h-5 rounded-full bg-blue-950/80 border border-blue-800/40 flex items-center justify-center shrink-0 mt-0.5 text-blue-400 text-xs">✓</div>
                   <span><strong>Companies Modernizing IT & Marketing:</strong> Transitioning away from fragmented software tools to cohesive managed IT systems and content marketing engines.</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-[#0E1017] border border-amber-500/25 rounded-2xl p-8 space-y-6 shadow-xl">
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6 shadow-xl">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-amber-500/15 border border-amber-500/35 rounded-xl text-amber-400">
+                <div className="p-3 bg-blue-500/15 border border-blue-500/40 rounded-xl text-blue-400">
                   <Award className="w-6 h-6" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white">Direct Principal Advisory</h3>
-                  <p className="text-xs text-amber-400/90">10+ Years Consulting Background</p>
+                  <p className="text-xs text-blue-400">10+ Years Consulting Background</p>
                 </div>
               </div>
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
                 "My commitment is straightforward: understand your business context deeply, analyze reality objectively, build strategies tailored specifically to your needs, and support execution till completion."
               </p>
-              <div className="pt-4 border-t border-amber-500/15 flex items-center justify-between">
+              <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
                 <Link
                   to="/services"
                   className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-300 hover:text-white"
                 >
-                  <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+                  <BookOpen className="w-3.5 h-3.5 text-blue-400" />
                   <span>Explore Services</span>
                 </Link>
                 <button
                   onClick={() => navigate('/contact')}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-400 hover:text-blue-300 cursor-pointer"
                 >
                   <span>Connect With Aniket</span>
                   <ArrowRight className="w-3.5 h-3.5" />
