@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle2, Shield, ArrowRight, Linkedin, Instagram } from 'lucide-react';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
 import { CONSULTANT_INFO, TARGET_AUDIENCE_PILLARS } from '../data';
 
 interface AboutProps {
@@ -61,37 +61,6 @@ export const About: React.FC<AboutProps> = ({ onScheduleClick }) => {
               <span>Request an Exploratory Call</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-
-            {/* Direct Social Channels */}
-            <div className="grid grid-cols-2 gap-2.5">
-              <a
-                href={CONSULTANT_INFO.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-950/40 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-all group"
-              >
-                <Linkedin className="w-4 h-4 text-blue-400 shrink-0" />
-                <span className="truncate">LinkedIn</span>
-              </a>
-              <a
-                href={CONSULTANT_INFO.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-pink-500/50 hover:bg-pink-950/30 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-all group"
-              >
-                <Instagram className="w-4 h-4 text-pink-400 shrink-0" />
-                <span className="truncate">Instagram</span>
-              </a>
-            </div>
-
-            {/* Location & Practice Base */}
-            <div className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 text-xs text-slate-400 flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-blue-400" />
-                <span>Operating from Durgapur, West Bengal</span>
-              </span>
-              <span className="text-slate-300 font-medium">Pan-India & Remote</span>
-            </div>
           </div>
 
           {/* Right Column: Consulting Philosophy & Who We Serve */}

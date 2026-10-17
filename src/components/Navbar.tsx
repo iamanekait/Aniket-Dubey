@@ -48,9 +48,7 @@ export const Navbar: React.FC<NavbarProps> = () => {
     { label: 'Home', path: '/' },
     { label: 'About', path: '/about' },
     { label: 'Capabilities', path: '/capabilities' },
-    { label: 'Approach', path: '/approach' },
-    { label: 'Insights', path: '/insights' },
-    { label: 'Why Aniket', path: '/why-aniket' },
+    { label: 'Recognition', path: '/recognition' },
     { label: 'Contact', path: '/contact' },
   ];
 

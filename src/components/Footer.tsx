@@ -73,13 +73,7 @@ export const Footer: React.FC = () => {
                 <Link to="/capabilities" className="hover:text-blue-400 transition-colors">Capabilities & Services</Link>
               </li>
               <li>
-                <Link to="/insights" className="hover:text-blue-400 transition-colors">Insights & Case Studies</Link>
-              </li>
-              <li>
-                <Link to="/approach" className="hover:text-blue-400 transition-colors">Consulting Approach</Link>
-              </li>
-              <li>
-                <Link to="/why-aniket" className="hover:text-blue-400 transition-colors">Why Work With Aniket</Link>
+                <Link to="/recognition" className="hover:text-blue-400 transition-colors">Recognition</Link>
               </li>
               <li>
                 <Link to="/contact" className="hover:text-blue-400 transition-colors">Contact & Location</Link>

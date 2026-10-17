@@ -1,21 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  CheckCircle2,
   ArrowRight,
-  Shield,
   Award,
-  Sparkles,
-  TrendingUp,
-  Cpu,
   HeartHandshake,
-  Mail,
-  Calendar,
-  Building2,
   Check,
   X,
-  Linkedin,
-  Instagram,
 } from 'lucide-react';
 import { WhyWorkWithAniket } from '../components/WhyWorkWithAniket';
 import { CrossIndustry } from '../components/CrossIndustry';
@@ -23,15 +13,15 @@ import { CallToAction } from '../components/CallToAction';
 import { SEO } from '../components/SEO';
 import { WHY_WORK_WITH_ANIKET, WHY_ANIKET_CONTENT, CONSULTANT_INFO } from '../data';
 
-export const WhyAniketPage: React.FC = () => {
+export const RecognitionPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const whyStructuredData = {
+  const recognitionStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'AboutPage',
-    name: 'Why Choose Aniket Dubey | Technology & Business Advisory Partner',
+    name: 'Recognition | Aniket Dubey Felicitated by Technext Technosoft Pvt. Ltd.',
     description:
-      'With over 10 years of professional experience with iWebNext (North American brand of Technext Technosoft Pvt. Ltd.), Aniket Dubey provides independent IT contracting and business advisory services.',
+      'Corporate recognition of Aniket Dubey by Technext Technosoft Pvt. Ltd. for scaling their global brand iWebNext for over 10 years. Independent IT Contractor & Business Advisory Partner.',
     mainEntity: {
       '@type': 'Person',
       name: 'Aniket Dubey',
@@ -54,12 +44,12 @@ export const WhyAniketPage: React.FC = () => {
     <div className="pt-24 pb-20 bg-slate-950 text-slate-100 min-h-screen">
       {/* React Helmet SEO Meta Tags */}
       <SEO
-        title="Why Choose Aniket Dubey | Technology & Business Advisory Partner"
-        description="With over 10 years of professional experience with iWebNext, North American brand of Technext Technosoft Pvt. Ltd., Aniket Dubey turns business challenges into opportunities for growth."
-        keywords="Why Choose Aniket Dubey, iWebNext, Technext Technosoft Pvt Ltd, Independent IT Contractor, Business Advisory Partner, Technology Strategy, Durgapur, Kolkata, Pan-India"
-        canonicalPath="/why-aniket"
+        title="Recognition | Aniket Dubey - Felicitated by Technext Technosoft Pvt. Ltd."
+        description="Corporate recognition of Aniket Dubey by Technext Technosoft Pvt. Ltd. for scaling their global brand iWebNext for over 10 years. Independent IT Contractor & Business Advisory Partner."
+        keywords="Recognition, Aniket Dubey, Felicitation, Technext Technosoft Pvt Ltd, iWebNext, Global Brand Scaling, 10 Years Experience, Independent IT Contractor, Business Advisory Partner"
+        canonicalPath="/recognition"
         ogType="website"
-        jsonLd={whyStructuredData}
+        jsonLd={recognitionStructuredData}
       />
 
       {/* Hero Header */}
@@ -69,49 +59,47 @@ export const WhyAniketPage: React.FC = () => {
         <div className="absolute -bottom-10 left-10 w-80 h-80 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-3xl">
+          <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/80 border border-blue-800/50 text-blue-400 text-xs font-bold uppercase tracking-wider mb-5 backdrop-blur-sm">
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>Technology & Business Advisory Partner</span>
+              <Award className="w-3.5 h-3.5 text-blue-400" />
+              <span>Corporate Recognition & Milestone</span>
             </div>
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-6">
-              Turning Business Challenges Into Opportunities For Growth.
+              Recognition & Global Brand Milestone.
             </h1>
             <p className="text-lg sm:text-xl text-slate-300 leading-relaxed font-normal">
-              With over 10 years of professional experience with{' '}
-              <span className="text-blue-400 font-medium">iWebNext</span>, the North American brand of{' '}
-              <span className="text-slate-100 font-medium">Technext Technosoft Pvt. Ltd.</span>, Aniket Dubey bridges the gap between technical capabilities and strategic decision-making.
+              Felicitated by <span className="text-white font-semibold">Technext Technosoft Pvt. Ltd.</span> in honor of scaling their flagship brand, <span className="text-blue-400 font-semibold">iWebNext</span>, at a global level for over 10 years.
             </p>
 
             {/* Quick Metrics Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-800/80">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-8 pt-8 border-t border-slate-800/80 text-left">
               <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80">
                 <div className="text-2xl font-black text-blue-400">10+ Years</div>
-                <div className="text-xs text-slate-400 mt-0.5">Industry Experience</div>
+                <div className="text-xs text-slate-400 mt-0.5">Scaling iWebNext</div>
               </div>
               <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80">
-                <div className="text-2xl font-black text-white">iWebNext</div>
+                <div className="text-2xl font-black text-white">Technext</div>
+                <div className="text-xs text-slate-400 mt-0.5">Corporate Felicitation</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80">
+                <div className="text-2xl font-black text-emerald-400">Global</div>
                 <div className="text-xs text-slate-400 mt-0.5">North American Brand</div>
               </div>
               <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80">
-                <div className="text-2xl font-black text-emerald-400">1-on-1</div>
-                <div className="text-xs text-slate-400 mt-0.5">Principal Advisory</div>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-900/60 border border-slate-800/80">
-                <div className="text-2xl font-black text-sky-400">100%</div>
-                <div className="text-xs text-slate-400 mt-0.5">Tailored Solutions</div>
+                <div className="text-2xl font-black text-sky-400">Principal</div>
+                <div className="text-xs text-slate-400 mt-0.5">Direct Advisory</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Core Narrative Section: Aniket's Profile + Full 4-Paragraph Narrative */}
+      {/* Main Core Narrative Section: Aniket's Profile + Felicitation Context */}
       <section className="py-20 lg:py-28 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             
-            {/* Left Column (Sticky Desktop): High-Res Profile Card & Credential Snapshot */}
+            {/* Left Column (Sticky Desktop): High-Res Felicitation Card & Milestone Details */}
             <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-6">
               <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl group">
                 {/* Visual Ambient Accent */}
@@ -119,7 +107,7 @@ export const WhyAniketPage: React.FC = () => {
 
                 <img
                   src="https://xd92d5z735f07l9p.public.blob.vercel-storage.com/IMG-20260715-WA0270.jpg"
-                  alt="Aniket Dubey - Independent IT Contractor & Business Advisory Partner"
+                  alt="Aniket Dubey being felicitated by Technext Technosoft Pvt. Ltd. for scaling their brand iWebNext at a global level for over 10 years"
                   loading="lazy"
                   decoding="async"
                   className="w-full h-auto max-h-[580px] object-cover object-top transition-transform duration-700 ease-out group-hover:scale-[1.02]"
@@ -127,79 +115,49 @@ export const WhyAniketPage: React.FC = () => {
 
                 {/* Overlay Badge Bar */}
                 <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 bg-gradient-to-t from-slate-950 via-slate-950/90 to-transparent z-10">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-blue-600/30 border border-blue-500/50 text-blue-300 text-xs font-bold uppercase tracking-wider mb-2 backdrop-blur-md">
-                    <Shield className="w-3.5 h-3.5 text-blue-400" />
-                    <span>Independent IT Contractor & Business Advisory Partner</span>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-blue-600/40 border border-blue-400/50 text-blue-200 text-xs font-bold uppercase tracking-wider mb-2 backdrop-blur-md">
+                    <Award className="w-3.5 h-3.5 text-blue-300" />
+                    <span>Corporate Felicitation Ceremony</span>
                   </div>
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
                     {CONSULTANT_INFO.name}
                   </h2>
-                  <p className="text-xs sm:text-sm text-slate-300 mt-1 font-medium">
-                    10+ Years Professional Track Record &bull; iWebNext
+                  <p className="text-xs sm:text-sm text-slate-200 mt-1 font-medium">
+                    Felicitated by Technext Technosoft Pvt. Ltd. &bull; Scaling iWebNext Globally
                   </p>
                 </div>
               </div>
 
-              {/* Fast Action Card */}
-              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-950/80 border border-blue-800/40 flex items-center justify-center text-blue-400">
-                    <Building2 className="w-5 h-5" />
+              {/* Formal Felicitation Citation Card */}
+              <div className="bg-gradient-to-br from-blue-950/40 via-slate-900/80 to-slate-950 border border-blue-800/40 rounded-2xl p-6 space-y-3.5 shadow-xl">
+                <div className="flex items-start gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0 mt-0.5">
+                    <Award className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">Technext Technosoft Pvt. Ltd.</h3>
-                    <p className="text-xs text-slate-400">iWebNext North American Brand</p>
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-blue-400">Official Felicitation</div>
+                    <h3 className="text-sm font-bold text-white mt-0.5">Technext Technosoft Pvt. Ltd.</h3>
+                    <p className="text-xs text-slate-400">10+ Years Brand Scaling Milestone</p>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Available for strategic advisory engagements, enterprise IT contractor mandates, and technology modernization initiatives across India and internationally.
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Pictured above: <strong>Aniket Dubey</strong> being formally felicitated by the executive leadership of <strong>Technext Technosoft Pvt. Ltd.</strong> in honor of his decade-long contribution in scaling and establishing their North American brand, <strong>iWebNext</strong>, into an international technology success.
                 </p>
 
-                <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                  <button
-                    onClick={() => navigate('/contact')}
-                    className="flex-1 inline-flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-xs sm:text-sm font-semibold rounded-xl transition-all shadow-lg shadow-blue-600/25 cursor-pointer"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    <span>Schedule an Exploratory Call</span>
-                  </button>
-                  <a
-                    href="mailto:email@aniketdubey.com?cc=aniketdubey.2012@gmail.com"
-                    className="inline-flex items-center justify-center gap-2 py-3 px-4 bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs sm:text-sm font-semibold rounded-xl border border-slate-800 transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span>Email</span>
-                  </a>
-                </div>
-
-                {/* Direct Social Channels */}
-                <div className="pt-3 border-t border-slate-800/80">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2">
-                    Social & Professional Connect
+                <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
+                  <span className="px-2.5 py-1 rounded-md bg-blue-950/80 border border-blue-800/60 text-blue-300 font-medium">
+                    Executive Honor
                   </span>
-                  <div className="grid grid-cols-2 gap-2">
-                    <a
-                      href={CONSULTANT_INFO.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-950/40 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-all group"
-                    >
-                      <Linkedin className="w-4 h-4 text-blue-400 shrink-0" />
-                      <span className="truncate">LinkedIn</span>
-                    </a>
-                    <a
-                      href={CONSULTANT_INFO.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-pink-500/50 hover:bg-pink-950/30 text-slate-300 hover:text-white flex items-center justify-center gap-2 text-xs font-semibold transition-all group"
-                    >
-                      <Instagram className="w-4 h-4 text-pink-400 shrink-0" />
-                      <span className="truncate">Instagram</span>
-                    </a>
-                  </div>
+                  <span className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300 font-medium">
+                    10+ Years Dedication
+                  </span>
+                  <span className="px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800 text-slate-300 font-medium">
+                    Global Brand Scaling
+                  </span>
                 </div>
               </div>
+
 
               {/* Trust Guarantee Note */}
               <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-400 flex items-start gap-3">
@@ -210,16 +168,16 @@ export const WhyAniketPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: The Complete 4-Paragraph Narrative, Structured by Theme */}
+            {/* Right Column: Narrative & Professional Model */}
             <div className="lg:col-span-7 space-y-12">
               
               {/* Lead Headline */}
               <div>
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
-                  The Philosophy & Engagement Model
+                  The Foundation & Advisory Philosophy
                 </div>
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-snug">
-                  A Practical Blend of Experience, Personalized Attention, and Results-Oriented Execution.
+                  Recognized Leadership Grounded in Practical Execution.
                 </h2>
               </div>
 
@@ -229,19 +187,7 @@ export const WhyAniketPage: React.FC = () => {
                   Choosing the right technology and business advisory partner can make all the difference in turning business challenges into opportunities for growth. With over 10 years of professional experience working with <span className="text-white font-medium">iWebNext</span>, the North American brand of <span className="text-white font-medium">Technext Technosoft Pvt. Ltd.</span>, Aniket Dubey brings a wealth of industry experience, technical understanding, and business-oriented thinking to every engagement. As an independent IT contractor and Business Advisory Partner, he combines technology expertise with a practical understanding of business needs to help organizations identify opportunities, overcome challenges, and build strategies aligned with their long-term objectives. Aniket believes that technology should do more than support day-to-day operations; it should create meaningful business value, improve efficiency, and open doors to new possibilities. His approach focuses on understanding each client's unique goals, evaluating their requirements, and identifying practical, scalable solutions that align with their business priorities. By bridging the gap between technical capabilities and strategic decision-making, he helps businesses make more informed choices, optimize their processes, and navigate an increasingly technology-driven marketplace with greater confidence. What sets Aniket apart is his commitment to building relationships based on trust, transparency, and collaboration. He understands that every business has its own challenges, ambitions, and constraints, which is why he values a personalized approach rather than a one-size-fits-all solution.
                 </p>
 
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-4 border-t border-slate-800/80">
-                  <div className="flex flex-wrap gap-2 text-xs">
-                    <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
-                      10+ Years Professional Experience
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-blue-400">
-                      iWebNext & Technext Technosoft
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-emerald-400">
-                      Direct Advisory
-                    </span>
-                  </div>
-
+                <div className="pt-2 flex items-center justify-end border-t border-slate-800/80">
                   <button
                     onClick={() => navigate('/contact')}
                     className="inline-flex items-center gap-2 text-sm font-bold text-blue-400 hover:text-blue-300 group cursor-pointer transition-colors"
@@ -257,7 +203,7 @@ export const WhyAniketPage: React.FC = () => {
         </div>
       </section>
 
-      {/* Strategic Comparison Table: Why Aniket vs Generic Consulting */}
+      {/* Strategic Comparison Table: Recognized Track Record vs Generic Consulting */}
       <section className="py-20 bg-slate-900/30 border-t border-slate-800/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mb-12">
@@ -268,7 +214,7 @@ export const WhyAniketPage: React.FC = () => {
               A Contrast in Values, Focus, and Execution.
             </h2>
             <p className="text-base text-slate-400 mt-3 leading-relaxed">
-              How partnering with an independent contractor and business advisor creates lasting competitive advantage compared to standard consulting or fragmented vendors.
+              How partnering with a recognized independent contractor and business advisor creates lasting competitive advantage compared to standard consulting or fragmented vendors.
             </p>
           </div>
 
@@ -283,7 +229,7 @@ export const WhyAniketPage: React.FC = () => {
                     Generic Agency / Big Consulting
                   </th>
                   <th className="py-4 px-5 text-blue-400 font-bold text-xs uppercase tracking-wider w-1/3 bg-blue-950/30 rounded-t-xl border-x border-t border-blue-900/40">
-                    Partnering With Aniket Dubey
+                    Aniket Dubey's Recognized Standard
                   </th>
                 </tr>
               </thead>
@@ -380,3 +326,5 @@ export const WhyAniketPage: React.FC = () => {
     </div>
   );
 };
+
+export const WhyAniketPage = RecognitionPage;

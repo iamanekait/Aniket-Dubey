@@ -262,10 +262,10 @@ export const HomePage: React.FC = () => {
                 </div>
 
                 <Link
-                  to="/insights"
+                  to="/capabilities"
                   className="inline-flex items-center justify-between w-full pt-3 border-t border-slate-800/80 text-xs font-semibold text-blue-400 hover:text-blue-300 group-hover:translate-x-0.5 transition-transform"
                 >
-                  <span>Read full case study</span>
+                  <span>Explore practice capabilities</span>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -274,10 +274,10 @@ export const HomePage: React.FC = () => {
 
           <div className="mt-10 text-center">
             <Link
-              to="/insights"
+              to="/capabilities"
               className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-800 hover:border-slate-700 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all min-h-[44px]"
             >
-              <span>Explore All Insights & In-Depth Case Studies</span>
+              <span>Explore All Advisory Capabilities & Services</span>
               <ArrowRight className="w-4 h-4 text-blue-400" />
             </Link>
           </div>

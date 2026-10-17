@@ -9,10 +9,8 @@ import { ReadingProgressBar } from './components/ReadingProgressBar';
 import { HomePage } from './pages/HomePage';
 import { AboutPage } from './pages/AboutPage';
 import { ServicesPage } from './pages/ServicesPage';
-import { ApproachPage } from './pages/ApproachPage';
-import { WhyAniketPage } from './pages/WhyAniketPage';
+import { RecognitionPage } from './pages/RecognitionPage';
 import { ContactPage } from './pages/ContactPage';
-import { InsightsPage } from './pages/InsightsPage';
 import { ContactFormData } from './types';
 
 function AppContent() {
@@ -30,14 +28,6 @@ function AppContent() {
     setFormData((prev) => ({
       ...prev,
       service: serviceName,
-    }));
-  };
-
-  const handlePreFillEnquiry = (service: string, summary: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      service: service,
-      message: summary + (prev.message ? `\n\nAdditional notes: ${prev.message}` : ''),
     }));
   };
 
@@ -65,16 +55,12 @@ function AppContent() {
             path="/capabilities"
             element={<ServicesPage onSelectService={handleSelectService} />}
           />
-          <Route
-            path="/insights"
-            element={<InsightsPage onOpenConsultation={() => navigate('/contact')} />}
-          />
-          <Route
-            path="/approach"
-            element={<ApproachPage onPreFillEnquiry={handlePreFillEnquiry} />}
-          />
-          <Route path="/why-aniket" element={<WhyAniketPage />} />
-          <Route path="/why" element={<Navigate to="/why-aniket" replace />} />
+          {/* Legacy redirects */}
+          <Route path="/insights" element={<Navigate to="/capabilities" replace />} />
+          <Route path="/approach" element={<Navigate to="/capabilities" replace />} />
+          <Route path="/recognition" element={<RecognitionPage />} />
+          <Route path="/why-aniket" element={<Navigate to="/recognition" replace />} />
+          <Route path="/why" element={<Navigate to="/recognition" replace />} />
           <Route
             path="/contact"
             element={<ContactPage formData={formData} setFormData={setFormData} />}

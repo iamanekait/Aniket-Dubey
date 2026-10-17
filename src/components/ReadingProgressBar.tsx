@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { motion, useScroll, useSpring } from 'motion/react';
 
 // Long-form pages where reading progress is most valuable
-const LONG_FORM_ROUTES = ['/about', '/services', '/capabilities', '/insights', '/approach', '/why-aniket'];
+const LONG_FORM_ROUTES = ['/about', '/services', '/capabilities', '/recognition', '/why-aniket'];
 
 export const ReadingProgressBar: React.FC = () => {
   const location = useLocation();

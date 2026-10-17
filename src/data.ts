@@ -163,6 +163,26 @@ export const WHY_ANIKET_CONTENT = {
   ]
 };
 
+export const RECOGNITION_CONTENT = {
+  headline: "Recognition & Global Brand Milestone",
+  subheadline: "Felicitated by Technext Technosoft Pvt. Ltd. for Scaling iWebNext at a Global Level for Over 10 Years",
+  ceremony: {
+    organization: "Technext Technosoft Pvt. Ltd.",
+    brand: "iWebNext (North American Brand)",
+    citation: "Felicitated in recognition of over 10 years of exceptional leadership, dedication, and strategic contribution in establishing, expanding, and scaling iWebNext across the North American and global IT landscape.",
+    years: "10+ Years",
+    impact: "Global Brand Scaling & Strategic Advisory"
+  },
+  paragraphs: WHY_ANIKET_CONTENT.paragraphs,
+  keyQuotes: WHY_ANIKET_CONTENT.keyQuotes,
+  credentials: [
+    { label: "Felicitation", value: "Technext Technosoft", detail: "Formal corporate recognition for brand scaling" },
+    { label: "Global Brand", value: "iWebNext", detail: "Scaled brand footprint across North America & international markets" },
+    { label: "Track Record", value: "10+ Years", detail: "Continuous leadership and technical excellence" },
+    { label: "Advisory Model", value: "Direct Principal", detail: "Independent IT Contractor & Business Advisory Partner" }
+  ]
+};
+
 export const WHY_WORK_WITH_ANIKET = [
   {
     title: "10+ Years Experience with iWebNext",
