@@ -361,7 +361,7 @@ Key Information about Aniket Dubey:
 - Profession: Business Consultant
 - Experience: 10+ years of cross-industry strategic consulting
 - Location / Office: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India
-- Direct Phone: +91 9932979875
+- Direct Phone: 03434041193
 - Direct Email: email@aniketdubey.com
 - Direct Booking Link: https://scheduler.zoom.us/aniketdubey/consultation (Online Zoom Scheduler for 1-on-1 consultations)
 - Services Offered:
@@ -377,7 +377,7 @@ Key Information about Aniket Dubey:
 Tone & Rules:
 - Professional, consultative, articulate, warm, and strategic.
 - Do NOT invent awards, named clients, or exaggerated metrics (no fake "guaranteed 500% ROI").
-- Encourage the user to schedule a direct consultation with Aniket via his Zoom Scheduler (https://scheduler.zoom.us/aniketdubey/consultation), leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / 9932979875.
+- Encourage the user to schedule a direct consultation with Aniket via his Zoom Scheduler (https://scheduler.zoom.us/aniketdubey/consultation), leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / 03434041193.
 - Keep responses concise (2-4 paragraphs maximum, clear and easy to read).`;
 
     if (!ai) {
@@ -386,11 +386,11 @@ Tone & Rules:
       let reply = "";
 
       if (queryLower.includes("book") || queryLower.includes("schedule") || queryLower.includes("consultation") || queryLower.includes("call") || queryLower.includes("meeting")) {
-        reply = `You can book a consultation directly with Aniket Dubey:\n\n- **Online Zoom Scheduler**: [Click to schedule a 1-on-1 meeting](https://scheduler.zoom.us/aniketdubey/consultation)\n- **Direct Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also submit an enquiry through the contact form on this website.`;
+        reply = `You can book a consultation directly with Aniket Dubey:\n\n- **Online Zoom Scheduler**: [Click to schedule a 1-on-1 meeting](https://scheduler.zoom.us/aniketdubey/consultation)\n- **Direct Phone**: 03434041193\n- **Email**: email@aniketdubey.com\n\nYou can also submit an enquiry through the contact form on this website.`;
       } else if (queryLower.includes("service") || queryLower.includes("what do you do") || queryLower.includes("offer")) {
         reply = `Aniket Dubey provides four core advisory pillars tailored to growing businesses:\n\n1. **Business Consulting**: Growth roadmaps, strategic decision frameworks, and operational refinement.\n2. **Strategic Content Marketing**: High-impact brand positioning, editorial strategy, and audience-focused content.\n3. **Managed IT Services**: Reliable infrastructure guidance, ongoing tech support, and digital security management.\n4. **Business & Technology Strategy**: Bridging operational objectives with modern digital workflows and scalable tools.\n\nWould you like to discuss how these services can be tailored to your specific business model? You can book a direct consultation anytime at: https://scheduler.zoom.us/aniketdubey/consultation`;
       } else if (queryLower.includes("contact") || queryLower.includes("email") || queryLower.includes("phone") || queryLower.includes("address") || queryLower.includes("location") || queryLower.includes("durgapur")) {
-        reply = `You can connect directly with Aniket Dubey:\n\n- **Zoom Scheduler**: https://scheduler.zoom.us/aniketdubey/consultation\n- **Office**: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India\n- **Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also use the enquiry form on this page to request an initial consultation!`;
+        reply = `You can connect directly with Aniket Dubey:\n\n- **Zoom Scheduler**: https://scheduler.zoom.us/aniketdubey/consultation\n- **Office**: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India\n- **Phone**: 03434041193\n- **Email**: email@aniketdubey.com\n\nYou can also use the enquiry form on this page to request an initial consultation!`;
       } else if (queryLower.includes("recognition") || queryLower.includes("felicitat") || queryLower.includes("award") || queryLower.includes("technext") || queryLower.includes("iwebnext") || queryLower.includes("why aniket")) {
         reply = `Aniket Dubey was formally felicitated by **Technext Technosoft Pvt. Ltd.** in recognition of over 10 years of dedicated leadership in scaling their flagship North American brand, **iWebNext**, at a global level.\n\nYou can explore the full story, felicitation photo, and credential milestones on the **Recognition** page on this website!`;
       } else if (queryLower.includes("experience") || queryLower.includes("about") || queryLower.includes("who is")) {
@@ -427,7 +427,7 @@ Tone & Rules:
     console.error("Gemini Chat API Error:", err);
     return res.status(200).json({
       success: true,
-      reply: "Thank you for reaching out. Aniket Dubey offers tailored business consulting, strategic content marketing, and managed IT services for businesses ready to scale. Please feel free to call +91 9932979875 or submit the consultation form on this page.",
+      reply: "Thank you for reaching out. Aniket Dubey offers tailored business consulting, strategic content marketing, and managed IT services for businesses ready to scale. Please feel free to call 03434041193 or submit the consultation form on this page.",
     });
   }
 });
