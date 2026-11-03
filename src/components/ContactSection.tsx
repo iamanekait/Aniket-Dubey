@@ -29,6 +29,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     recipients?: string[];
     mailtoUrl?: string;
     submittedData?: ContactFormData;
+    needsActivation?: boolean;
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [fallbackMailtoUrl, setFallbackMailtoUrl] = useState<string | null>(null);
@@ -68,82 +69,121 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     const snapshot: ContactFormData = { ...formData };
     setSubmitting(true);
 
+    const subjectStr = `[Consultation Enquiry] ${snapshot.name} (${snapshot.business || 'Individual'}) - ${snapshot.service}`;
+    const mailtoSubject = encodeURIComponent(`Consultation Request: ${snapshot.name} - ${snapshot.service}`);
+    const mailtoBody = encodeURIComponent(
+      `Consultation Request Details:\n\n` +
+        `Full Name: ${snapshot.name}\n` +
+        `Company: ${snapshot.business || 'Not specified'}\n` +
+        `Email: ${snapshot.email}\n` +
+        `Phone: ${snapshot.phone || 'Not provided'}\n` +
+        `Service Required: ${snapshot.service}\n\n` +
+        `Message & Objectives:\n${snapshot.message}\n\n` +
+        `Routed To: email@aniketdubey.com`
+    );
+    const backupMailtoUrl = `mailto:email@aniketdubey.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+
+    let isSuccess = false;
+    let needsActivationFlag = false;
+    let successMessage = '';
+    let returnedRefId = `ENQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+    // 1. Primary Attempt: Send to /api/contact (Works in local server & Vercel serverless /api/contact.ts)
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        setSubmitResult({
-          success: true,
-          referenceId: data.referenceId,
-          message:
+      const contentType = response.headers.get('content-type') || '';
+      if (response.ok && contentType.includes('application/json')) {
+        const data = await response.json();
+        if (data.success) {
+          isSuccess = true;
+          returnedRefId = data.referenceId || returnedRefId;
+          needsActivationFlag = Boolean(data.needsActivation);
+          successMessage =
             data.message ||
-            'Your enquiry has been received and routed to email@aniketdubey.com and aniketdubey.2012@gmail.com.',
-          recipients: data.recipients || [
-            'email@aniketdubey.com',
-            'aniketdubey.2012@gmail.com',
-          ],
-          mailtoUrl: data.mailtoUrl,
-          submittedData: snapshot,
-        });
-        // Reset form
-        setFormData({
-          name: '',
-          business: '',
-          email: '',
-          phone: '',
-          service: 'General Strategic Consulting',
-          message: '',
-        });
-      } else {
-        setErrorMsg(
-          data.error ||
-            'Failed to transmit enquiry to server. You can dispatch directly via your email app.'
-        );
-        const subject = encodeURIComponent(
-          `Consultation Request: ${snapshot.name} - ${snapshot.service}`
-        );
-        const body = encodeURIComponent(
-          `Consultation Request Details:\n\n` +
-            `Full Name: ${snapshot.name}\n` +
-            `Company: ${snapshot.business}\n` +
-            `Email: ${snapshot.email}\n` +
-            `Phone: ${snapshot.phone}\n` +
-            `Service Required: ${snapshot.service}\n\n` +
-            `Message & Objectives:\n${snapshot.message}`
-        );
-        setFallbackMailtoUrl(
-          `mailto:email@aniketdubey.com,aniketdubey.2012@gmail.com?subject=${subject}&body=${body}`
-        );
+            'Your enquiry has been received and routed to email@aniketdubey.com.';
+        }
       }
-    } catch (err) {
-      console.error('Submission error:', err);
-      const subject = encodeURIComponent(
-        `Consultation Request: ${snapshot.name} - ${snapshot.service}`
-      );
-      const body = encodeURIComponent(
-        `Consultation Request Details:\n\n` +
-          `Full Name: ${snapshot.name}\n` +
-          `Company: ${snapshot.business}\n` +
-          `Email: ${snapshot.email}\n` +
-          `Phone: ${snapshot.phone}\n` +
-          `Service Required: ${snapshot.service}\n\n` +
-          `Message & Objectives:\n${snapshot.message}`
-      );
-      setFallbackMailtoUrl(
-        `mailto:email@aniketdubey.com,aniketdubey.2012@gmail.com?subject=${subject}&body=${body}`
-      );
-      setErrorMsg(
-        'Network error transmitting to server. Please click below to send directly to email@aniketdubey.com and aniketdubey.2012@gmail.com via your email app.'
-      );
-    } finally {
-      setSubmitting(false);
+    } catch (primaryErr) {
+      console.warn('Primary /api/contact request encountered an issue, trying direct fallback relay...', primaryErr);
     }
+
+    // 2. Secondary Attempt: Direct client relay to email@aniketdubey.com
+    if (!isSuccess) {
+      try {
+        const relayRes = await fetch('https://formsubmit.co/ajax/email@aniketdubey.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            _subject: subjectStr,
+            _replyto: snapshot.email,
+            _captcha: 'false',
+            _template: 'table',
+            'Reference ID': returnedRefId,
+            'Client Name': snapshot.name,
+            'Company / Business': snapshot.business || 'Not specified',
+            'Client Email': snapshot.email,
+            'Contact Phone': snapshot.phone || 'Not provided',
+            'Requested Service': snapshot.service,
+            'Objectives & Message': snapshot.message,
+            'Target Recipient': 'email@aniketdubey.com',
+          }),
+        });
+
+        const relayData: any = await relayRes.json().catch(() => null);
+        const relayOk = Boolean(relayRes.ok || relayData?.success === true || relayData?.success === 'true');
+        if (relayOk) {
+          isSuccess = true;
+          if (relayData?.message && typeof relayData.message === 'string' && relayData.message.toLowerCase().includes('activation')) {
+            needsActivationFlag = true;
+            successMessage =
+              "Enquiry recorded! FormSubmit sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.";
+          } else {
+            successMessage =
+              'Your enquiry has been securely received and dispatched to email@aniketdubey.com.';
+          }
+        }
+      } catch (relayErr) {
+        console.error('Relay fallback error:', relayErr);
+      }
+    }
+
+    if (isSuccess) {
+      setSubmitResult({
+        success: true,
+        referenceId: returnedRefId,
+        needsActivation: needsActivationFlag,
+        message:
+          successMessage ||
+          'Your enquiry has been received and routed to email@aniketdubey.com.',
+        recipients: ['email@aniketdubey.com'],
+        mailtoUrl: backupMailtoUrl,
+        submittedData: snapshot,
+      });
+      // Reset form
+      setFormData({
+        name: '',
+        business: '',
+        email: '',
+        phone: '',
+        service: 'General Strategic Consulting',
+        message: '',
+      });
+    } else {
+      setFallbackMailtoUrl(backupMailtoUrl);
+      setErrorMsg(
+        'An error occurred transmitting the enquiry. You can send the pre-filled information directly to email@aniketdubey.com by clicking below.'
+      );
+    }
+
+    setSubmitting(false);
   };
 
   return (
@@ -299,7 +339,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         Enquiry Transmitted & Routed Successfully
                       </h4>
                       <p className="text-xs text-emerald-400 font-medium mt-0.5">
-                        Information sent to email@aniketdubey.com & aniketdubey.2012@gmail.com
+                        Information sent to email@aniketdubey.com
                       </p>
                     </div>
                   </div>
@@ -307,6 +347,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-lg border border-slate-800">
                     {submitResult.message}
                   </p>
+
+                  {submitResult.needsActivation && (
+                    <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/50 text-amber-200 text-xs space-y-2.5 shadow-lg">
+                      <div className="flex items-center gap-2 font-bold text-amber-300">
+                        <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
+                        <span>One-Time Form Activation Required in Inbox</span>
+                      </div>
+                      <p className="leading-relaxed text-amber-100/95 text-xs">
+                        FormSubmit sent a one-time activation email to <strong>email@aniketdubey.com</strong>. Please check your Inbox and Spam/Junk folder for an email from <em>FormSubmit</em> and click <strong>"Activate Form"</strong>. After clicking it once, all future submissions will reach your inbox automatically.
+                      </p>
+                      <p className="leading-relaxed text-amber-200/90 text-[11px] pt-1 border-t border-amber-500/20">
+                        To deliver this enquiry right now, you can also click <strong>"Send Copy via Email Client"</strong> below to open your mail app with all details pre-filled.
+                      </p>
+                    </div>
+                  )}
 
                   {/* Summary receipt box */}
                   {submitResult.submittedData && (
@@ -336,19 +391,15 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                     </div>
                   )}
 
-                  {/* Recipient verification badges */}
+                  {/* Recipient verification badge */}
                   <div className="p-3 bg-blue-950/40 border border-blue-800/40 rounded-lg text-xs space-y-1.5">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 block">
-                      Target Destination Inboxes
+                      Target Destination Inbox
                     </span>
                     <div className="flex flex-wrap gap-2">
                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono">
                         <Mail className="w-3 h-3 text-blue-400" />
                         email@aniketdubey.com
-                      </span>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono">
-                        <Mail className="w-3 h-3 text-blue-400" />
-                        aniketdubey.2012@gmail.com
                       </span>
                     </div>
                   </div>
@@ -390,7 +441,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                           className="inline-flex items-center gap-1.5 text-blue-400 hover:text-blue-300 underline font-semibold mt-1"
                         >
                           <Mail className="w-3.5 h-3.5" />
-                          <span>Click here to send directly to email@aniketdubey.com & aniketdubey.2012@gmail.com</span>
+                          <span>Click here to send directly to email@aniketdubey.com</span>
                         </a>
                       )}
                     </div>
@@ -505,17 +556,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                     />
                   </div>
 
-                  {/* Email Routing Assurance Banner */}
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 flex items-start gap-2.5">
-                    <Mail className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                    <div className="leading-relaxed">
-                      <span>Upon submission, your enquiry is instantly routed to </span>
-                      <strong className="text-slate-200">email@aniketdubey.com</strong>
-                      <span> and </span>
-                      <strong className="text-slate-200">aniketdubey.2012@gmail.com</strong>
-                      <span> for direct review by Aniket Dubey.</span>
-                    </div>
-                  </div>
 
                   {/* Submit Button */}
                   <div className="pt-1">

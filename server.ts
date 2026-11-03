@@ -61,33 +61,40 @@ const TARGET_RECIPIENT_EMAILS = [
   "aniketdubey.2012@gmail.com",
 ];
 
-// Helper to initialize email transporter if SMTP credentials exist in environment
 function createEmailTransporter() {
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  const user = process.env.SMTP_USER || process.env.GMAIL_USER || process.env.EMAIL_USER;
+  const pass =
+    process.env.SMTP_PASS ||
+    process.env.SMTP_PASSWORD ||
+    process.env.GMAIL_APP_PASS ||
+    process.env.GMAIL_APP_PASSWORD ||
+    process.env.EMAIL_PASS;
+  const host =
+    process.env.SMTP_HOST ||
+    (user?.includes("@gmail.com") || user?.includes("aniketdubey.com") ? "smtp.gmail.com" : undefined);
+  const port = Number(process.env.SMTP_PORT) || (process.env.SMTP_SECURE === "true" ? 465 : 587);
+  const secure = process.env.SMTP_SECURE === "true" || port === 465;
+
+  if (user && pass && host) {
     return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: process.env.SMTP_SECURE === "true" || process.env.SMTP_PORT === "465",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+      host,
+      port,
+      secure,
+      auth: { user, pass },
+      tls: { rejectUnauthorized: false },
     });
   }
-  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASS) {
+  if (user && pass) {
     return nodemailer.createTransport({
       service: "gmail",
-      auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASS,
-      },
+      auth: { user, pass },
     });
   }
   return null;
 }
 
 // Dispatch email to target recipients
-async function sendContactNotification(enquiry: ConsultationEnquiry): Promise<{ smtpSent: boolean; webRelaySent: boolean }> {
+async function sendContactNotification(enquiry: ConsultationEnquiry): Promise<{ smtpSent: boolean; webRelaySent: boolean; needsActivation?: boolean }> {
   const subject = `[New Consultation Enquiry] ${enquiry.name} (${enquiry.business || "Individual"}) - ${enquiry.service} [Ref: ${enquiry.id}]`;
 
   const plainText = `NEW CONSULTATION ENQUIRY
@@ -223,11 +230,14 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
+        Origin: "https://dubeyconglomerate.vercel.app",
+        Referer: "https://dubeyconglomerate.vercel.app/",
+        "User-Agent": "Dubey-Conglomerate-Portal/1.0",
       },
       body: JSON.stringify({
         _subject: subject,
-        _cc: "aniketdubey.2012@gmail.com",
         _replyto: enquiry.email,
+        _captcha: "false",
         _template: "table",
         "Reference Number": enquiry.id,
         "Client Name": enquiry.name,
@@ -241,16 +251,18 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
       signal: controller.signal,
     });
     clearTimeout(timeout);
-    if (relayResponse.ok) {
-      webRelaySent = true;
-      console.log(`[Web Relay Dispatched] Enquiry ${enquiry.id} routed via relay to ${TARGET_RECIPIENT_EMAILS.join(", ")}`);
-    }
-  } catch (relayErr: any) {
-    // Non-blocking
-    console.log("[Web Relay Info] Relay dispatch completed:", relayErr?.message || "Relay processed");
-  }
 
-  return { smtpSent, webRelaySent };
+    const relayData: any = await relayResponse.json().catch(() => null);
+    const sent = Boolean(relayData?.success === true || relayData?.success === "true");
+    const needsActivation = Boolean(
+      relayData?.message && typeof relayData.message === "string" && relayData.message.toLowerCase().includes("activation")
+    );
+
+    return { smtpSent, webRelaySent: sent, needsActivation };
+  } catch (relayErr: any) {
+    console.log("[Web Relay Info] Relay dispatch completed:", relayErr?.message || "Relay processed");
+    return { smtpSent, webRelaySent: false, needsActivation: false };
+  }
 }
 
 // Consultation contact form submission endpoint
@@ -288,7 +300,7 @@ app.post("/api/contact", async (req, res) => {
     enquiries.unshift(newEnquiry);
     console.log(`[Enquiry Received] from ${newEnquiry.name} (${newEnquiry.email}) for ${newEnquiry.service}`);
 
-    // Dispatch email to target recipients (email@aniketdubey.com & aniketdubey.2012@gmail.com)
+    // Dispatch email
     const emailDispatch = await sendContactNotification(newEnquiry);
 
     // Build pre-filled mailto URL for direct client-side open / backup send
@@ -309,12 +321,17 @@ app.post("/api/contact", async (req, res) => {
       `----------------------------------------\n` +
       `Sent via Dubey Conglomerate Portal`
     );
-    const mailtoUrl = `mailto:${TARGET_RECIPIENT_EMAILS.join(",")}?subject=${mailtoSubject}&body=${mailtoBody}`;
+    const mailtoUrl = `mailto:email@aniketdubey.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+
+    const defaultMsg = `Your consultation request has been received and routed to email@aniketdubey.com. Aniket Dubey will review your details personally.`;
+    const activationNotice = `Enquiry recorded. Note: FormSubmit has sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.`;
+
+    const needsActivation = !emailDispatch.smtpSent && emailDispatch.needsActivation;
 
     return res.status(200).json({
       success: true,
       referenceId: newEnquiry.id,
-      recipients: TARGET_RECIPIENT_EMAILS,
+      recipients: ["email@aniketdubey.com"],
       mailtoUrl,
       enquiry: {
         name: newEnquiry.name,
@@ -328,8 +345,10 @@ app.post("/api/contact", async (req, res) => {
       dispatchStatus: {
         smtpSent: emailDispatch.smtpSent,
         webRelaySent: emailDispatch.webRelaySent,
+        needsActivation,
       },
-      message: `Your consultation request has been received and routed to email@aniketdubey.com and aniketdubey.2012@gmail.com. Aniket Dubey will review your details personally.`,
+      needsActivation,
+      message: needsActivation ? activationNotice : defaultMsg,
     });
   } catch (error) {
     console.error("Error processing contact form:", error);
@@ -377,7 +396,7 @@ Key Information about Aniket Dubey:
 Tone & Rules:
 - Professional, consultative, articulate, warm, and strategic.
 - Do NOT invent awards, named clients, or exaggerated metrics (no fake "guaranteed 500% ROI").
-- Encourage the user to schedule a direct consultation with Aniket via his Zoom Scheduler (https://scheduler.zoom.us/aniketdubey/consultation), leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / 9932979875.
+- Encourage the user to schedule a direct consultation with Aniket via his Zoom Scheduler (https://scheduler.zoom.us/aniketdubey/consultation), leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / +91 9932979875.
 - Keep responses concise (2-4 paragraphs maximum, clear and easy to read).`;
 
     if (!ai) {

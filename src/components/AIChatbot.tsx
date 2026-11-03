@@ -78,7 +78,7 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
         {
           id: `assistant-err-${Date.now()}`,
           sender: 'assistant',
-          text: 'Aniket Dubey provides strategic consulting, content marketing, and managed IT services. You can reach out directly at email@aniketdubey.com or call +91 9932979875.',
+          text: `Aniket Dubey provides strategic consulting, content marketing, and managed IT services. You can reach out directly at ${CONSULTANT_INFO.email} or call ${CONSULTANT_INFO.formattedPhone}.`,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);

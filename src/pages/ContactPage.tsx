@@ -35,7 +35,7 @@ export const ContactPage: React.FC<ContactPageProps> = ({ formData, setFormData 
       <SEO
         title="Book a Consultation | Contact Aniket Dubey | Business Consultant"
         description="Schedule a 1-on-1 strategic consultation with Aniket Dubey. Discuss business growth, content marketing, or managed IT services for your organization."
-        keywords="Contact Business Consultant, Book Consultation, Schedule Advisory Session, Aniket Dubey Contact, Durgapur Business Office, Phone 9932979875"
+        keywords="Contact Business Consultant, Book Consultation, Schedule Advisory Session, Aniket Dubey Contact, Durgapur Business Office, Phone +91 9932979875"
         canonicalPath="/contact"
         ogType="website"
         jsonLd={contactStructuredData}

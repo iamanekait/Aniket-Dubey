@@ -7,7 +7,7 @@ export const CONSULTANT_INFO = {
   shortTitle: "Business Advisory Partner",
   experience: "10+ Years",
   address: "Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India",
-  phone: "9932979875",
+  phone: "+91 9932979875",
   formattedPhone: "+91 99329 79875",
   email: "email@aniketdubey.com",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=Road+No.+36,+Uttarpally,+Benachity,+Durgapur,+West+Bengal,+India",
