@@ -11,6 +11,8 @@ import {
   ExternalLink,
   Linkedin,
   Instagram,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { CONSULTANT_INFO, SERVICES } from '../data';
 import { ContactFormData } from '../types';
@@ -33,6 +35,26 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [fallbackMailtoUrl, setFallbackMailtoUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyDetails = () => {
+    const text =
+      `Consultation Request for Aniket Dubey\n` +
+      `----------------------------------------\n` +
+      `Client Name: ${formData.name || 'Not provided'}\n` +
+      `Company: ${formData.business || 'Individual'}\n` +
+      `Email: ${formData.email || 'Not provided'}\n` +
+      `Phone: ${formData.phone || 'Not provided'}\n` +
+      `Service: ${formData.service}\n` +
+      `Message & Objectives:\n${formData.message}\n` +
+      `----------------------------------------\n` +
+      `Target: email@aniketdubey.com | Direct Phone: +91 9932979875`;
+
+    navigator.clipboard?.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    }).catch(() => {});
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -140,11 +162,30 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
           }),
         });
 
-        const relayData: any = await relayRes.json().catch(() => null);
-        const relayOk = Boolean(relayRes.ok || relayData?.success === true || relayData?.success === 'true');
+        const rawText = await relayRes.text().catch(() => '');
+        let relayData: any = null;
+        try {
+          relayData = JSON.parse(rawText);
+        } catch {
+          // Body may be HTML or text
+        }
+
+        const hasActivationNotice =
+          (relayData?.message && typeof relayData.message === 'string' && relayData.message.toLowerCase().includes('activation')) ||
+          rawText.toLowerCase().includes('needs activation') ||
+          rawText.toLowerCase().includes('activate your form') ||
+          rawText.toLowerCase().includes('activate form');
+
+        const relayOk = Boolean(
+          relayRes.ok ||
+          relayData?.success === true ||
+          relayData?.success === 'true' ||
+          hasActivationNotice
+        );
+
         if (relayOk) {
           isSuccess = true;
-          if (relayData?.message && typeof relayData.message === 'string' && relayData.message.toLowerCase().includes('activation')) {
+          if (hasActivationNotice) {
             needsActivationFlag = true;
             successMessage =
               "Enquiry recorded! FormSubmit sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.";
@@ -182,7 +223,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     } else {
       setFallbackMailtoUrl(backupMailtoUrl);
       setErrorMsg(
-        'An error occurred transmitting the enquiry. You can send the pre-filled information directly to email@aniketdubey.com by clicking below.'
+        'Automated dispatch was delayed or blocked. You can immediately launch your email client with all details pre-filled or copy the details below.'
       );
     }
 
@@ -433,20 +474,49 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4" id="consultation-enquiry-form">
                   {errorMsg && (
-                    <div className="p-3.5 rounded-lg bg-red-950/60 border border-red-800/60 text-red-300 text-xs space-y-2">
-                      <div className="flex items-center gap-2 font-medium">
-                        <AlertCircle className="w-4 h-4 shrink-0 text-red-400" />
-                        <span>{errorMsg}</span>
+                    <div className="p-4 rounded-xl bg-red-950/70 border border-red-700/60 text-red-200 text-xs space-y-3 shadow-lg">
+                      <div className="flex items-start gap-2.5 font-medium text-red-300">
+                        <AlertCircle className="w-4 h-4 shrink-0 text-red-400 mt-0.5" />
+                        <span className="leading-relaxed">{errorMsg}</span>
                       </div>
-                      {fallbackMailtoUrl && (
-                        <a
-                          href={fallbackMailtoUrl}
-                          className="inline-flex items-center gap-1.5 text-blue-400 hover:text-blue-300 underline font-semibold mt-1"
+                      <div className="pt-2 border-t border-red-900/50 flex flex-wrap gap-2.5">
+                        {fallbackMailtoUrl && (
+                          <a
+                            href={fallbackMailtoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all shadow text-xs min-h-[38px]"
+                          >
+                            <Mail className="w-3.5 h-3.5" />
+                            <span>Launch Email App (Pre-filled)</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                        <button
+                          type="button"
+                          onClick={handleCopyDetails}
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-medium transition-all text-xs min-h-[38px] cursor-pointer"
                         >
-                          <Mail className="w-3.5 h-3.5" />
-                          <span>Click here to send directly to email@aniketdubey.com</span>
+                          {copied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-400" />
+                              <span className="text-emerald-300">Copied to Clipboard!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Copy Enquiry Details</span>
+                            </>
+                          )}
+                        </button>
+                        <a
+                          href="tel:+919932979875"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-medium transition-all text-xs min-h-[38px]"
+                        >
+                          <Phone className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Call +91 9932979875</span>
                         </a>
-                      )}
+                      </div>
                     </div>
                   )}
 
@@ -580,7 +650,20 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         </>
                       )}
                     </button>
-                    <p className="text-[11px] text-slate-500 text-center mt-2.5">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2.5 border-t border-slate-800/80 text-[11px] text-slate-400">
+                      <span className="flex items-center gap-1.5 text-slate-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                        Direct Destination: <span className="font-mono text-slate-200">email@aniketdubey.com</span>
+                      </span>
+                      <a
+                        href="mailto:email@aniketdubey.com?subject=Direct%20Consultation%20Enquiry%20-%20Dubey%20Conglomerate"
+                        className="text-blue-400 hover:text-blue-300 font-semibold inline-flex items-center gap-1 transition-colors"
+                      >
+                        <Mail className="w-3 h-3" />
+                        <span>Prefer direct email? Click here</span>
+                      </a>
+                    </div>
+                    <p className="text-[11px] text-slate-500 text-center mt-2">
                       Strict confidentiality assured. Information is never shared with third parties.
                     </p>
                   </div>

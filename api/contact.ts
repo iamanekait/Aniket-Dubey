@@ -1,5 +1,3 @@
-import nodemailer from "nodemailer";
-
 // Target recipient email - solely email@aniketdubey.com
 const TARGET_RECIPIENT_EMAILS = [
   "email@aniketdubey.com",
@@ -14,9 +12,9 @@ interface EnquiryPayload {
   message: string;
 }
 
-// Safely parse request body across Vercel serverless, Express, and raw Node.js runtimes
+// Safely parse request body across Vercel serverless, Express, and raw Node.js runtimes without hanging
 async function getRequestBody(req: any): Promise<any> {
-  // 1. If already parsed as an object
+  // 1. If already parsed as an object (standard Express / Vercel with json body)
   if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) {
     return req.body;
   }
@@ -36,13 +34,26 @@ async function getRequestBody(req: any): Promise<any> {
       return {};
     }
   }
-  // 4. If req is an IncomingMessage stream, read it chunks-wise
+  // 4. If stream has already ended or not readable, do not wait
+  if (req.readableEnded || req.complete || typeof req.on !== "function") {
+    return {};
+  }
+  // 5. If stream is readable, read chunks with a strict safety timeout
   return new Promise((resolve) => {
     let raw = "";
+    const timeout = setTimeout(() => {
+      try {
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch {
+        resolve({});
+      }
+    }, 1500);
+
     req.on("data", (chunk: any) => {
       raw += chunk;
     });
     req.on("end", () => {
+      clearTimeout(timeout);
       if (!raw || !raw.trim()) {
         resolve({});
         return;
@@ -53,7 +64,10 @@ async function getRequestBody(req: any): Promise<any> {
         resolve({});
       }
     });
-    req.on("error", () => resolve({}));
+    req.on("error", () => {
+      clearTimeout(timeout);
+      resolve({});
+    });
   });
 }
 
@@ -67,7 +81,8 @@ function sendJsonResponse(res: any, status: number, data: any) {
   res.end(JSON.stringify(data));
 }
 
-function createEmailTransporter() {
+// Dynamically create email transporter if SMTP credentials are provided in env vars
+async function createEmailTransporter() {
   const user = process.env.SMTP_USER || process.env.GMAIL_USER || process.env.EMAIL_USER;
   const pass =
     process.env.SMTP_PASS ||
@@ -75,28 +90,39 @@ function createEmailTransporter() {
     process.env.GMAIL_APP_PASS ||
     process.env.GMAIL_APP_PASSWORD ||
     process.env.EMAIL_PASS;
-  const host =
-    process.env.SMTP_HOST ||
-    (user?.includes("@gmail.com") || user?.includes("aniketdubey.com") ? "smtp.gmail.com" : undefined);
-  const port = Number(process.env.SMTP_PORT) || (process.env.SMTP_SECURE === "true" ? 465 : 587);
-  const secure = process.env.SMTP_SECURE === "true" || port === 465;
 
-  if (user && pass && host) {
-    return nodemailer.createTransport({
-      host,
-      port,
-      secure,
-      auth: { user, pass },
-      tls: { rejectUnauthorized: false },
-    });
+  if (!user || !pass) {
+    return null;
   }
-  if (user && pass) {
+
+  try {
+    const nodemailerModule = await import("nodemailer");
+    const nodemailer = nodemailerModule.default || nodemailerModule;
+
+    const host =
+      process.env.SMTP_HOST ||
+      (user?.includes("@gmail.com") || user?.includes("aniketdubey.com") ? "smtp.gmail.com" : undefined);
+    const port = Number(process.env.SMTP_PORT) || (process.env.SMTP_SECURE === "true" ? 465 : 587);
+    const secure = process.env.SMTP_SECURE === "true" || port === 465;
+
+    if (host) {
+      return nodemailer.createTransport({
+        host,
+        port,
+        secure,
+        auth: { user, pass },
+        tls: { rejectUnauthorized: false },
+      });
+    }
+
     return nodemailer.createTransport({
       service: "gmail",
       auth: { user, pass },
     });
+  } catch (err) {
+    console.warn("[Nodemailer Init Warning]", err);
+    return null;
   }
-  return null;
 }
 
 async function sendViaResend(enquiry: any, subject: string, htmlContent: string): Promise<boolean> {
@@ -125,18 +151,24 @@ async function sendViaResend(enquiry: any, subject: string, htmlContent: string)
   }
 }
 
-async function sendViaRelay(enquiry: any, subject: string): Promise<{ sent: boolean; needsActivation: boolean }> {
+async function sendViaRelay(
+  enquiry: any,
+  subject: string,
+  originHeader?: string
+): Promise<{ sent: boolean; needsActivation: boolean; message: string }> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 9000);
+
+    const callerOrigin = originHeader || "https://aniketdubey.com";
 
     const relayResponse = await fetch("https://formsubmit.co/ajax/email@aniketdubey.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Origin: "https://dubeyconglomerate.vercel.app",
-        Referer: "https://dubeyconglomerate.vercel.app/contact",
+        Origin: callerOrigin,
+        Referer: `${callerOrigin}/#contact`,
         "User-Agent": "Dubey-Conglomerate-Portal/1.0",
       },
       body: JSON.stringify({
@@ -158,23 +190,41 @@ async function sendViaRelay(enquiry: any, subject: string): Promise<{ sent: bool
     });
     clearTimeout(timeout);
 
-    const data: any = await relayResponse.json().catch(() => null);
-    const sent = Boolean(data?.success === true || data?.success === "true");
+    const rawText = await relayResponse.text().catch(() => "");
+    let data: any = null;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      // Body may be plain text or HTML
+    }
+
     const needsActivation = Boolean(
-      data?.message && typeof data.message === "string" && data.message.toLowerCase().includes("activation")
+      (data?.message && typeof data.message === "string" && data.message.toLowerCase().includes("activation")) ||
+      rawText.toLowerCase().includes("needs activation") ||
+      rawText.toLowerCase().includes("activate your form") ||
+      rawText.toLowerCase().includes("activate form")
     );
 
-    return { sent, needsActivation };
+    const sent = Boolean(
+      (data?.success === true || data?.success === "true") && !needsActivation
+    );
+
+    const message = data?.message || rawText.slice(0, 200) || "";
+
+    return { sent, needsActivation, message };
   } catch (relayErr: any) {
     console.error("[FormSubmit Relay Error]", relayErr?.message || relayErr);
-    return { sent: false, needsActivation: false };
+    return { sent: false, needsActivation: false, message: relayErr?.message || "Relay error" };
   }
 }
 
 export default async function handler(req: any, res: any) {
-  // CORS configuration
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  // Safe CORS configuration for custom domains (e.g. aniketdubey.com and vercel previews)
+  const incomingOrigin = req.headers?.origin || "*";
+  res.setHeader("Access-Control-Allow-Origin", incomingOrigin);
+  if (incomingOrigin !== "*") {
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
   res.setHeader(
     "Access-Control-Allow-Headers",
@@ -307,12 +357,12 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
         <div class="msg-box">${enquiry.message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
       </div>
       <div class="recipients">
-        <strong>Direct Notification Routed to:</strong><br/>
+        <strong>Direct Notification Destination:</strong><br/>
         email@aniketdubey.com
       </div>
     </div>
     <div class="footer">
-      Automated consultation delivery service • Dubey Conglomerate
+      Automated consultation delivery service • Dubey Conglomerate (aniketdubey.com)
     </div>
   </div>
 </body>
@@ -322,16 +372,17 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     let smtpSent = false;
     let resendSent = false;
     let relaySent = false;
+    let needsActivation = false;
 
-    // 1. Try SMTP if configured
-    const transporter = createEmailTransporter();
+    // 1. Try SMTP if configured in environment variables
+    const transporter = await createEmailTransporter();
     if (transporter) {
       try {
         const fromAddress =
           process.env.SMTP_FROM ||
           process.env.SMTP_USER ||
           process.env.GMAIL_USER ||
-          '"Dubey Conglomerate" <noreply@aniketdubey.com>';
+          '"Dubey Conglomerate" <email@aniketdubey.com>';
 
         await transporter.sendMail({
           from: fromAddress,
@@ -354,11 +405,11 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     }
 
     // 3. Automated Web Relay to email@aniketdubey.com
-    const relayResult = await sendViaRelay(enquiry, subject);
-    relaySent = relayResult.sent;
-
-    const isDirectlyDelivered = smtpSent || resendSent || relayResult.sent;
-    const needsActivation = !smtpSent && !resendSent && relayResult.needsActivation;
+    if (!smtpSent && !resendSent) {
+      const relayResult = await sendViaRelay(enquiry, subject, req.headers?.origin);
+      relaySent = relayResult.sent;
+      needsActivation = relayResult.needsActivation;
+    }
 
     // Build pre-filled mailto backup URL
     const mailtoSubject = encodeURIComponent(
@@ -376,12 +427,12 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
       `Date: ${new Date(enquiry.submittedAt).toLocaleString()}\n\n` +
       `Business Overview & Objectives:\n${enquiry.message}\n` +
       `----------------------------------------\n` +
-      `Sent via Dubey Conglomerate Portal`
+      `Sent via Dubey Conglomerate Portal (aniketdubey.com)`
     );
     const mailtoUrl = `mailto:email@aniketdubey.com?subject=${mailtoSubject}&body=${mailtoBody}`;
 
-    const defaultMsg = `Your consultation request has been received and routed to email@aniketdubey.com. Aniket Dubey will review your details personally.`;
-    const activationNotice = `Enquiry recorded. Note: FormSubmit has sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.`;
+    const defaultMsg = `Your consultation request has been recorded and dispatched to email@aniketdubey.com. Aniket Dubey will review your details personally.`;
+    const activationNotice = `Enquiry recorded! FormSubmit has sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.`;
 
     return sendJsonResponse(res, 200, {
       success: true,
@@ -393,7 +444,6 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
         smtpSent,
         resendSent,
         relaySent,
-        isDirectlyDelivered,
         needsActivation,
       },
       needsActivation,
@@ -403,7 +453,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     console.error("Vercel Serverless contact error:", error);
     return sendJsonResponse(res, 500, {
       success: false,
-      error: "An error occurred while processing your enquiry. Please reach out directly at email@aniketdubey.com.",
+      error: "An error occurred while processing your enquiry. Please reach out directly at email@aniketdubey.com or +91 9932979875.",
     });
   }
 }

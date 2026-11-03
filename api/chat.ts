@@ -20,7 +20,7 @@ function getAIClient(): GoogleGenAI | null {
   return aiClient;
 }
 
-// Safely parse request body across Vercel serverless and Node.js runtimes
+// Safely parse request body across Vercel serverless and Node.js runtimes without hanging
 async function getRequestBody(req: any): Promise<any> {
   if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) {
     return req.body;
@@ -39,12 +39,24 @@ async function getRequestBody(req: any): Promise<any> {
       return {};
     }
   }
+  if (req.readableEnded || req.complete || typeof req.on !== "function") {
+    return {};
+  }
   return new Promise((resolve) => {
     let raw = "";
+    const timer = setTimeout(() => {
+      try {
+        resolve(raw ? JSON.parse(raw) : {});
+      } catch {
+        resolve({});
+      }
+    }, 1500);
+
     req.on("data", (chunk: any) => {
       raw += chunk;
     });
     req.on("end", () => {
+      clearTimeout(timer);
       if (!raw || !raw.trim()) {
         resolve({});
         return;
@@ -55,7 +67,10 @@ async function getRequestBody(req: any): Promise<any> {
         resolve({});
       }
     });
-    req.on("error", () => resolve({}));
+    req.on("error", () => {
+      clearTimeout(timer);
+      resolve({});
+    });
   });
 }
 
@@ -95,8 +110,11 @@ Tone & Rules:
 - Keep responses concise (2-4 paragraphs maximum, clear and easy to read).`;
 
 export default async function handler(req: any, res: any) {
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  const incomingOrigin = req.headers?.origin || "*";
+  res.setHeader("Access-Control-Allow-Origin", incomingOrigin);
+  if (incomingOrigin !== "*") {
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+  }
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
   res.setHeader(
     "Access-Control-Allow-Headers",

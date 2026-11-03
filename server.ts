@@ -217,17 +217,42 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     console.log(`[Email Notice] SMTP not configured. Enquiry ${enquiry.id} stored and routed to: ${TARGET_RECIPIENT_EMAILS.join(", ")}`);
   }
 
-  // 2. Automated web relay attempt to email@aniketdubey.com
+  // 2. Resend API attempt if configured
+  if (!smtpSent && process.env.RESEND_API_KEY) {
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: process.env.RESEND_FROM || "Dubey Conglomerate <onboarding@resend.dev>",
+          to: TARGET_RECIPIENT_EMAILS,
+          reply_to: enquiry.email,
+          subject,
+          html: htmlContent,
+        }),
+      });
+      if (res.ok) {
+        return { smtpSent: false, webRelaySent: true, needsActivation: false };
+      }
+    } catch (resendErr) {
+      console.error("[Resend Error]", resendErr);
+    }
+  }
+
+  // 3. Automated web relay attempt to email@aniketdubey.com
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 7000);
     const relayResponse = await fetch("https://formsubmit.co/ajax/email@aniketdubey.com", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        Origin: "https://dubeyconglomerate.vercel.app",
-        Referer: "https://dubeyconglomerate.vercel.app/contact",
+        Origin: "https://aniketdubey.com",
+        Referer: "https://aniketdubey.com/#contact",
         "User-Agent": "Dubey-Conglomerate-Portal/1.0",
       },
       body: JSON.stringify({
@@ -248,10 +273,21 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     });
     clearTimeout(timeout);
 
-    const relayData: any = await relayResponse.json().catch(() => null);
-    const sent = Boolean(relayData?.success === true || relayData?.success === "true");
+    const rawText = await relayResponse.text().catch(() => "");
+    let relayData: any = null;
+    try {
+      relayData = JSON.parse(rawText);
+    } catch {
+      // Body may be HTML or text
+    }
+
     const needsActivation = Boolean(
-      relayData?.message && typeof relayData.message === "string" && relayData.message.toLowerCase().includes("activation")
+      (relayData?.message && typeof relayData.message === "string" && relayData.message.toLowerCase().includes("activation")) ||
+      rawText.toLowerCase().includes("needs activation") ||
+      rawText.toLowerCase().includes("activate form")
+    );
+    const sent = Boolean(
+      (relayData?.success === true || relayData?.success === "true") && !needsActivation
     );
 
     return { smtpSent, webRelaySent: sent, needsActivation };
