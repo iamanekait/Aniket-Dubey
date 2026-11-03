@@ -1,10 +1,8 @@
-import type { IncomingMessage, ServerResponse } from "http";
 import nodemailer from "nodemailer";
 
-// Target notification emails
+// Target recipient email - solely email@aniketdubey.com
 const TARGET_RECIPIENT_EMAILS = [
   "email@aniketdubey.com",
-  "aniketdubey.2012@gmail.com",
 ];
 
 interface EnquiryPayload {
@@ -14,6 +12,59 @@ interface EnquiryPayload {
   phone?: string;
   service?: string;
   message: string;
+}
+
+// Safely parse request body across Vercel serverless, Express, and raw Node.js runtimes
+async function getRequestBody(req: any): Promise<any> {
+  // 1. If already parsed as an object
+  if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) {
+    return req.body;
+  }
+  // 2. If body is a string
+  if (typeof req.body === "string" && req.body.trim().length > 0) {
+    try {
+      return JSON.parse(req.body);
+    } catch {
+      return {};
+    }
+  }
+  // 3. If body is a Buffer
+  if (Buffer.isBuffer(req.body)) {
+    try {
+      return JSON.parse(req.body.toString("utf-8"));
+    } catch {
+      return {};
+    }
+  }
+  // 4. If req is an IncomingMessage stream, read it chunks-wise
+  return new Promise((resolve) => {
+    let raw = "";
+    req.on("data", (chunk: any) => {
+      raw += chunk;
+    });
+    req.on("end", () => {
+      if (!raw || !raw.trim()) {
+        resolve({});
+        return;
+      }
+      try {
+        resolve(JSON.parse(raw));
+      } catch {
+        resolve({});
+      }
+    });
+    req.on("error", () => resolve({}));
+  });
+}
+
+// Universal response helper compatible with both Vercel helper and raw Node ServerResponse
+function sendJsonResponse(res: any, status: number, data: any) {
+  if (typeof res.status === "function" && typeof res.json === "function") {
+    return res.status(status).json(data);
+  }
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.end(JSON.stringify(data));
 }
 
 function createEmailTransporter() {
@@ -85,7 +136,7 @@ async function sendViaRelay(enquiry: any, subject: string): Promise<{ sent: bool
         "Content-Type": "application/json",
         Accept: "application/json",
         Origin: "https://dubeyconglomerate.vercel.app",
-        Referer: "https://dubeyconglomerate.vercel.app/",
+        Referer: "https://dubeyconglomerate.vercel.app/contact",
         "User-Agent": "Dubey-Conglomerate-Portal/1.0",
       },
       body: JSON.stringify({
@@ -100,6 +151,7 @@ async function sendViaRelay(enquiry: any, subject: string): Promise<{ sent: bool
         "Contact Phone": enquiry.phone || "Not provided",
         "Requested Service": enquiry.service,
         "Objectives & Message": enquiry.message,
+        "Target Recipient": "email@aniketdubey.com",
         "Date Submitted": new Date(enquiry.submittedAt).toLocaleString(),
       }),
       signal: controller.signal,
@@ -120,7 +172,7 @@ async function sendViaRelay(enquiry: any, subject: string): Promise<{ sent: bool
 }
 
 export default async function handler(req: any, res: any) {
-  // CORS support
+  // CORS configuration
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
@@ -130,20 +182,25 @@ export default async function handler(req: any, res: any) {
   );
 
   if (req.method === "OPTIONS") {
-    res.status(200).end();
+    if (typeof res.status === "function") {
+      res.status(200).end();
+    } else {
+      res.statusCode = 200;
+      res.end();
+    }
     return;
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "Method not allowed. Use POST." });
+    return sendJsonResponse(res, 405, { success: false, error: "Method not allowed. Use POST." });
   }
 
   try {
-    const body: EnquiryPayload = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    const body: EnquiryPayload = await getRequestBody(req);
     const { name, business, email, phone, service, message } = body;
 
     if (!name || !email || !message) {
-      return res.status(400).json({
+      return sendJsonResponse(res, 400, {
         success: false,
         error: "Please provide your Name, Email, and Message.",
       });
@@ -151,7 +208,7 @@ export default async function handler(req: any, res: any) {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(String(email).trim())) {
-      return res.status(400).json({
+      return sendJsonResponse(res, 400, {
         success: false,
         error: "Please provide a valid email address.",
       });
@@ -192,9 +249,7 @@ BUSINESS OBJECTIVES & MESSAGE:
 ${enquiry.message}
 
 ==================================================
-Routed automatically to:
-- email@aniketdubey.com
-- aniketdubey.2012@gmail.com
+Routed automatically to: email@aniketdubey.com
 Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
 `;
 
@@ -253,8 +308,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
       </div>
       <div class="recipients">
         <strong>Direct Notification Routed to:</strong><br/>
-        1. email@aniketdubey.com<br/>
-        2. aniketdubey.2012@gmail.com
+        email@aniketdubey.com
       </div>
     </div>
     <div class="footer">
@@ -329,7 +383,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     const defaultMsg = `Your consultation request has been received and routed to email@aniketdubey.com. Aniket Dubey will review your details personally.`;
     const activationNotice = `Enquiry recorded. Note: FormSubmit has sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.`;
 
-    return res.status(200).json({
+    return sendJsonResponse(res, 200, {
       success: true,
       referenceId: enquiry.id,
       recipients: ["email@aniketdubey.com"],
@@ -347,7 +401,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     });
   } catch (error: any) {
     console.error("Vercel Serverless contact error:", error);
-    return res.status(500).json({
+    return sendJsonResponse(res, 500, {
       success: false,
       error: "An error occurred while processing your enquiry. Please reach out directly at email@aniketdubey.com.",
     });

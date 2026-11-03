@@ -58,7 +58,6 @@ app.get("/api/health", (req, res) => {
 // Target notification emails requested for contact enquiries
 const TARGET_RECIPIENT_EMAILS = [
   "email@aniketdubey.com",
-  "aniketdubey.2012@gmail.com",
 ];
 
 function createEmailTransporter() {
@@ -118,9 +117,7 @@ BUSINESS OBJECTIVES & MESSAGE:
 ${enquiry.message}
 
 ==================================================
-Routed automatically to:
-- email@aniketdubey.com
-- aniketdubey.2012@gmail.com
+Routed automatically to: email@aniketdubey.com
 Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
 `;
 
@@ -179,8 +176,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
       </div>
       <div class="recipients">
         <strong>Direct Notification Routed to:</strong><br/>
-        1. email@aniketdubey.com<br/>
-        2. aniketdubey.2012@gmail.com
+        email@aniketdubey.com
       </div>
     </div>
     <div class="footer">
@@ -221,7 +217,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     console.log(`[Email Notice] SMTP not configured. Enquiry ${enquiry.id} stored and routed to: ${TARGET_RECIPIENT_EMAILS.join(", ")}`);
   }
 
-  // 2. Automated web relay attempt to email@aniketdubey.com with CC to aniketdubey.2012@gmail.com
+  // 2. Automated web relay attempt to email@aniketdubey.com
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
@@ -231,7 +227,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
         "Content-Type": "application/json",
         Accept: "application/json",
         Origin: "https://dubeyconglomerate.vercel.app",
-        Referer: "https://dubeyconglomerate.vercel.app/",
+        Referer: "https://dubeyconglomerate.vercel.app/contact",
         "User-Agent": "Dubey-Conglomerate-Portal/1.0",
       },
       body: JSON.stringify({
@@ -354,7 +350,7 @@ app.post("/api/contact", async (req, res) => {
     console.error("Error processing contact form:", error);
     return res.status(500).json({
       success: false,
-      error: "An error occurred while receiving your enquiry. Please reach out directly via email at email@aniketdubey.com and aniketdubey.2012@gmail.com.",
+      error: "An error occurred while receiving your enquiry. Please reach out directly via email at email@aniketdubey.com.",
     });
   }
 });

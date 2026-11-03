@@ -20,6 +20,54 @@ function getAIClient(): GoogleGenAI | null {
   return aiClient;
 }
 
+// Safely parse request body across Vercel serverless and Node.js runtimes
+async function getRequestBody(req: any): Promise<any> {
+  if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) {
+    return req.body;
+  }
+  if (typeof req.body === "string" && req.body.trim().length > 0) {
+    try {
+      return JSON.parse(req.body);
+    } catch {
+      return {};
+    }
+  }
+  if (Buffer.isBuffer(req.body)) {
+    try {
+      return JSON.parse(req.body.toString("utf-8"));
+    } catch {
+      return {};
+    }
+  }
+  return new Promise((resolve) => {
+    let raw = "";
+    req.on("data", (chunk: any) => {
+      raw += chunk;
+    });
+    req.on("end", () => {
+      if (!raw || !raw.trim()) {
+        resolve({});
+        return;
+      }
+      try {
+        resolve(JSON.parse(raw));
+      } catch {
+        resolve({});
+      }
+    });
+    req.on("error", () => resolve({}));
+  });
+}
+
+function sendJsonResponse(res: any, status: number, data: any) {
+  if (typeof res.status === "function" && typeof res.json === "function") {
+    return res.status(status).json(data);
+  }
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  res.end(JSON.stringify(data));
+}
+
 const systemInstruction = `You are the executive AI Advisory Assistant for Aniket Dubey, an experienced Business Consultant with 10+ years of experience helping businesses scale across multiple industries and verticals through strategic content marketing and managed IT services tailored to each client's needs.
 
 Key Information about Aniket Dubey:
@@ -56,20 +104,25 @@ export default async function handler(req: any, res: any) {
   );
 
   if (req.method === "OPTIONS") {
-    res.status(200).end();
+    if (typeof res.status === "function") {
+      res.status(200).end();
+    } else {
+      res.statusCode = 200;
+      res.end();
+    }
     return;
   }
 
   if (req.method !== "POST") {
-    return res.status(405).json({ success: false, error: "Method not allowed. Use POST." });
+    return sendJsonResponse(res, 405, { success: false, error: "Method not allowed. Use POST." });
   }
 
   try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
+    const body = await getRequestBody(req);
     const { message } = body;
 
     if (!message || typeof message !== "string") {
-      return res.status(400).json({ success: false, error: "Message is required." });
+      return sendJsonResponse(res, 400, { success: false, error: "Message is required." });
     }
 
     const ai = getAIClient();
@@ -94,7 +147,7 @@ export default async function handler(req: any, res: any) {
         reply = `Thank you for your interest in strategic consulting with Aniket Dubey. With 10+ years of experience in business growth, strategic content marketing, and managed IT infrastructure, Aniket works closely with founders and business owners to build resilient, scalable operations.\n\nFeel free to ask about specific services, Aniket's 4-step consulting approach, or book a consultation directly at https://scheduler.zoom.us/aniketdubey/consultation.`;
       }
 
-      return res.status(200).json({ success: true, reply });
+      return sendJsonResponse(res, 200, { success: true, reply });
     }
 
     const response = await ai.models.generateContent({
@@ -108,10 +161,10 @@ export default async function handler(req: any, res: any) {
 
     const reply = response.text || "I'd be glad to assist you with your business strategy. Please feel free to schedule a consultation or reach Aniket Dubey directly at email@aniketdubey.com.";
 
-    return res.status(200).json({ success: true, reply });
+    return sendJsonResponse(res, 200, { success: true, reply });
   } catch (err: any) {
     console.error("Vercel Chat API Error:", err);
-    return res.status(200).json({
+    return sendJsonResponse(res, 200, {
       success: true,
       reply: "Thank you for reaching out. Aniket Dubey offers tailored business consulting, strategic content marketing, and managed IT services for businesses ready to scale. Please feel free to call +91 9932979875 or submit the consultation form on this page.",
     });

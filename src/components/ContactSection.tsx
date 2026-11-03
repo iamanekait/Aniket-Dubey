@@ -96,16 +96,19 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
         body: JSON.stringify(formData),
       });
 
-      const contentType = response.headers.get('content-type') || '';
-      if (response.ok && contentType.includes('application/json')) {
-        const data = await response.json();
-        if (data.success) {
-          isSuccess = true;
-          returnedRefId = data.referenceId || returnedRefId;
-          needsActivationFlag = Boolean(data.needsActivation);
-          successMessage =
-            data.message ||
-            'Your enquiry has been received and routed to email@aniketdubey.com.';
+      if (response.ok) {
+        try {
+          const data = await response.json();
+          if (data && data.success) {
+            isSuccess = true;
+            returnedRefId = data.referenceId || returnedRefId;
+            needsActivationFlag = Boolean(data.needsActivation);
+            successMessage =
+              data.message ||
+              'Your enquiry has been received and routed to email@aniketdubey.com.';
+          }
+        } catch (parseErr) {
+          console.warn('Failed to parse /api/contact response as JSON:', parseErr);
         }
       }
     } catch (primaryErr) {
