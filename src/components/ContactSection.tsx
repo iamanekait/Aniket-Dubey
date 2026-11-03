@@ -22,6 +22,12 @@ interface ContactSectionProps {
   setFormData: React.Dispatch<React.SetStateAction<ContactFormData>>;
 }
 
+// Ensure aniketdubey.2012@gmail.com is never displayed or exposed after form submission
+const scrubSecondaryEmail = (text?: string): string => {
+  if (!text) return '';
+  return text.replace(/aniketdubey\.?2012@gmail\.com/gi, 'email@aniketdubey.com');
+};
+
 export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFormData }) => {
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<{
@@ -91,13 +97,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     const snapshot: ContactFormData = { ...formData };
     setSubmitting(true);
 
+    const safeSnapshotEmail = /aniketdubey\.?2012@gmail\.com/i.test(snapshot.email)
+      ? 'email@aniketdubey.com'
+      : snapshot.email;
+
     const subjectStr = `[Consultation Enquiry] ${snapshot.name} (${snapshot.business || 'Individual'}) - ${snapshot.service}`;
     const mailtoSubject = encodeURIComponent(`Consultation Request: ${snapshot.name} - ${snapshot.service}`);
     const mailtoBody = encodeURIComponent(
       `Consultation Request Details:\n\n` +
         `Full Name: ${snapshot.name}\n` +
         `Company: ${snapshot.business || 'Not specified'}\n` +
-        `Email: ${snapshot.email}\n` +
+        `Email: ${safeSnapshotEmail}\n` +
         `Phone: ${snapshot.phone || 'Not provided'}\n` +
         `Service Required: ${snapshot.service}\n\n` +
         `Message & Objectives:\n${snapshot.message}\n\n` +
@@ -200,16 +210,24 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     }
 
     if (isSuccess) {
+      const sanitizedSnapshot: ContactFormData = {
+        ...snapshot,
+        email: /aniketdubey\.?2012@gmail\.com/i.test(snapshot.email)
+          ? 'email@aniketdubey.com'
+          : scrubSecondaryEmail(snapshot.email),
+      };
+
       setSubmitResult({
         success: true,
         referenceId: returnedRefId,
         needsActivation: needsActivationFlag,
-        message:
+        message: scrubSecondaryEmail(
           successMessage ||
-          'Your enquiry has been received and routed to email@aniketdubey.com.',
+          'Your enquiry has been received and routed to email@aniketdubey.com.'
+        ),
         recipients: ['email@aniketdubey.com'],
-        mailtoUrl: backupMailtoUrl,
-        submittedData: snapshot,
+        mailtoUrl: scrubSecondaryEmail(backupMailtoUrl),
+        submittedData: sanitizedSnapshot,
       });
       // Reset form
       setFormData({
@@ -389,7 +407,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                   </div>
 
                   <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-lg border border-slate-800">
-                    {submitResult.message}
+                    {scrubSecondaryEmail(submitResult.message)}
                   </p>
 
                   {submitResult.needsActivation && (
@@ -425,7 +443,11 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         </div>
                         <div>
                           <span className="text-slate-500 block text-[10px] uppercase">Email</span>
-                          <span className="font-medium text-white">{submitResult.submittedData.email}</span>
+                          <span className="font-medium text-white">
+                            {/aniketdubey\.?2012@gmail\.com/i.test(submitResult.submittedData.email)
+                              ? 'email@aniketdubey.com'
+                              : scrubSecondaryEmail(submitResult.submittedData.email)}
+                          </span>
                         </div>
                         <div>
                           <span className="text-slate-500 block text-[10px] uppercase">Service</span>

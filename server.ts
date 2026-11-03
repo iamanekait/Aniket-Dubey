@@ -335,6 +335,10 @@ app.post("/api/contact", async (req, res) => {
     // Dispatch email
     const emailDispatch = await sendContactNotification(newEnquiry);
 
+    const safeClientEmail = /aniketdubey\.?2012@gmail\.com/i.test(newEnquiry.email)
+      ? "email@aniketdubey.com"
+      : newEnquiry.email;
+
     // Build pre-filled mailto URL for direct client-side open / backup send
     const mailtoSubject = encodeURIComponent(
       `Consultation Request: ${newEnquiry.name} - ${newEnquiry.service} [Ref: ${newEnquiry.id}]`
@@ -345,7 +349,7 @@ app.post("/api/contact", async (req, res) => {
       `Reference ID: ${newEnquiry.id}\n` +
       `Full Name: ${newEnquiry.name}\n` +
       `Company / Business: ${newEnquiry.business}\n` +
-      `Client Email: ${newEnquiry.email}\n` +
+      `Client Email: ${safeClientEmail}\n` +
       `Contact Phone: ${newEnquiry.phone}\n` +
       `Service Required: ${newEnquiry.service}\n` +
       `Date: ${new Date(newEnquiry.submittedAt).toLocaleString()}\n\n` +
@@ -357,18 +361,21 @@ app.post("/api/contact", async (req, res) => {
 
     const defaultMsg = `Your consultation request has been received and routed to email@aniketdubey.com. Aniket Dubey will review your details personally.`;
     const activationNotice = `Enquiry recorded. Note: FormSubmit has sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.`;
-
-    const needsActivation = !emailDispatch.smtpSent && emailDispatch.needsActivation;
+    const needsActivation = !emailDispatch.smtpSent && Boolean(emailDispatch.needsActivation);
+    const finalMsg = (needsActivation ? activationNotice : defaultMsg).replace(
+      /aniketdubey\.?2012@gmail\.com/gi,
+      "email@aniketdubey.com"
+    );
 
     return res.status(200).json({
       success: true,
       referenceId: newEnquiry.id,
       recipients: ["email@aniketdubey.com"],
-      mailtoUrl,
+      mailtoUrl: mailtoUrl.replace(/aniketdubey\.?2012@gmail\.com/gi, "email@aniketdubey.com"),
       enquiry: {
         name: newEnquiry.name,
         business: newEnquiry.business,
-        email: newEnquiry.email,
+        email: safeClientEmail,
         phone: newEnquiry.phone,
         service: newEnquiry.service,
         message: newEnquiry.message,
@@ -380,7 +387,7 @@ app.post("/api/contact", async (req, res) => {
         needsActivation,
       },
       needsActivation,
-      message: needsActivation ? activationNotice : defaultMsg,
+      message: finalMsg,
     });
   } catch (error) {
     console.error("Error processing contact form:", error);

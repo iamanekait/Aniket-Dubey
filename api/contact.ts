@@ -412,6 +412,10 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
     }
 
     // Build pre-filled mailto backup URL
+    const safeClientEmail = /aniketdubey\.?2012@gmail\.com/i.test(enquiry.email)
+      ? "email@aniketdubey.com"
+      : enquiry.email;
+
     const mailtoSubject = encodeURIComponent(
       `Consultation Request: ${enquiry.name} - ${enquiry.service} [Ref: ${enquiry.id}]`
     );
@@ -421,7 +425,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
       `Reference ID: ${enquiry.id}\n` +
       `Full Name: ${enquiry.name}\n` +
       `Company / Business: ${enquiry.business}\n` +
-      `Client Email: ${enquiry.email}\n` +
+      `Client Email: ${safeClientEmail}\n` +
       `Contact Phone: ${enquiry.phone}\n` +
       `Service Required: ${enquiry.service}\n` +
       `Date: ${new Date(enquiry.submittedAt).toLocaleString()}\n\n` +
@@ -433,13 +437,24 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
 
     const defaultMsg = `Your consultation request has been recorded and dispatched to email@aniketdubey.com. Aniket Dubey will review your details personally.`;
     const activationNotice = `Enquiry recorded! FormSubmit has sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.`;
+    const finalMessage = (needsActivation ? activationNotice : defaultMsg).replace(
+      /aniketdubey\.?2012@gmail\.com/gi,
+      "email@aniketdubey.com"
+    );
+
+    const safeEnquiry = {
+      ...enquiry,
+      email: /aniketdubey\.?2012@gmail\.com/i.test(enquiry.email)
+        ? "email@aniketdubey.com"
+        : enquiry.email,
+    };
 
     return sendJsonResponse(res, 200, {
       success: true,
       referenceId: enquiry.id,
       recipients: ["email@aniketdubey.com"],
-      mailtoUrl,
-      enquiry,
+      mailtoUrl: mailtoUrl.replace(/aniketdubey\.?2012@gmail\.com/gi, "email@aniketdubey.com"),
+      enquiry: safeEnquiry,
       dispatchStatus: {
         smtpSent,
         resendSent,
@@ -447,7 +462,7 @@ Origin: Dubey Conglomerate - Aniket Dubey Advisory Portal (aniketdubey.com)
         needsActivation,
       },
       needsActivation,
-      message: needsActivation ? activationNotice : defaultMsg,
+      message: finalMessage,
     });
   } catch (error: any) {
     console.error("Vercel Serverless contact error:", error);
