@@ -2,32 +2,14 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { About } from '../components/About';
 import { SEO } from '../components/SEO';
+import { getAboutSchema } from '../utils/seoSchemas';
 import { Award, Target, Users, ArrowRight, BookOpen, ShieldCheck, HeartHandshake, Sparkles } from 'lucide-react';
 import { CONSULTANT_INFO, PERSONAL_MANIFESTO } from '../data';
 
 export const AboutPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const aboutStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    mainEntity: {
-      '@type': 'Person',
-      name: CONSULTANT_INFO.name,
-      jobTitle: CONSULTANT_INFO.title,
-      description:
-        'Business consultant with 10+ years of advisory experience helping founders and enterprises scale through strategic consulting, content marketing, and managed IT.',
-      telephone: CONSULTANT_INFO.phone,
-      email: CONSULTANT_INFO.email,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Road No. 36, Uttarpally, Benachity',
-        addressLocality: 'Durgapur',
-        addressRegion: 'West Bengal',
-        addressCountry: 'IN',
-      },
-    },
-  };
+  const aboutStructuredData = getAboutSchema();
 
   return (
     <div className="pt-24 pb-20 bg-slate-950">

@@ -54,6 +54,7 @@ Allow: /
 
 # Sitemap location
 Sitemap: https://aniketdubey.com/sitemap.xml
+Sitemap: https://www.aniketdubey.com/sitemap.xml
 `;
 
 app.get(["/robots.txt", "/robots.text"], (req, res) => {

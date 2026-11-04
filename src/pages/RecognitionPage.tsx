@@ -11,41 +11,20 @@ import { WhyWorkWithAniket } from '../components/WhyWorkWithAniket';
 import { CrossIndustry } from '../components/CrossIndustry';
 import { CallToAction } from '../components/CallToAction';
 import { SEO } from '../components/SEO';
+import { getRecognitionSchema } from '../utils/seoSchemas';
 import { WHY_WORK_WITH_ANIKET, WHY_ANIKET_CONTENT, CONSULTANT_INFO } from '../data';
 
 export const RecognitionPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const recognitionStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: 'Recognition | Aniket Dubey Felicitated by Technext Technosoft Pvt. Ltd.',
-    description:
-      'Corporate recognition of Aniket Dubey by Technext Technosoft Pvt. Ltd. for scaling their global brand iWebNext for over 10 years. Independent IT Contractor & Business Advisory Partner.',
-    mainEntity: {
-      '@type': 'Person',
-      name: 'Aniket Dubey',
-      jobTitle: 'Independent IT Contractor & Business Advisory Partner',
-      worksFor: {
-        '@type': 'Organization',
-        name: 'iWebNext (North American brand of Technext Technosoft Pvt. Ltd.)',
-      },
-      description: WHY_ANIKET_CONTENT.paragraphs[0],
-    },
-    itemListElement: WHY_WORK_WITH_ANIKET.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.title,
-      description: item.description,
-    })),
-  };
+  const recognitionStructuredData = getRecognitionSchema();
 
   return (
     <div className="pt-24 pb-20 bg-slate-950 text-slate-100 min-h-screen">
       {/* React Helmet SEO Meta Tags */}
       <SEO
-        title="Recognition | Aniket Dubey - Felicitated by Technext Technosoft Pvt. Ltd."
-        description="Corporate recognition of Aniket Dubey by Technext Technosoft Pvt. Ltd. for scaling their global brand iWebNext for over 10 years. Independent IT Contractor & Business Advisory Partner."
+        title="Recognition & Felicitation | Aniket Dubey - Technext Technosoft Pvt. Ltd."
+        description="Corporate recognition of Aniket Dubey by Technext Technosoft Pvt. Ltd. for scaling their global brand iWebNext for over 10 years as an Independent IT Contractor & Business Advisory Partner."
         keywords="Recognition, Aniket Dubey, Felicitation, Technext Technosoft Pvt Ltd, iWebNext, Global Brand Scaling, 10 Years Experience, Independent IT Contractor, Business Advisory Partner"
         canonicalPath="/recognition"
         ogType="website"

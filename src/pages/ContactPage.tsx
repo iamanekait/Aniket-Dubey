@@ -1,7 +1,7 @@
 import React from 'react';
 import { ContactSection } from '../components/ContactSection';
 import { SEO } from '../components/SEO';
-import { CONSULTANT_INFO } from '../data';
+import { getContactSchema } from '../utils/seoSchemas';
 import { ContactFormData } from '../types';
 
 interface ContactPageProps {
@@ -10,31 +10,14 @@ interface ContactPageProps {
 }
 
 export const ContactPage: React.FC<ContactPageProps> = ({ formData, setFormData }) => {
-  const contactStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'ContactPage',
-    mainEntity: {
-      '@type': 'LocalBusiness',
-      name: 'Aniket Dubey - Business Consultant',
-      telephone: CONSULTANT_INFO.phone,
-      email: CONSULTANT_INFO.email,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: 'Road No. 36, Uttarpally, Benachity',
-        addressLocality: 'Durgapur',
-        addressRegion: 'West Bengal',
-        postalCode: '713213',
-        addressCountry: 'IN',
-      },
-    },
-  };
+  const contactStructuredData = getContactSchema();
 
   return (
     <div className="pt-24 pb-20 bg-slate-950">
       {/* React Helmet SEO Meta Tags */}
       <SEO
-        title="Book a Consultation | Contact Aniket Dubey | Business Consultant"
-        description="Schedule a 1-on-1 strategic consultation with Aniket Dubey. Discuss business growth, content marketing, or managed IT services for your organization."
+        title="Contact & Advisory Enquiry | Aniket Dubey | Business Consultant"
+        description="Schedule a 1-on-1 strategic consultation with Aniket Dubey in Durgapur, West Bengal. Discuss business growth, content marketing, or managed IT services for your organization."
         keywords="Contact Business Consultant, Book Consultation, Schedule Advisory Session, Aniket Dubey Contact, Durgapur Business Office, Phone +91 9932979875"
         canonicalPath="/contact"
         ogType="website"

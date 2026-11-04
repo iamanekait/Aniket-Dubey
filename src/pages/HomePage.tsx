@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { Hero } from '../components/Hero';
 import { SEO } from '../components/SEO';
+import { getHomeSchema } from '../utils/seoSchemas';
 import {
   SERVICES,
   PERSONAL_MANIFESTO,
@@ -44,49 +45,14 @@ export const HomePage: React.FC = () => {
       ? PORTFOLIO_PROJECTS.slice(0, 4)
       : PORTFOLIO_PROJECTS.filter((p) => p.category === selectedGalleryCategory);
 
-  const homeStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'ProfessionalService',
-    name: 'Aniket Dubey | Founder-First Strategic Business Advisory Partner',
-    description:
-      'A founder-first strategic business advisory partner with 10+ years of experience helping founders and growing businesses through strategic guidance, content marketing, and managed IT.',
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://aniketdubey.com',
-    telephone: CONSULTANT_INFO.phone,
-    email: CONSULTANT_INFO.email,
-    founder: {
-      '@type': 'Person',
-      name: CONSULTANT_INFO.name,
-      jobTitle: CONSULTANT_INFO.title,
-    },
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: 'Road No. 36, Uttarpally, Benachity',
-      addressLocality: 'Durgapur',
-      addressRegion: 'West Bengal',
-      addressCountry: 'IN',
-    },
-    areaServed: ['India', 'Global'],
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Advisory and Technology Services',
-      itemListElement: SERVICES.map((service, index) => ({
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: service.title,
-          description: service.description,
-        },
-        position: index + 1,
-      })),
-    },
-  };
+  const homeStructuredData = getHomeSchema();
 
   return (
     <div className="space-y-0 overflow-x-hidden">
       {/* React Helmet SEO Meta Tags */}
       <SEO
         title="Aniket Dubey | Founder-First Strategic Business Advisory Partner"
-        description="A founder-first strategic business advisory partner with 10+ years of hands-on experience helping founders, owner-operators, and scaling businesses solve operational friction, establish commercial authority through strategic content marketing, and deploy resilient managed IT systems."
+        description="Founder-first strategic business advisory partner with 10+ years of experience helping founders and growing businesses with strategic consulting, content marketing, and managed IT services."
         keywords="Founder-First Business Advisory, Strategic Business Advisory Partner, Business Consultant, Strategic Content Marketing, Managed IT Services, Technology Strategy, Durgapur, West Bengal, SME Growth, Aniket Dubey"
         canonicalPath="/"
         ogType="website"

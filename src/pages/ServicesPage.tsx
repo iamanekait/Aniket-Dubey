@@ -2,7 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Services } from '../components/Services';
 import { SEO } from '../components/SEO';
-import { SERVICES, CONSULTANT_INFO } from '../data';
+import { getServicesSchema } from '../utils/seoSchemas';
+import { SERVICES } from '../data';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 
 interface ServicesPageProps {
@@ -17,28 +18,7 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService }) =
     navigate('/contact');
   };
 
-  const servicesStructuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'Service',
-    provider: {
-      '@type': 'Person',
-      name: CONSULTANT_INFO.name,
-      jobTitle: CONSULTANT_INFO.title,
-    },
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Consulting Capabilities & Services',
-      itemListElement: SERVICES.map((service, index) => ({
-        '@type': 'Offer',
-        itemOffered: {
-          '@type': 'Service',
-          name: service.title,
-          description: service.description,
-        },
-        position: index + 1,
-      })),
-    },
-  };
+  const servicesStructuredData = getServicesSchema();
 
   return (
     <div className="pt-24 pb-20 bg-slate-950">
