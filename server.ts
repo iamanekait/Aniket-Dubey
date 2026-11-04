@@ -46,6 +46,25 @@ function getAIClient(): GoogleGenAI | null {
   return aiClient;
 }
 
+// Robots and Sitemap routes
+const ROBOTS_CONTENT = `User-agent: *
+
+# Allow crawling of all public website pages
+Allow: /
+
+# Sitemap location
+Sitemap: https://aniketdubey.com/sitemap.xml
+`;
+
+app.get(["/robots.txt", "/robots.text"], (req, res) => {
+  res.type("text/plain");
+  res.send(ROBOTS_CONTENT);
+});
+
+app.get("/sitemap.xml", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "sitemap.xml"));
+});
+
 // Health check
 app.get("/api/health", (req, res) => {
   res.json({

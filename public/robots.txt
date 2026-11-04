@@ -1,0 +1,7 @@
+User-agent: *
+
+# Allow crawling of all public website pages
+Allow: /
+
+# Sitemap location
+Sitemap: https://aniketdubey.com/sitemap.xml
