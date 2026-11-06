@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { ArrowRight, ShieldCheck, CheckCircle2, Briefcase, Sparkles, UserCheck, Volume2, VolumeX } from 'lucide-react';
+import React from 'react';
+import { ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { CONSULTANT_INFO } from '../data';
 import heroBgPoster from '../assets/images/hero_consulting_bg_1789358194495.jpg';
 
@@ -11,22 +11,6 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) => {
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      const nextMuted = !videoRef.current.muted;
-      videoRef.current.muted = nextMuted;
-      setIsMuted(nextMuted);
-      if (!nextMuted) {
-        videoRef.current.play().catch(() => {});
-      }
-    } else {
-      setIsMuted((prev) => !prev);
-    }
-  };
-
   return (
     <section
       id="hero"
@@ -35,12 +19,11 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
       {/* Background Video with Layered Gradient Overlays */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <video
-          ref={videoRef}
           src={HERO_VIDEO_URL}
           poster={heroBgPoster}
           autoPlay
           loop
-          muted={isMuted}
+          muted
           playsInline
           className="w-full h-full object-cover object-center opacity-60 scale-105 transition-opacity duration-700"
         />
@@ -50,31 +33,6 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
         <div className="absolute inset-0 bg-grid-pattern opacity-25" />
       </div>
 
-      {/* Floating Audio Control Widget - positioned bottom-left to never collide with fixed bottom-right AI Chatbot */}
-      <div className="absolute bottom-6 left-4 sm:bottom-8 sm:left-8 z-20">
-        <button
-          onClick={toggleMute}
-          id="hero-audio-toggle-btn"
-          aria-label={isMuted ? "Unmute hero video audio" : "Mute hero video audio"}
-          className={`inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full border transition-all shadow-xl backdrop-blur-md cursor-pointer text-xs font-semibold ${
-            isMuted
-              ? 'bg-slate-900/80 hover:bg-slate-800 text-slate-300 border-slate-700/80 hover:border-slate-600 hover:text-white shadow-black/50'
-              : 'bg-blue-600 text-white font-bold border-blue-400 shadow-blue-500/30 ring-2 ring-blue-500/20'
-          }`}
-        >
-          {isMuted ? (
-            <>
-              <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
-              <span>Unmute Video</span>
-            </>
-          ) : (
-            <>
-              <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white animate-pulse" />
-              <span>Sound Active</span>
-            </>
-          )}
-        </button>
-      </div>
 
       {/* Subtle blue and sky ambient glows */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[650px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none z-0" />
@@ -82,12 +40,6 @@ export const Hero: React.FC<HeroProps> = ({ onBookConsultation, onGetInTouch }) 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
         <div className="max-w-4xl mx-auto flex flex-col items-center text-center z-10">
-          {/* Personal Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-blue-400 text-xs sm:text-sm font-semibold mb-6 shadow-sm shadow-blue-500/10 backdrop-blur-md">
-            <UserCheck className="w-4 h-4 text-blue-400" />
-            <span>A Founder-First Strategic Business Advisory Partner</span>
-          </div>
-
           {/* Main Personal Headline */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.14] mb-6 max-w-4xl drop-shadow-md">
             Helping Founders & Growing Businesses Turn Strategic Vision Into{' '}
