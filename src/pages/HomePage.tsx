@@ -186,12 +186,14 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Cards Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Cards Grid - Symmetrical 2x2 layout for the four case study blocks */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
             {filteredProjects.map((project) => (
               <div
                 key={project.id}
-                className="bg-slate-900/90 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 flex flex-col justify-between transition-all duration-300 group hover:-translate-y-1 shadow-lg"
+                className={`bg-slate-900/90 hover:bg-slate-900/95 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 sm:p-7 flex flex-col justify-between transition-all duration-300 group hover:-translate-y-1 shadow-lg hover:shadow-blue-500/10 ${
+                  filteredProjects.length === 1 ? 'md:col-span-2 max-w-2xl mx-auto w-full' : ''
+                }`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-4">
@@ -203,7 +205,7 @@ export const HomePage: React.FC = () => {
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-blue-300 transition-colors leading-snug">
+                  <h3 className="text-base sm:text-xl font-bold text-white mb-2 group-hover:text-blue-300 transition-colors leading-snug">
                     {project.title}
                   </h3>
 
@@ -212,16 +214,16 @@ export const HomePage: React.FC = () => {
                     <span>Client: {project.clientType}</span>
                   </p>
 
-                  <p className="text-xs text-slate-300 leading-relaxed line-clamp-3 mb-4">
+                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
                     {project.solution}
                   </p>
 
                   {/* Key outcomes bullets */}
-                  <div className="space-y-1.5 pt-3 border-t border-slate-800/80 mb-4">
-                    {project.keyOutcomes.slice(0, 2).map((outcome, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-[11px] text-slate-400">
+                  <div className="space-y-2 pt-3 border-t border-slate-800/80 mb-5">
+                    {project.keyOutcomes.slice(0, 3).map((outcome, idx) => (
+                      <div key={idx} className="flex items-start gap-2 text-xs text-slate-400">
                         <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
-                        <span className="line-clamp-1">{outcome}</span>
+                        <span className="leading-snug">{outcome}</span>
                       </div>
                     ))}
                   </div>
@@ -229,7 +231,7 @@ export const HomePage: React.FC = () => {
 
                 <Link
                   to="/capabilities"
-                  className="inline-flex items-center justify-between w-full pt-3 border-t border-slate-800/80 text-xs font-semibold text-blue-400 hover:text-blue-300 group-hover:translate-x-0.5 transition-transform"
+                  className="inline-flex items-center justify-between w-full pt-4 border-t border-slate-800/80 text-xs font-semibold text-blue-400 hover:text-blue-300 group-hover:translate-x-0.5 transition-transform"
                 >
                   <span>Explore practice capabilities</span>
                   <ChevronRight className="w-4 h-4" />
