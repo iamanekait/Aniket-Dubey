@@ -31,11 +31,11 @@ export const AboutPage: React.FC = () => {
           <img
             src={heroAboutBg}
             alt="Executive Advisory Office & Strategy Boardroom"
-            className="w-full h-full object-cover object-center opacity-40 scale-105 transition-opacity duration-700"
+            className="w-full h-full object-cover object-center opacity-65 scale-105 transition-opacity duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/90 via-[#080808]/75 to-[#080808]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/85 via-transparent to-[#080808]/85" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-25" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/80 via-[#080808]/60 to-[#080808]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/70 via-transparent to-[#080808]/70" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-20" />
         </div>
 
         {/* Ambient Burnt Orange Glows */}

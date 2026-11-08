@@ -39,11 +39,11 @@ export const RecognitionPage: React.FC = () => {
           <img
             src={heroRecognitionBg}
             alt="Corporate Felicitation Ceremony and Global Brand Milestone Stage"
-            className="w-full h-full object-cover object-center opacity-35 scale-105 transition-opacity duration-700"
+            className="w-full h-full object-cover object-center opacity-60 scale-105 transition-opacity duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/90 via-[#080808]/75 to-[#080808]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/85 via-transparent to-[#080808]/85" />
-          <div className="absolute inset-0 bg-grid-pattern opacity-25" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#080808]/80 via-[#080808]/60 to-[#080808]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#080808]/70 via-transparent to-[#080808]/70" />
+          <div className="absolute inset-0 bg-grid-pattern opacity-20" />
         </div>
 
         {/* Ambient background glows */}
