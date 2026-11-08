@@ -87,6 +87,116 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
     }
   };
 
+  // Formats text, bullet points, bold markers, and handles URLs safely without bleeding
+  const renderFormattedMessage = (content: string, isUser: boolean) => {
+    const lines = content.split('\n');
+
+    return lines.map((line, lineIdx) => {
+      const isBullet =
+        line.trim().startsWith('- ') ||
+        line.trim().startsWith('* ') ||
+        /^\d+\.\s/.test(line.trim());
+      const cleanLine = isBullet ? line.trim().replace(/^[-*]\s+|\d+\.\s+/, '') : line;
+
+      // Tokenize by markdown link [label](url), standalone URL, or bold **text**
+      const tokenRegex = /(\[[^\]]+\]\(https?:\/\/[^\s)]+\)|https?:\/\/[^\s<]+|\*\*[^*]+\*\*)/g;
+      const parts = cleanLine.split(tokenRegex);
+
+      const renderedLine = parts.map((part, partIdx) => {
+        if (!part) return null;
+
+        // Markdown link [label](url)
+        const mdLinkMatch = part.match(/^\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)$/);
+        if (mdLinkMatch) {
+          const [, label, url] = mdLinkMatch;
+          return (
+            <a
+              key={partIdx}
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${
+                isUser ? 'text-white underline font-semibold' : 'text-[#D15301] hover:text-[#B94700] underline font-semibold'
+              } break-all [overflow-wrap:anywhere] inline-flex items-center gap-0.5`}
+            >
+              <span>{label}</span>
+              <ExternalLink className="w-2.5 h-2.5 shrink-0 inline ml-0.5" />
+            </a>
+          );
+        }
+
+        // Standalone URL: https://...
+        if (/^https?:\/\//.test(part)) {
+          let cleanUrl = part;
+          let trailingPunct = '';
+          if (/[.,;:!?]$/.test(cleanUrl)) {
+            trailingPunct = cleanUrl.slice(-1);
+            cleanUrl = cleanUrl.slice(0, -1);
+          }
+
+          const displayText = cleanUrl.includes('scheduler.zoom.us')
+            ? 'Zoom Scheduler'
+            : cleanUrl.replace(/^https?:\/\/(www\.)?/, '');
+
+          return (
+            <React.Fragment key={partIdx}>
+              <a
+                href={cleanUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${
+                  isUser
+                    ? 'text-white underline font-semibold'
+                    : 'text-[#D15301] hover:text-[#B94700] underline font-semibold'
+                } break-all [overflow-wrap:anywhere] inline-flex items-center gap-0.5`}
+              >
+                <span>{displayText}</span>
+                <ExternalLink className="w-2.5 h-2.5 shrink-0 inline ml-0.5" />
+              </a>
+              {trailingPunct}
+            </React.Fragment>
+          );
+        }
+
+        // Bold text **text**
+        const boldMatch = part.match(/^\*\*([^*]+)\*\*$/);
+        if (boldMatch) {
+          return (
+            <strong key={partIdx} className="font-bold text-white">
+              {boldMatch[1]}
+            </strong>
+          );
+        }
+
+        return <span key={partIdx}>{part}</span>;
+      });
+
+      if (isBullet) {
+        return (
+          <div key={lineIdx} className="flex items-start gap-1.5 my-1 min-w-0">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                isUser ? 'bg-white' : 'bg-[#D15301]'
+              } shrink-0 mt-1.5`}
+            />
+            <div className="flex-1 min-w-0 break-words [overflow-wrap:anywhere] [word-break:break-word]">
+              {renderedLine}
+            </div>
+          </div>
+        );
+      }
+
+      return (
+        <p
+          key={lineIdx}
+          className="min-w-0 break-words [overflow-wrap:anywhere] [word-break:break-word] mb-1.5 last:mb-0"
+        >
+          {renderedLine}
+        </p>
+      );
+    });
+  };
+
   return (
     <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 max-w-[calc(100vw-1.5rem)]">
       {/* Floating Toggle Button */}
@@ -140,11 +250,13 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
           </div>
 
           {/* Messages Body */}
-          <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 bg-[#080808] text-xs leading-relaxed">
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-4 space-y-3 bg-[#080808] text-xs leading-relaxed">
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2.5 min-w-0 w-full ${
+                  msg.sender === 'user' ? 'justify-end' : 'justify-start'
+                }`}
               >
                 {msg.sender === 'assistant' && (
                   <div className="w-6 h-6 rounded-full bg-[#121212] border border-[#292929] flex items-center justify-center shrink-0 mt-0.5 text-[#D15301]">
@@ -152,14 +264,20 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
                   </div>
                 )}
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 whitespace-pre-line ${
+                  className={`max-w-[85%] min-w-0 rounded-2xl px-3.5 py-2.5 shadow-sm break-words [overflow-wrap:anywhere] [word-break:break-word] ${
                     msg.sender === 'user'
-                      ? 'bg-[#D15301] text-white font-medium rounded-br-none shadow-sm'
-                      : 'bg-[#121212] border border-[#292929] text-[#F5F2ED] rounded-bl-none shadow-sm'
+                      ? 'bg-[#D15301] text-white font-medium rounded-br-none'
+                      : 'bg-[#121212] border border-[#292929] text-[#F5F2ED] rounded-bl-none'
                   }`}
                 >
-                  <p>{msg.text}</p>
-                  <span className={`block text-[9px] mt-1 text-right ${msg.sender === 'user' ? 'text-white/80' : 'text-[#A6A6A6]'}`}>
+                  <div className="min-w-0 break-words [overflow-wrap:anywhere] [word-break:break-word] leading-relaxed">
+                    {renderFormattedMessage(msg.text, msg.sender === 'user')}
+                  </div>
+                  <span
+                    className={`block text-[9px] mt-1.5 text-right ${
+                      msg.sender === 'user' ? 'text-white/80' : 'text-[#A6A6A6]'
+                    }`}
+                  >
                     {msg.timestamp}
                   </span>
                 </div>
