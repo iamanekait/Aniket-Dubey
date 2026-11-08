@@ -32,7 +32,7 @@ function AppContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#080808] text-[#F5F2ED] flex flex-col selection:bg-[#D15301] selection:text-white">
       {/* Resets window scroll position on page transition */}
       <ScrollToTopOnRouteChange />
 

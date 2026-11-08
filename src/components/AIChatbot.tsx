@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Bot, User, Sparkles, Loader2, Minimize2, ExternalLink } from 'lucide-react';
+import { Bot, User, Sparkles, Loader2, X, Send, ExternalLink } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { CONSULTANT_INFO } from '../data';
 
@@ -94,12 +94,12 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
         <button
           onClick={() => setIsOpen(true)}
           id="ai-chatbot-toggle-btn"
-          className="group relative flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold rounded-full shadow-2xl shadow-blue-600/35 hover:shadow-blue-600/50 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer border border-blue-400"
+          className="group relative flex items-center gap-2.5 px-3.5 py-2.5 sm:px-4 sm:py-3 bg-[#D15301] hover:bg-[#B94700] active:scale-95 text-white font-bold rounded-full shadow-2xl shadow-[#D15301]/35 hover:shadow-[#D15301]/50 hover:scale-105 transition-all duration-200 cursor-pointer border border-[#D15301]"
           aria-label="Open AI Strategy Assistant"
         >
           <div className="relative">
             <Bot className="w-5 h-5 text-white" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-slate-950 rounded-full animate-pulse" />
+            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 border-2 border-[#080808] rounded-full animate-pulse" />
           </div>
           <span className="text-xs font-bold tracking-wide hidden sm:inline-block text-white">
             Ask AI Assistant
@@ -111,27 +111,27 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
       {isOpen && (
         <div
           id="ai-chatbot-window"
-          className="w-[calc(100vw-1.5rem)] sm:w-[390px] max-w-full max-h-[min(580px,calc(100dvh-5.5rem))] h-[76vh] sm:h-[580px] bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+          className="w-[calc(100vw-1.5rem)] sm:w-[390px] max-w-full max-h-[min(580px,calc(100dvh-5.5rem))] h-[76vh] sm:h-[580px] bg-[#080808] border border-[#292929] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
         >
           {/* Header */}
-          <div className="bg-slate-900 border-b border-slate-800 p-3 sm:p-3.5 flex items-center justify-between shrink-0">
+          <div className="bg-[#030303] border-b border-[#292929] p-3 sm:p-3.5 flex items-center justify-between shrink-0">
             <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-[#D15301]/15 border border-[#D15301]/30 flex items-center justify-center text-[#D15301] shrink-0">
                 <Bot className="w-4 h-4" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-xs font-bold text-white truncate">Aniket Dubey AI Advisory</h4>
-                  <Sparkles className="w-3 h-3 text-blue-400 shrink-0" />
+                  <h4 className="text-xs font-bold text-[#F5F2ED] truncate">Aniket Dubey AI Advisory</h4>
+                  <Sparkles className="w-3 h-3 text-[#D15301] shrink-0" />
                 </div>
-                <p className="text-[10px] text-blue-300/80 truncate">Strategic Consulting Assistant</p>
+                <p className="text-[10px] text-[#A6A6A6] truncate">Strategic Consulting Assistant</p>
               </div>
             </div>
 
             <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+                className="p-1.5 text-[#A6A6A6] hover:text-white rounded-lg hover:bg-[#171717] transition-colors cursor-pointer"
                 aria-label="Close Chat"
               >
                 <X className="w-4 h-4" />
@@ -140,31 +140,31 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
           </div>
 
           {/* Messages Body */}
-          <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 bg-slate-950 text-xs leading-relaxed">
+          <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 bg-[#080808] text-xs leading-relaxed">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex gap-2.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 {msg.sender === 'assistant' && (
-                  <div className="w-6 h-6 rounded-full bg-blue-950/80 border border-blue-800/40 flex items-center justify-center shrink-0 mt-0.5 text-blue-400">
+                  <div className="w-6 h-6 rounded-full bg-[#121212] border border-[#292929] flex items-center justify-center shrink-0 mt-0.5 text-[#D15301]">
                     <Bot className="w-3.5 h-3.5" />
                   </div>
                 )}
                 <div
                   className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 whitespace-pre-line ${
                     msg.sender === 'user'
-                      ? 'bg-blue-600 text-white font-medium rounded-br-none shadow-sm'
-                      : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none shadow-sm'
+                      ? 'bg-[#D15301] text-white font-medium rounded-br-none shadow-sm'
+                      : 'bg-[#121212] border border-[#292929] text-[#F5F2ED] rounded-bl-none shadow-sm'
                   }`}
                 >
                   <p>{msg.text}</p>
-                  <span className={`block text-[9px] mt-1 text-right ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-400'}`}>
+                  <span className={`block text-[9px] mt-1 text-right ${msg.sender === 'user' ? 'text-white/80' : 'text-[#A6A6A6]'}`}>
                     {msg.timestamp}
                   </span>
                 </div>
                 {msg.sender === 'user' && (
-                  <div className="w-6 h-6 rounded-full bg-blue-600/30 border border-blue-500/50 flex items-center justify-center shrink-0 mt-0.5 text-blue-300">
+                  <div className="w-6 h-6 rounded-full bg-[#D15301]/20 border border-[#D15301]/40 flex items-center justify-center shrink-0 mt-0.5 text-[#D15301]">
                     <User className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -172,8 +172,8 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
             ))}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs py-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-400" />
+              <div className="flex items-center gap-2 text-[#A6A6A6] text-xs py-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#D15301]" />
                 <span>Aniket's assistant is thinking...</span>
               </div>
             )}
@@ -181,13 +181,13 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
           </div>
 
           {/* Quick Prompts Chips */}
-          <div className="px-3 py-2 bg-slate-900 border-t border-slate-800 overflow-x-auto no-scrollbar flex items-center gap-1.5 shrink-0">
+          <div className="px-3 py-2 bg-[#030303] border-t border-[#292929] overflow-x-auto no-scrollbar flex items-center gap-1.5 shrink-0">
             {quickPrompts.map((prompt) => (
               <button
                 key={prompt}
                 onClick={() => handleSend(prompt)}
                 disabled={isLoading}
-                className="whitespace-nowrap text-[10px] font-medium px-2.5 py-1.5 rounded-full bg-slate-800 hover:bg-blue-950/60 text-slate-200 hover:text-white border border-slate-700 hover:border-blue-500/40 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                className="whitespace-nowrap text-[10px] font-medium px-2.5 py-1.5 rounded-full bg-[#121212] hover:bg-[#D15301]/15 text-[#F5F2ED] hover:text-white border border-[#292929] hover:border-[#D15301]/40 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
               >
                 {prompt}
               </button>
@@ -195,7 +195,7 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
           </div>
 
           {/* Input Footer */}
-          <div className="p-3 bg-slate-900 border-t border-slate-800 shrink-0 pb-safe">
+          <div className="p-3 bg-[#030303] border-t border-[#292929] shrink-0 pb-safe">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -208,24 +208,24 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about strategy, IT, or booking..."
-                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="flex-1 bg-[#080808] border border-[#292929] rounded-xl px-3 py-2 text-base sm:text-xs text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-1 focus:ring-[#D15301]"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || isLoading}
-                className="p-2 sm:p-2 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl transition-all cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center shrink-0 shadow-md shadow-blue-600/20"
+                className="p-2 sm:p-2 bg-[#D15301] hover:bg-[#B94700] active:scale-95 disabled:opacity-50 text-white font-bold rounded-xl transition-all cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center shrink-0 shadow-md shadow-[#D15301]/20"
                 aria-label="Send message"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
             </form>
-            <div className="flex items-center justify-between mt-2 pt-1 border-t border-slate-800 text-[10px] text-slate-400">
+            <div className="flex items-center justify-between mt-2 pt-1 border-t border-[#292929] text-[10px] text-[#A6A6A6]">
               <span>Book Consultation:</span>
               <a
                 href={CONSULTANT_INFO.bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-400 hover:text-blue-300 hover:underline flex items-center gap-1 cursor-pointer font-medium"
+                className="text-[#D15301] hover:text-[#B94700] hover:underline flex items-center gap-1 cursor-pointer font-medium"
               >
                 <span>Zoom Scheduler</span>
                 <ExternalLink className="w-2.5 h-2.5" />

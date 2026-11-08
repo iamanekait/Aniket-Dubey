@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle, HelpCircle, ArrowRight, Sparkles, RefreshCw } from 'lucide-react';
+import { CheckCircle, ArrowRight, Sparkles } from 'lucide-react';
 
 interface StrategicAssessmentProps {
   onPreFillEnquiry: (service: string, summary: string) => void;
@@ -58,25 +58,25 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
   const rec = getRecommendation();
 
   return (
-    <section className="py-20 bg-slate-950 border-t border-slate-800/80 relative">
+    <section className="py-20 bg-[#080808] border-t border-[#292929] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#D15301]/10 border border-[#D15301]/30 text-[#D15301] text-xs font-bold uppercase tracking-wider mb-4">
             Interactive Diagnostic
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F5F2ED] tracking-tight leading-tight mb-4">
             Identify Your Highest-Leverage Growth Priority.
           </h2>
-          <p className="text-base text-slate-300">
+          <p className="text-base text-[#A6A6A6]">
             Select your current business stage and primary operational focus to view the recommended consulting framework.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-12 gap-8 items-start">
           {/* Controls */}
-          <div className="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6">
+          <div className="lg:col-span-6 bg-[#121212] border border-[#292929] rounded-2xl p-6 sm:p-8 space-y-6">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-3">
                 1. What is your current business stage?
               </label>
               <div className="grid grid-cols-3 gap-2 sm:gap-3">
@@ -91,19 +91,19 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
                     onClick={() => setStage(s.key as any)}
                     className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       stage === s.key
-                        ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-sm shadow-blue-500/10'
-                        : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'
+                        ? 'bg-[#D15301]/15 border-[#D15301] text-[#F5F2ED] shadow-sm shadow-[#D15301]/10 font-semibold'
+                        : 'bg-[#080808] border-[#292929] text-[#A6A6A6] hover:border-[#D15301]/30'
                     }`}
                   >
                     <div className="text-xs font-bold leading-tight">{s.label}</div>
-                    <div className="text-[10px] text-slate-400 mt-1">{s.sub}</div>
+                    <div className="text-[10px] text-[#A6A6A6]/80 mt-1">{s.sub}</div>
                   </button>
                 ))}
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-3">
                 2. Where is your biggest current bottleneck or priority?
               </label>
               <div className="grid sm:grid-cols-2 gap-3">
@@ -135,15 +135,15 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
                     onClick={() => setPriority(p.key as any)}
                     className={`p-4 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                       priority === p.key
-                        ? 'bg-blue-600/20 border-blue-500 text-white ring-1 ring-blue-500/50 shadow-sm shadow-blue-500/10'
-                        : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
+                        ? 'bg-[#D15301]/15 border-[#D15301] text-white ring-1 ring-[#D15301]/50 shadow-sm shadow-[#D15301]/10'
+                        : 'bg-[#080808] border-[#292929] text-[#A6A6A6] hover:border-[#D15301]/30'
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-bold">{p.title}</span>
-                      {priority === p.key && <CheckCircle className="w-3.5 h-3.5 text-blue-400" />}
+                      <span className="text-xs font-bold text-[#F5F2ED]">{p.title}</span>
+                      {priority === p.key && <CheckCircle className="w-3.5 h-3.5 text-[#D15301]" />}
                     </div>
-                    <span className="text-[11px] text-slate-400">{p.desc}</span>
+                    <span className="text-[11px] text-[#A6A6A6]">{p.desc}</span>
                   </button>
                 ))}
               </div>
@@ -151,46 +151,46 @@ export const StrategicAssessment: React.FC<StrategicAssessmentProps> = ({ onPreF
           </div>
 
           {/* Diagnostic Result Card */}
-          <div className="lg:col-span-6 bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
-            <div className="flex items-center justify-between border-b border-slate-800/80 pb-4">
+          <div className="lg:col-span-6 bg-gradient-to-br from-[#121212] to-[#080808] border border-[#292929] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-[#292929] pb-4">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-400" />
-                <span className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                <Sparkles className="w-5 h-5 text-[#D15301]" />
+                <span className="text-xs font-bold uppercase tracking-wider text-[#D15301]">
                   Recommended Consulting Alignment
                 </span>
               </div>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-slate-800 text-blue-300 border border-slate-700 font-semibold">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#080808] text-[#D15301] border border-[#292929] font-semibold">
                 Stage: {stage.toUpperCase()}
               </span>
             </div>
 
             <div>
-              <h3 className="text-2xl font-bold text-white mb-2">{rec.service}</h3>
-              <p className="text-sm text-slate-300 leading-relaxed">{rec.diagnosis}</p>
+              <h3 className="text-2xl font-bold text-[#F5F2ED] mb-2">{rec.service}</h3>
+              <p className="text-sm text-[#A6A6A6] leading-relaxed">{rec.diagnosis}</p>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold uppercase tracking-wider text-blue-400 mb-3">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#D15301] mb-3">
                 Key Strategic Focus in Engagement:
               </h4>
               <ul className="space-y-2.5">
                 {rec.focus.map((item, idx) => (
-                  <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-300">
-                    <CheckCircle className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#F5F2ED]/90">
+                    <CheckCircle className="w-4 h-4 text-[#D15301] shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            <div className="pt-4 border-t border-slate-800/80">
+            <div className="pt-4 border-t border-[#292929]">
               <button
                 type="button"
                 onClick={() => {
                   const summary = `Priority: ${priority.toUpperCase()} at ${stage} stage. Interested in discussing ${rec.service}.`;
                   onPreFillEnquiry(rec.service, summary);
                 }}
-                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 active:scale-95 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/25 cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 bg-[#D15301] hover:bg-[#B94700] active:scale-95 text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#D15301]/25 cursor-pointer"
               >
                 <span>Discuss This Priority With Aniket</span>
                 <ArrowRight className="w-4 h-4" />

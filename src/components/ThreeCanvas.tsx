@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { Layers, ShieldCheck, Compass } from 'lucide-react';
+import { Layers } from 'lucide-react';
 
 interface ThreeCanvasProps {
   className?: string;
@@ -59,34 +59,34 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     const strategicGroup = new THREE.Group();
     scene.add(strategicGroup);
 
-    // 1. Central Icosahedron (Core Business Nucleus - Deep Slate & Navy)
+    // 1. Central Icosahedron (Core Business Nucleus - Deep Obsidian)
     const coreGeometry = new THREE.IcosahedronGeometry(1.4, 1);
     const coreMaterial = new THREE.MeshStandardMaterial({
-      color: 0x0f172a, // Deep slate navy
-      roughness: 0.25,
-      metalness: 0.85,
+      color: 0x121212, // Executive Obsidian
+      roughness: 0.2,
+      metalness: 0.9,
       wireframe: false,
     });
     const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
     strategicGroup.add(coreMesh);
 
-    // 2. Outer Wireframe Cage (Strategic Execution Shell - Vibrant Tech Blue)
+    // 2. Outer Wireframe Cage (Strategic Execution Shell - Vibrant Burnt Orange)
     const wireGeometry = new THREE.IcosahedronGeometry(1.65, 1);
     const wireMaterial = new THREE.MeshBasicMaterial({
-      color: 0x3b82f6, // Royal Blue
+      color: 0xD15301, // Burnt Orange
       wireframe: true,
       transparent: true,
-      opacity: 0.55,
+      opacity: 0.65,
     });
     const wireMesh = new THREE.Mesh(wireGeometry, wireMaterial);
     strategicGroup.add(wireMesh);
 
-    // 3. Orbital Rings (Business & IT Synergy Rings - Sky & Indigo)
+    // 3. Orbital Rings (Business & IT Synergy Rings - Deep Orange & Warm Amber)
     const ringGeometry1 = new THREE.TorusGeometry(2.1, 0.02, 16, 100);
     const ringMaterial1 = new THREE.MeshBasicMaterial({
-      color: 0x60a5fa, // Sky Blue
+      color: 0xB94700, // Deep Orange
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.5,
     });
     const ringMesh1 = new THREE.Mesh(ringGeometry1, ringMaterial1);
     ringMesh1.rotation.x = Math.PI / 3;
@@ -94,7 +94,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
 
     const ringGeometry2 = new THREE.TorusGeometry(2.35, 0.02, 16, 100);
     const ringMaterial2 = new THREE.MeshBasicMaterial({
-      color: 0x818cf8, // Indigo Accent
+      color: 0xF5A25D, // Warm Amber Accent
       transparent: true,
       opacity: 0.35,
     });
@@ -102,9 +102,9 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
     ringMesh2.rotation.y = Math.PI / 4;
     strategicGroup.add(ringMesh2);
 
-    // 4. Strategic Nodes (Pillars of growth - Glowing Cyan Blue)
+    // 4. Strategic Nodes (Pillars of growth - Warm White / Amber glow)
     const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-    const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const nodeMaterial = new THREE.MeshBasicMaterial({ color: 0xF5F2ED });
     const nodes: THREE.Mesh[] = [];
 
     const positions = [
@@ -123,15 +123,15 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
       nodes.push(node);
     });
 
-    // Lighting with crisp tech illumination
+    // Lighting with warm executive illumination
     const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
 
-    const pointLight1 = new THREE.PointLight(0x3b82f6, 3.5, 50);
+    const pointLight1 = new THREE.PointLight(0xD15301, 4.5, 50);
     pointLight1.position.set(5, 5, 5);
     scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0x06b6d4, 2.5, 50);
+    const pointLight2 = new THREE.PointLight(0xB94700, 3.0, 50);
     pointLight2.position.set(-5, -5, 2);
     scene.add(pointLight2);
 
@@ -282,13 +282,13 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '' }) => {
   if (!webGLSupported) {
     return (
       <div
-        className={`relative w-full h-full min-h-[300px] flex flex-col items-center justify-center p-6 bg-slate-900/80 border border-slate-800 rounded-2xl text-center shadow-xl ${className}`}
+        className={`relative w-full h-full min-h-[300px] flex flex-col items-center justify-center p-6 bg-[#121212] border border-[#292929] rounded-2xl text-center shadow-xl ${className}`}
       >
-        <div className="w-16 h-16 rounded-2xl bg-blue-500/15 border border-blue-500/40 flex items-center justify-center text-blue-400 mb-4 animate-pulse">
+        <div className="w-16 h-16 rounded-2xl bg-[#D15301]/15 border border-[#D15301]/40 flex items-center justify-center text-[#D15301] mb-4 animate-pulse">
           <Layers className="w-8 h-8" />
         </div>
-        <h4 className="text-base font-bold text-white mb-1">Interactive Strategic Architecture</h4>
-        <p className="text-xs text-slate-400 max-w-xs">
+        <h4 className="text-base font-bold text-[#F5F2ED] mb-1">Interactive Strategic Architecture</h4>
+        <p className="text-xs text-[#A6A6A6] max-w-xs">
           Tri-pillar alignment uniting Business Strategy, Content Marketing Authority, and Managed IT Infrastructure.
         </p>
       </div>

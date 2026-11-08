@@ -46,19 +46,19 @@ export const ReadingProgressBar: React.FC = () => {
       }`}
     >
       {/* Background track (subtle translucent guide) */}
-      <div className="w-full h-[3px] bg-slate-900/60 backdrop-blur-xs relative overflow-hidden">
+      <div className="w-full h-[3px] bg-[#080808]/80 backdrop-blur-xs relative overflow-hidden">
         {/* Animated Reading Progress Bar */}
         <motion.div
           id="reading-progress-bar"
           style={{ scaleX, transformOrigin: '0%' }}
-          className="h-full w-full bg-gradient-to-r from-blue-600 via-sky-400 to-indigo-500 shadow-[0_0_12px_rgba(59,130,246,0.9)]"
+          className="h-full w-full bg-gradient-to-r from-[#B94700] via-[#D15301] to-[#FFA86B] shadow-[0_0_12px_rgba(209,83,1,0.9)]"
         />
       </div>
 
       {/* Optional micro indicator badge that appears when reading deep into long content */}
       {readPercent > 5 && readPercent < 98 && (
-        <div className="hidden sm:flex absolute top-2 right-4 items-center gap-1.5 px-2 py-0.5 rounded-full bg-slate-900/90 border border-blue-500/30 text-[10px] font-semibold text-blue-300 shadow-md backdrop-blur-md">
-          <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+        <div className="hidden sm:flex absolute top-2 right-4 items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#080808]/90 border border-[#D15301]/30 text-[10px] font-semibold text-[#F5F2ED] shadow-md backdrop-blur-md">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#D15301] animate-pulse" />
           <span>{readPercent}% read</span>
         </div>
       )}

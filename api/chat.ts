@@ -109,6 +109,36 @@ Tone & Rules:
 - Encourage the user to schedule a direct consultation with Aniket via his Zoom Scheduler (https://scheduler.zoom.us/aniketdubey/consultation), leave their details via the contact form on the page, or reach out directly at email@aniketdubey.com / +91 9932979875.
 - Keep responses concise (2-4 paragraphs maximum, clear and easy to read).`;
 
+function generateConsultantKnowledgeReply(message: string): string {
+  const queryLower = (message || "").toLowerCase().trim();
+
+  if (queryLower.includes("book") || queryLower.includes("schedule") || queryLower.includes("consultation") || queryLower.includes("call") || queryLower.includes("meeting") || queryLower.includes("zoom")) {
+    return `You can schedule a direct 1-on-1 consultation with Aniket Dubey:\n\n- **Online Zoom Scheduler**: [Click to schedule a 1-on-1 meeting](https://scheduler.zoom.us/aniketdubey/consultation)\n- **Direct Phone**: +91 9932979875\n- **Direct Email**: email@aniketdubey.com\n\nYou can also submit an enquiry through the contact form on this website and Aniket will review your requirements personally.`;
+  }
+
+  if (queryLower.includes("service") || queryLower.includes("what do you do") || queryLower.includes("offer") || queryLower.includes("help") || queryLower.includes("capability") || queryLower.includes("capabilities")) {
+    return `Aniket Dubey provides four core advisory pillars tailored to growing businesses:\n\n1. **Business Consulting**: Growth roadmaps, strategic decision frameworks, unit economic clarity, and operational de-bottlenecking.\n2. **Strategic Content Marketing**: High-authority brand positioning, editorial strategy, and inbound audience-focused content engines.\n3. **Managed IT Services**: Reliable infrastructure guidance, cloud modernization, ongoing tech support, and digital security management.\n4. **Business & Technology Strategy**: Bridging commercial objectives with modern digital workflows and scalable systems.\n\nWould you like to discuss how these services can be tailored to your business? You can book a direct consultation anytime at: https://scheduler.zoom.us/aniketdubey/consultation`;
+  }
+
+  if (queryLower.includes("contact") || queryLower.includes("email") || queryLower.includes("phone") || queryLower.includes("address") || queryLower.includes("location") || queryLower.includes("durgapur") || queryLower.includes("reach") || queryLower.includes("office")) {
+    return `You can connect directly with Aniket Dubey:\n\n- **Zoom Scheduler**: https://scheduler.zoom.us/aniketdubey/consultation\n- **Office Location**: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India\n- **Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also use the enquiry form on this page to request an initial consultation!`;
+  }
+
+  if (queryLower.includes("recognition") || queryLower.includes("felicitat") || queryLower.includes("award") || queryLower.includes("technext") || queryLower.includes("iwebnext") || queryLower.includes("why aniket") || queryLower.includes("credential")) {
+    return `Aniket Dubey was formally felicitated by **Technext Technosoft Pvt. Ltd.** in recognition of over 10 years of dedicated leadership in scaling their flagship North American brand, **iWebNext**, at a global level.\n\nHe operates as an Independent IT Contractor and Business Advisory Partner. You can explore the full story, felicitation photo, and credential milestones on the **Recognition** page on this website!`;
+  }
+
+  if (queryLower.includes("experience") || queryLower.includes("about") || queryLower.includes("who is") || queryLower.includes("background") || queryLower.includes("bio")) {
+    return `Aniket Dubey brings over 10 years of cross-industry consulting experience. His philosophy is strictly consultative and execution-focused: first understanding your unique operating model and challenges, then formulating pragmatic strategies combining business acumen, content marketing, and managed IT systems. He operates on a 4-step methodology: 01 Understand -> 02 Analyze -> 03 Strategize -> 04 Scale.`;
+  }
+
+  if (queryLower.includes("cost") || queryLower.includes("pricing") || queryLower.includes("fee") || queryLower.includes("rate") || queryLower.includes("retainer") || queryLower.includes("charge")) {
+    return `Because Aniket's consulting engagements are strictly customized to the scope, industry, and specific operational needs of each client, pricing is determined after an initial exploratory discussion.\n\nYou can book an introductory discovery consultation directly via Zoom: https://scheduler.zoom.us/aniketdubey/consultation or email email@aniketdubey.com to receive a tailored advisory proposal.`;
+  }
+
+  return `Thank you for your interest in strategic consulting with Aniket Dubey. With 10+ years of experience in business growth, strategic content marketing, and managed IT infrastructure, Aniket works closely with founders and business owners to build resilient, scalable operations.\n\nFeel free to ask about specific services, Aniket's 4-step consulting approach, or book a consultation directly at https://scheduler.zoom.us/aniketdubey/consultation.`;
+}
+
 export default async function handler(req: any, res: any) {
   const incomingOrigin = req.headers?.origin || "*";
   res.setHeader("Access-Control-Allow-Origin", incomingOrigin);
@@ -144,47 +174,38 @@ export default async function handler(req: any, res: any) {
     }
 
     const ai = getAIClient();
+    let reply = "";
 
-    if (!ai) {
-      const queryLower = message.toLowerCase();
-      let reply = "";
-
-      if (queryLower.includes("book") || queryLower.includes("schedule") || queryLower.includes("consultation") || queryLower.includes("call") || queryLower.includes("meeting")) {
-        reply = `You can book a consultation directly with Aniket Dubey:\n\n- **Online Zoom Scheduler**: [Click to schedule a 1-on-1 meeting](https://scheduler.zoom.us/aniketdubey/consultation)\n- **Direct Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also submit an enquiry through the contact form on this website.`;
-      } else if (queryLower.includes("service") || queryLower.includes("what do you do") || queryLower.includes("offer")) {
-        reply = `Aniket Dubey provides four core advisory pillars tailored to growing businesses:\n\n1. **Business Consulting**: Growth roadmaps, strategic decision frameworks, and operational refinement.\n2. **Strategic Content Marketing**: High-impact brand positioning, editorial strategy, and audience-focused content.\n3. **Managed IT Services**: Reliable infrastructure guidance, ongoing tech support, and digital security management.\n4. **Business & Technology Strategy**: Bridging operational objectives with modern digital workflows and scalable tools.\n\nWould you like to discuss how these services can be tailored to your specific business model? You can book a direct consultation anytime at: https://scheduler.zoom.us/aniketdubey/consultation`;
-      } else if (queryLower.includes("contact") || queryLower.includes("email") || queryLower.includes("phone") || queryLower.includes("address") || queryLower.includes("location") || queryLower.includes("durgapur")) {
-        reply = `You can connect directly with Aniket Dubey:\n\n- **Zoom Scheduler**: https://scheduler.zoom.us/aniketdubey/consultation\n- **Office**: Road No. 36, Uttarpally, Benachity, Durgapur, West Bengal, India\n- **Phone**: +91 9932979875\n- **Email**: email@aniketdubey.com\n\nYou can also use the enquiry form on this page to request an initial consultation!`;
-      } else if (queryLower.includes("recognition") || queryLower.includes("felicitat") || queryLower.includes("award") || queryLower.includes("technext") || queryLower.includes("iwebnext") || queryLower.includes("why aniket")) {
-        reply = `Aniket Dubey was formally felicitated by **Technext Technosoft Pvt. Ltd.** in recognition of over 10 years of dedicated leadership in scaling their flagship North American brand, **iWebNext**, at a global level.\n\nYou can explore the full story, felicitation photo, and credential milestones on the **Recognition** page on this website!`;
-      } else if (queryLower.includes("experience") || queryLower.includes("about") || queryLower.includes("who is")) {
-        reply = `Aniket Dubey brings over 10 years of cross-industry consulting experience. His philosophy is strictly consultative and execution-focused: first understanding your unique operating model and challenges, then formulating pragmatic strategies combining business acumen, content marketing, and managed IT systems.`;
-      } else if (queryLower.includes("cost") || queryLower.includes("pricing") || queryLower.includes("fee") || queryLower.includes("rate")) {
-        reply = `Because Aniket's consulting engagements are strictly customized to the scope, industry, and specific operational needs of each client, pricing is determined after an initial exploratory discussion. You can book an introductory discovery consultation directly via Zoom: https://scheduler.zoom.us/aniketdubey/consultation or email email@aniketdubey.com.`;
-      } else {
-        reply = `Thank you for your interest in strategic consulting with Aniket Dubey. With 10+ years of experience in business growth, strategic content marketing, and managed IT infrastructure, Aniket works closely with founders and business owners to build resilient, scalable operations.\n\nFeel free to ask about specific services, Aniket's 4-step consulting approach, or book a consultation directly at https://scheduler.zoom.us/aniketdubey/consultation.`;
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-3.8-flash",
+          contents: message,
+          config: {
+            systemInstruction,
+          },
+        });
+        reply = response.text || "";
+      } catch (geminiErr: any) {
+        const errMsg = geminiErr?.message || String(geminiErr);
+        // Gracefully handle free tier disabled / 403 / billing permission errors
+        if (errMsg.includes("403") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("free tier") || errMsg.includes("billing")) {
+          console.warn("[Chat Advisory] Gemini API project quota/billing not active; serving curated advisory response.");
+        } else {
+          console.warn("[Chat Advisory] Gemini API request error:", errMsg);
+        }
       }
-
-      return sendJsonResponse(res, 200, { success: true, reply });
     }
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: message,
-      config: {
-        systemInstruction,
-        temperature: 0.7,
-      },
-    });
-
-    const reply = response.text || "I'd be glad to assist you with your business strategy. Please feel free to schedule a consultation or reach Aniket Dubey directly at email@aniketdubey.com.";
+    if (!reply) {
+      reply = generateConsultantKnowledgeReply(message);
+    }
 
     return sendJsonResponse(res, 200, { success: true, reply });
   } catch (err: any) {
-    console.error("Vercel Chat API Error:", err);
     return sendJsonResponse(res, 200, {
       success: true,
-      reply: "Thank you for reaching out. Aniket Dubey offers tailored business consulting, strategic content marketing, and managed IT services for businesses ready to scale. Please feel free to call +91 9932979875 or submit the consultation form on this page.",
+      reply: generateConsultantKnowledgeReply(""),
     });
   }
 }

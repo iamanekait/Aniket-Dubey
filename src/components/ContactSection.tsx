@@ -249,17 +249,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
   };
 
   return (
-    <section id="contact" className="py-20 lg:py-28 bg-slate-950 border-t border-slate-800/80 relative">
+    <section id="contact" className="py-20 lg:py-28 bg-[#080808] border-t border-[#292929] relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="max-w-3xl mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-950/80 border border-blue-800/40 text-blue-400 text-xs font-bold uppercase tracking-wider mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-[#D15301]/10 border border-[#D15301]/30 text-[#D15301] text-xs font-bold uppercase tracking-wider mb-4">
             Contact & Consultation
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight mb-4">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#F5F2ED] tracking-tight leading-tight mb-4">
             Connect Directly with Aniket Dubey.
           </h2>
-          <p className="text-base sm:text-lg text-slate-400 leading-relaxed">
+          <p className="text-base sm:text-lg text-[#A6A6A6] leading-relaxed">
             Schedule an initial consultation to discuss your business strategy, content marketing initiatives, or managed IT requirements.
           </p>
         </div>
@@ -267,31 +267,31 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
         <div className="grid lg:grid-cols-12 gap-12">
           {/* Left Column: Direct Business Contact Information & Map Directions */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
+            <div className="bg-[#121212] border border-[#292929] rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">{CONSULTANT_INFO.name}</h3>
-                <p className="text-sm font-semibold text-blue-400 mb-4">{CONSULTANT_INFO.title}</p>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <h3 className="text-xl font-bold text-[#F5F2ED] mb-1">{CONSULTANT_INFO.name}</h3>
+                <p className="text-sm font-semibold text-[#D15301] mb-4">{CONSULTANT_INFO.title}</p>
+                <p className="text-xs text-[#A6A6A6] leading-relaxed">
                   Available for in-person advisory in Durgapur and across West Bengal, as well as comprehensive remote strategic consulting pan-India.
                 </p>
               </div>
 
-              <div className="space-y-4 pt-4 border-t border-slate-800">
+              <div className="space-y-4 pt-4 border-t border-[#292929]">
                 {/* Address with Map Directions */}
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <MapPin className="w-4 h-4 text-blue-400" />
+                  <div className="w-9 h-9 rounded-lg bg-[#080808] border border-[#292929] flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="w-4 h-4 text-[#D15301]" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Office Location</p>
-                    <p className="text-sm text-slate-200 mt-0.5 leading-snug">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#A6A6A6]">Office Location</p>
+                    <p className="text-sm text-[#F5F2ED] mt-0.5 leading-snug">
                       {CONSULTANT_INFO.address}
                     </p>
                     <a
                       href={CONSULTANT_INFO.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 mt-2 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D15301] hover:text-[#B94700] mt-2 transition-colors"
                       id="contact-get-directions-btn"
                     >
                       <Navigation className="w-3 h-3" />
@@ -302,80 +302,80 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
 
                 {/* Phone */}
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <Phone className="w-4 h-4 text-blue-400" />
+                  <div className="w-9 h-9 rounded-lg bg-[#080808] border border-[#292929] flex items-center justify-center shrink-0 mt-0.5">
+                    <Phone className="w-4 h-4 text-[#D15301]" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Direct Phone</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#A6A6A6]">Direct Phone</p>
                     <a
                       href={`tel:${CONSULTANT_INFO.phone}`}
-                      className="text-sm font-semibold text-slate-200 hover:text-blue-400 transition-colors mt-0.5 block"
+                      className="text-sm font-semibold text-[#F5F2ED] hover:text-[#D15301] transition-colors mt-0.5 block"
                       id="contact-phone-link"
                     >
                       {CONSULTANT_INFO.formattedPhone}
                     </a>
-                    <span className="text-[11px] text-slate-500">Mon – Sat for business inquiries</span>
+                    <span className="text-[11px] text-[#A6A6A6]/70">Mon – Sat for business inquiries</span>
                   </div>
                 </div>
 
                 {/* Email */}
                 <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <Mail className="w-4 h-4 text-blue-400" />
+                  <div className="w-9 h-9 rounded-lg bg-[#080808] border border-[#292929] flex items-center justify-center shrink-0 mt-0.5">
+                    <Mail className="w-4 h-4 text-[#D15301]" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Direct Email</p>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#A6A6A6]">Direct Email</p>
                     <a
                       href={`mailto:${CONSULTANT_INFO.email}`}
-                      className="text-sm font-semibold text-slate-200 hover:text-blue-400 transition-colors mt-0.5 block"
+                      className="text-sm font-semibold text-[#F5F2ED] hover:text-[#D15301] transition-colors mt-0.5 block"
                       id="contact-email-link"
                     >
                       {CONSULTANT_INFO.email}
                     </a>
-                    <span className="text-[11px] text-slate-500">Responses within 1-2 business days</span>
+                    <span className="text-[11px] text-[#A6A6A6]/70">Responses within 1-2 business days</span>
                   </div>
                 </div>
               </div>
 
               {/* Local Durgapur badge */}
-              <div className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800/80 text-xs text-slate-400">
-                <span className="font-semibold text-slate-300">Local Presence in Durgapur:</span>{' '}
+              <div className="p-3.5 bg-[#080808] rounded-xl border border-[#292929] text-xs text-[#A6A6A6]">
+                <span className="font-semibold text-[#F5F2ED]">Local Presence in Durgapur:</span>{' '}
                 Situated in Uttarpally, Benachity, providing local businesses and founders direct access to experienced strategic advisory.
               </div>
 
               {/* Direct Social Media Channels */}
-              <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800/80 space-y-3">
+              <div className="p-4 bg-[#080808] rounded-xl border border-[#292929] space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Social & Professional Channels</span>
-                  <span className="text-[10px] text-blue-400 font-medium">Direct Profiles</span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#A6A6A6]">Social & Professional Channels</span>
+                  <span className="text-[10px] text-[#D15301] font-medium">Direct Profiles</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5">
                   <a
                     href={CONSULTANT_INFO.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-950/40 text-slate-300 hover:text-white flex flex-col gap-1 transition-all group"
+                    className="p-3 rounded-lg bg-[#121212] border border-[#292929] hover:border-[#D15301]/50 hover:bg-[#D15301]/10 text-[#F5F2ED] flex flex-col gap-1 transition-all group"
                   >
                     <div className="flex items-center justify-between">
-                      <Linkedin className="w-4 h-4 text-blue-400" />
-                      <ExternalLink className="w-3 h-3 text-slate-600 group-hover:text-blue-400 transition-colors" />
+                      <Linkedin className="w-4 h-4 text-[#D15301]" />
+                      <ExternalLink className="w-3 h-3 text-[#A6A6A6] group-hover:text-[#D15301] transition-colors" />
                     </div>
-                    <span className="text-xs font-bold text-white mt-1">LinkedIn</span>
-                    <span className="text-[10px] text-slate-400 truncate">aniketdubey1996</span>
+                    <span className="text-xs font-bold text-[#F5F2ED] mt-1">LinkedIn</span>
+                    <span className="text-[10px] text-[#A6A6A6] truncate">aniketdubey1996</span>
                   </a>
 
                   <a
                     href={CONSULTANT_INFO.instagram}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-3 rounded-lg bg-slate-900/80 border border-slate-800 hover:border-pink-500/50 hover:bg-pink-950/30 text-slate-300 hover:text-white flex flex-col gap-1 transition-all group"
+                    className="p-3 rounded-lg bg-[#121212] border border-[#292929] hover:border-[#D15301]/50 hover:bg-[#D15301]/10 text-[#F5F2ED] flex flex-col gap-1 transition-all group"
                   >
                     <div className="flex items-center justify-between">
-                      <Instagram className="w-4 h-4 text-pink-400" />
-                      <ExternalLink className="w-3 h-3 text-slate-600 group-hover:text-pink-400 transition-colors" />
+                      <Instagram className="w-4 h-4 text-[#D15301]" />
+                      <ExternalLink className="w-3 h-3 text-[#A6A6A6] group-hover:text-[#D15301] transition-colors" />
                     </div>
-                    <span className="text-xs font-bold text-white mt-1">Instagram</span>
-                    <span className="text-[10px] text-slate-400 truncate">@iamaniketdubey</span>
+                    <span className="text-xs font-bold text-[#F5F2ED] mt-1">Instagram</span>
+                    <span className="text-[10px] text-[#A6A6A6] truncate">@iamaniketdubey</span>
                   </a>
                 </div>
               </div>
@@ -384,20 +384,20 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
 
           {/* Right Column: Professional Enquiry / Consultation Form */}
           <div className="lg:col-span-7">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl relative">
-              <h3 className="text-xl font-bold text-white mb-2">Schedule a Consultation</h3>
-              <p className="text-xs sm:text-sm text-slate-400 mb-6">
+            <div className="bg-[#121212] border border-[#292929] rounded-2xl p-6 sm:p-8 shadow-xl relative">
+              <h3 className="text-xl font-bold text-[#F5F2ED] mb-2">Schedule a Consultation</h3>
+              <p className="text-xs sm:text-sm text-[#A6A6A6] mb-6">
                 Fill out the form below with your requirements. Aniket will review your details personally before scheduling an initial exploratory call.
               </p>
 
               {submitResult ? (
-                <div className="p-6 sm:p-7 bg-slate-950 border border-emerald-500/40 rounded-xl space-y-5 shadow-2xl">
+                <div className="p-6 sm:p-7 bg-[#080808] border border-emerald-500/40 rounded-xl space-y-5 shadow-2xl">
                   <div className="flex items-start gap-3.5">
                     <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0 text-emerald-400">
                       <CheckCircle2 className="w-6 h-6" />
                     </div>
                     <div>
-                      <h4 className="text-base sm:text-lg font-bold text-white">
+                      <h4 className="text-base sm:text-lg font-bold text-[#F5F2ED]">
                         Enquiry Transmitted & Routed Successfully
                       </h4>
                       <p className="text-xs text-emerald-400 font-medium mt-0.5">
@@ -406,7 +406,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                     </div>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed bg-slate-900/60 p-3.5 rounded-lg border border-slate-800">
+                  <p className="text-xs sm:text-sm text-[#F5F2ED]/90 leading-relaxed bg-[#121212] p-3.5 rounded-lg border border-[#292929]">
                     {scrubSecondaryEmail(submitResult.message)}
                   </p>
 
@@ -427,22 +427,22 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
 
                   {/* Summary receipt box */}
                   {submitResult.submittedData && (
-                    <div className="p-4 rounded-xl bg-slate-900/90 border border-slate-800 text-xs space-y-2">
-                      <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                        <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px]">Reference ID</span>
-                        <span className="font-mono text-blue-400 font-semibold">{submitResult.referenceId}</span>
+                    <div className="p-4 rounded-xl bg-[#121212] border border-[#292929] text-xs space-y-2">
+                      <div className="flex items-center justify-between pb-2 border-b border-[#292929]">
+                        <span className="font-bold text-[#A6A6A6] uppercase tracking-wider text-[10px]">Reference ID</span>
+                        <span className="font-mono text-[#D15301] font-semibold">{submitResult.referenceId}</span>
                       </div>
-                      <div className="grid sm:grid-cols-2 gap-2 pt-1 text-slate-300">
+                      <div className="grid sm:grid-cols-2 gap-2 pt-1 text-[#F5F2ED]/90">
                         <div>
-                          <span className="text-slate-500 block text-[10px] uppercase">Client Name</span>
+                          <span className="text-[#A6A6A6] block text-[10px] uppercase">Client Name</span>
                           <span className="font-medium text-white">{submitResult.submittedData.name}</span>
                         </div>
                         <div>
-                          <span className="text-slate-500 block text-[10px] uppercase">Organization</span>
+                          <span className="text-[#A6A6A6] block text-[10px] uppercase">Organization</span>
                           <span className="font-medium text-white">{submitResult.submittedData.business || 'Individual'}</span>
                         </div>
                         <div>
-                          <span className="text-slate-500 block text-[10px] uppercase">Email</span>
+                          <span className="text-[#A6A6A6] block text-[10px] uppercase">Email</span>
                           <span className="font-medium text-white">
                             {/aniketdubey\.?2012@gmail\.com/i.test(submitResult.submittedData.email)
                               ? 'email@aniketdubey.com'
@@ -450,21 +450,21 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                           </span>
                         </div>
                         <div>
-                          <span className="text-slate-500 block text-[10px] uppercase">Service</span>
-                          <span className="font-medium text-blue-400">{submitResult.submittedData.service}</span>
+                          <span className="text-[#A6A6A6] block text-[10px] uppercase">Service</span>
+                          <span className="font-medium text-[#D15301]">{submitResult.submittedData.service}</span>
                         </div>
                       </div>
                     </div>
                   )}
 
                   {/* Recipient verification badge */}
-                  <div className="p-3 bg-blue-950/40 border border-blue-800/40 rounded-lg text-xs space-y-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400 block">
+                  <div className="p-3 bg-[#D15301]/10 border border-[#D15301]/30 rounded-lg text-xs space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#D15301] block">
                       Target Destination Inbox
                     </span>
                     <div className="flex flex-wrap gap-2">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-slate-900 border border-slate-700 text-slate-200 text-xs font-mono">
-                        <Mail className="w-3 h-3 text-blue-400" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#080808] border border-[#292929] text-[#F5F2ED] text-xs font-mono">
+                        <Mail className="w-3 h-3 text-[#D15301]" />
                         email@aniketdubey.com
                       </span>
                     </div>
@@ -477,7 +477,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         href={submitResult.mailtoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-600/20 cursor-pointer min-h-[44px]"
+                        className="inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-[#D15301] hover:bg-[#B94700] text-white text-xs font-semibold uppercase tracking-wider rounded-xl transition-all shadow-md shadow-[#D15301]/20 cursor-pointer min-h-[44px]"
                       >
                         <Mail className="w-3.5 h-3.5" />
                         <span>Send Copy via Email Client</span>
@@ -487,7 +487,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                     <button
                       type="button"
                       onClick={() => setSubmitResult(null)}
-                      className="inline-flex items-center justify-center py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer min-h-[44px]"
+                      className="inline-flex items-center justify-center py-2.5 px-4 bg-[#121212] hover:bg-[#171717] text-[#A6A6A6] hover:text-white border border-[#292929] text-xs font-semibold uppercase tracking-wider rounded-xl transition-all cursor-pointer min-h-[44px]"
                     >
                       Submit Another Enquiry
                     </button>
@@ -507,7 +507,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                             href={fallbackMailtoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all shadow text-xs min-h-[38px]"
+                            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#D15301] hover:bg-[#B94700] text-white font-semibold transition-all shadow text-xs min-h-[38px]"
                           >
                             <Mail className="w-3.5 h-3.5" />
                             <span>Launch Email App (Pre-filled)</span>
@@ -517,7 +517,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         <button
                           type="button"
                           onClick={handleCopyDetails}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-medium transition-all text-xs min-h-[38px] cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#080808] hover:bg-[#121212] border border-[#292929] text-[#F5F2ED] font-medium transition-all text-xs min-h-[38px] cursor-pointer"
                         >
                           {copied ? (
                             <>
@@ -526,16 +526,16 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                             </>
                           ) : (
                             <>
-                              <Copy className="w-3.5 h-3.5 text-slate-400" />
+                              <Copy className="w-3.5 h-3.5 text-[#A6A6A6]" />
                               <span>Copy Enquiry Details</span>
                             </>
                           )}
                         </button>
                         <a
                           href="tel:+919932979875"
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-medium transition-all text-xs min-h-[38px]"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#080808] hover:bg-[#121212] border border-[#292929] text-[#F5F2ED] font-medium transition-all text-xs min-h-[38px]"
                         >
-                          <Phone className="w-3.5 h-3.5 text-blue-400" />
+                          <Phone className="w-3.5 h-3.5 text-[#D15301]" />
                           <span>Call +91 9932979875</span>
                         </a>
                       </div>
@@ -545,7 +545,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Name */}
                     <div>
-                      <label htmlFor="form-name" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                      <label htmlFor="form-name" className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-1.5">
                         Full Name *
                       </label>
                       <input
@@ -556,13 +556,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="e.g. Rahul Sharma"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
+                        className="w-full px-3.5 py-2.5 bg-[#080808] border border-[#292929] rounded-lg text-base sm:text-sm text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-2 focus:ring-[#D15301] focus:border-[#D15301] transition-all min-h-[44px]"
                       />
                     </div>
 
                     {/* Business/Company */}
                     <div>
-                      <label htmlFor="form-business" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                      <label htmlFor="form-business" className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-1.5">
                         Business / Company
                       </label>
                       <input
@@ -572,7 +572,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.business}
                         onChange={handleChange}
                         placeholder="e.g. Apex Tech Solutions"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
+                        className="w-full px-3.5 py-2.5 bg-[#080808] border border-[#292929] rounded-lg text-base sm:text-sm text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-2 focus:ring-[#D15301] focus:border-[#D15301] transition-all min-h-[44px]"
                       />
                     </div>
                   </div>
@@ -580,7 +580,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                   <div className="grid sm:grid-cols-2 gap-4">
                     {/* Email */}
                     <div>
-                      <label htmlFor="form-email" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                      <label htmlFor="form-email" className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-1.5">
                         Business Email *
                       </label>
                       <input
@@ -591,13 +591,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="name@company.com"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
+                        className="w-full px-3.5 py-2.5 bg-[#080808] border border-[#292929] rounded-lg text-base sm:text-sm text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-2 focus:ring-[#D15301] focus:border-[#D15301] transition-all min-h-[44px]"
                       />
                     </div>
 
                     {/* Phone */}
                     <div>
-                      <label htmlFor="form-phone" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                      <label htmlFor="form-phone" className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-1.5">
                         Contact Phone
                       </label>
                       <input
@@ -607,14 +607,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+91 98765 43210"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
+                        className="w-full px-3.5 py-2.5 bg-[#080808] border border-[#292929] rounded-lg text-base sm:text-sm text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-2 focus:ring-[#D15301] focus:border-[#D15301] transition-all min-h-[44px]"
                       />
                     </div>
                   </div>
 
                   {/* Service Required */}
                   <div>
-                    <label htmlFor="form-service" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                    <label htmlFor="form-service" className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-1.5">
                       Primary Service Required
                     </label>
                     <select
@@ -622,7 +622,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all min-h-[44px]"
+                      className="w-full px-3.5 py-2.5 bg-[#080808] border border-[#292929] rounded-lg text-base sm:text-sm text-[#F5F2ED] focus:outline-none focus:ring-2 focus:ring-[#D15301] focus:border-[#D15301] transition-all min-h-[44px]"
                     >
                       <option value="General Strategic Consulting">General Strategic Consulting / Exploratory</option>
                       {SERVICES.map((s) => (
@@ -636,7 +636,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
 
                   {/* Message */}
                   <div>
-                    <label htmlFor="form-message" className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                    <label htmlFor="form-message" className="block text-xs font-bold uppercase tracking-wider text-[#F5F2ED] mb-1.5">
                       Business Overview & Key Objectives *
                     </label>
                     <textarea
@@ -647,10 +647,9 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="Briefly describe your company, your key growth challenges, and what you hope to achieve through consulting..."
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-base sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-y"
+                      className="w-full px-3.5 py-2.5 bg-[#080808] border border-[#292929] rounded-lg text-base sm:text-sm text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-2 focus:ring-[#D15301] focus:border-[#D15301] transition-all resize-y"
                     />
                   </div>
-
 
                   {/* Submit Button */}
                   <div className="pt-1">
@@ -658,7 +657,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                       type="submit"
                       disabled={submitting}
                       id="form-submit-btn"
-                      className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-blue-600/20 disabled:opacity-60 cursor-pointer"
+                      className="w-full inline-flex items-center justify-center gap-2 py-3.5 px-6 bg-[#D15301] hover:bg-[#B94700] active:scale-95 text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-[#D15301]/20 disabled:opacity-60 cursor-pointer"
                     >
                       {submitting ? (
                         <>
@@ -672,20 +671,20 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         </>
                       )}
                     </button>
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2.5 border-t border-slate-800/80 text-[11px] text-slate-400">
-                      <span className="flex items-center gap-1.5 text-slate-400">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-2.5 border-t border-[#292929] text-[11px] text-[#A6A6A6]">
+                      <span className="flex items-center gap-1.5 text-[#A6A6A6]">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                        Direct Destination: <span className="font-mono text-slate-200">email@aniketdubey.com</span>
+                        Direct Destination: <span className="font-mono text-[#F5F2ED]">email@aniketdubey.com</span>
                       </span>
                       <a
                         href="mailto:email@aniketdubey.com?subject=Direct%20Consultation%20Enquiry%20-%20Dubey%20Conglomerate"
-                        className="text-blue-400 hover:text-blue-300 font-semibold inline-flex items-center gap-1 transition-colors"
+                        className="text-[#D15301] hover:text-[#B94700] font-semibold inline-flex items-center gap-1 transition-colors"
                       >
                         <Mail className="w-3 h-3" />
                         <span>Prefer direct email? Click here</span>
                       </a>
                     </div>
-                    <p className="text-[11px] text-slate-500 text-center mt-2">
+                    <p className="text-[11px] text-[#A6A6A6]/60 text-center mt-2">
                       Strict confidentiality assured. Information is never shared with third parties.
                     </p>
                   </div>
