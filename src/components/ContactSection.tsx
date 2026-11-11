@@ -30,6 +30,8 @@ const scrubSecondaryEmail = (text?: string): string => {
 
 export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFormData }) => {
   const [submitting, setSubmitting] = useState(false);
+  const [honeypot, setHoneypot] = useState('');
+  const renderTimeRef = React.useRef<number>(Date.now());
   const [submitResult, setSubmitResult] = useState<{
     success: boolean;
     referenceId?: string;
@@ -38,6 +40,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     mailtoUrl?: string;
     submittedData?: ContactFormData;
     needsActivation?: boolean;
+    delivered?: boolean;
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [fallbackMailtoUrl, setFallbackMailtoUrl] = useState<string | null>(null);
@@ -89,8 +92,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
       setErrorMsg('Please provide a valid email address.');
       return;
     }
-    if (!formData.message.trim()) {
-      setErrorMsg('Please provide details about your business objectives or challenges.');
+    if (!formData.message.trim() || formData.message.trim().length < 10) {
+      setErrorMsg('Please provide details about your business objectives or challenges (at least 10 characters).');
       return;
     }
 
@@ -101,7 +104,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
       ? 'email@aniketdubey.com'
       : snapshot.email;
 
-    const subjectStr = `[Consultation Enquiry] ${snapshot.name} (${snapshot.business || 'Individual'}) - ${snapshot.service}`;
     const mailtoSubject = encodeURIComponent(`Consultation Request: ${snapshot.name} - ${snapshot.service}`);
     const mailtoBody = encodeURIComponent(
       `Consultation Request Details:\n\n` +
@@ -111,141 +113,108 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
         `Phone: ${snapshot.phone || 'Not provided'}\n` +
         `Service Required: ${snapshot.service}\n\n` +
         `Message & Objectives:\n${snapshot.message}\n\n` +
-        `Routed To: email@aniketdubey.com`
+        `Target Destination: email@aniketdubey.com\n` +
+        `Sent via Dubey Conglomerate Portal (aniketdubey.com)`
     );
     const backupMailtoUrl = `mailto:email@aniketdubey.com?subject=${mailtoSubject}&body=${mailtoBody}`;
 
-    let isSuccess = false;
-    let needsActivationFlag = false;
-    let successMessage = '';
-    let returnedRefId = `ENQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    // Payload routed exclusively through secure server endpoint
+    const payload = {
+      ...formData,
+      website_hp: honeypot, // Honeypot field for spam prevention
+      _rendered_at: renderTimeRef.current, // Form load timestamp for bot detection
+    };
 
-    // 1. Primary Attempt: Send to /api/contact (Works in local server & Vercel serverless /api/contact.ts)
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        try {
-          const data = await response.json();
-          if (data && data.success) {
-            isSuccess = true;
-            returnedRefId = data.referenceId || returnedRefId;
-            needsActivationFlag = Boolean(data.needsActivation);
-            successMessage =
-              data.message ||
-              'Your enquiry has been received and routed to email@aniketdubey.com.';
-          }
-        } catch (parseErr) {
-          console.warn('Failed to parse /api/contact response as JSON:', parseErr);
-        }
-      }
-    } catch (primaryErr) {
-      console.warn('Primary /api/contact request encountered an issue, trying direct fallback relay...', primaryErr);
-    }
-
-    // 2. Secondary Attempt: Direct client relay to email@aniketdubey.com
-    if (!isSuccess) {
+      let data: any = null;
       try {
-        const relayRes = await fetch('https://formsubmit.co/ajax/email@aniketdubey.com', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-          body: JSON.stringify({
-            _subject: subjectStr,
-            _replyto: snapshot.email,
-            _captcha: 'false',
-            _template: 'table',
-            'Reference ID': returnedRefId,
-            'Client Name': snapshot.name,
-            'Company / Business': snapshot.business || 'Not specified',
-            'Client Email': snapshot.email,
-            'Contact Phone': snapshot.phone || 'Not provided',
-            'Requested Service': snapshot.service,
-            'Objectives & Message': snapshot.message,
-            'Target Recipient': 'email@aniketdubey.com',
-          }),
+        data = await response.json();
+      } catch {
+        // Non-JSON response
+      }
+
+      // CASE 1: 200 OK — Email was verified delivered via configured provider
+      if (response.ok && data?.success && data?.delivered) {
+        setSubmitResult({
+          success: true,
+          delivered: true,
+          referenceId: data.referenceId,
+          needsActivation: false,
+          message:
+            data.message ||
+            'Your consultation request has been delivered to email@aniketdubey.com. Aniket Dubey will review your business requirements personally.',
+          recipients: ['email@aniketdubey.com'],
+          mailtoUrl: data.mailtoUrl || backupMailtoUrl,
+          submittedData: snapshot,
         });
 
-        const rawText = await relayRes.text().catch(() => '');
-        let relayData: any = null;
-        try {
-          relayData = JSON.parse(rawText);
-        } catch {
-          // Body may be HTML or text
-        }
-
-        const hasActivationNotice =
-          (relayData?.message && typeof relayData.message === 'string' && relayData.message.toLowerCase().includes('activation')) ||
-          rawText.toLowerCase().includes('needs activation') ||
-          rawText.toLowerCase().includes('activate your form') ||
-          rawText.toLowerCase().includes('activate form');
-
-        const relayOk = Boolean(
-          relayRes.ok ||
-          relayData?.success === true ||
-          relayData?.success === 'true' ||
-          hasActivationNotice
-        );
-
-        if (relayOk) {
-          isSuccess = true;
-          if (hasActivationNotice) {
-            needsActivationFlag = true;
-            successMessage =
-              "Enquiry recorded! FormSubmit sent a one-time activation email to email@aniketdubey.com. Please check your inbox (or Spam folder) and click 'Activate Form' once to enable automatic forwarding.";
-          } else {
-            successMessage =
-              'Your enquiry has been securely received and dispatched to email@aniketdubey.com.';
-          }
-        }
-      } catch (relayErr) {
-        console.error('Relay fallback error:', relayErr);
+        // Reset form on verified delivery
+        setFormData({
+          name: '',
+          business: '',
+          email: '',
+          phone: '',
+          service: 'General Strategic Consulting',
+          message: '',
+        });
+        setHoneypot('');
+        renderTimeRef.current = Date.now();
       }
-    }
-
-    if (isSuccess) {
-      const sanitizedSnapshot: ContactFormData = {
-        ...snapshot,
-        email: /aniketdubey\.?2012@gmail\.com/i.test(snapshot.email)
-          ? 'email@aniketdubey.com'
-          : scrubSecondaryEmail(snapshot.email),
-      };
-
-      setSubmitResult({
-        success: true,
-        referenceId: returnedRefId,
-        needsActivation: needsActivationFlag,
-        message: scrubSecondaryEmail(
-          successMessage ||
-          'Your enquiry has been received and routed to email@aniketdubey.com.'
-        ),
-        recipients: ['email@aniketdubey.com'],
-        mailtoUrl: scrubSecondaryEmail(backupMailtoUrl),
-        submittedData: sanitizedSnapshot,
-      });
-      // Reset form
-      setFormData({
-        name: '',
-        business: '',
-        email: '',
-        phone: '',
-        service: 'General Strategic Consulting',
-        message: '',
-      });
-    } else {
-      setFallbackMailtoUrl(backupMailtoUrl);
+      // CASE 2: 202 Accepted — Pending one-time inbox activation
+      else if (response.status === 202 || data?.needsActivation) {
+        setSubmitResult({
+          success: true,
+          delivered: false,
+          referenceId: data?.referenceId || `ENQ-${Date.now()}`,
+          needsActivation: true,
+          message:
+            data?.message ||
+            'Enquiry recorded! A one-time activation confirmation email was sent to email@aniketdubey.com. Please check your inbox and click "Activate Form" once to enable automatic forwarding.',
+          recipients: ['email@aniketdubey.com'],
+          mailtoUrl: data?.mailtoUrl || backupMailtoUrl,
+          submittedData: snapshot,
+        });
+        // Clear form
+        setFormData({
+          name: '',
+          business: '',
+          email: '',
+          phone: '',
+          service: 'General Strategic Consulting',
+          message: '',
+        });
+      }
+      // CASE 3: 429 Rate Limit
+      else if (response.status === 429) {
+        setErrorMsg(data?.error || 'Please wait a few seconds before submitting another request.');
+      }
+      // CASE 4: 409 Duplicate
+      else if (response.status === 409) {
+        setErrorMsg(data?.error || 'Duplicate submission detected. Your enquiry has already been transmitted.');
+      }
+      // CASE 5: 503 / 500 / Delivery failure
+      else {
+        const errorDetail =
+          data?.error ||
+          'Automated email dispatch is currently unconfigured on the server. Please launch your email client with all details pre-filled or contact email@aniketdubey.com directly.';
+        setErrorMsg(errorDetail);
+        setFallbackMailtoUrl(data?.mailtoUrl || backupMailtoUrl);
+      }
+    } catch (networkErr: any) {
+      console.error('Contact API network error:', networkErr);
       setErrorMsg(
-        'Automated dispatch was delayed or blocked. You can immediately launch your email client with all details pre-filled or copy the details below.'
+        'Unable to connect to the consultation server. Please click below to send your enquiry directly via your email client, or copy the details.'
       );
+      setFallbackMailtoUrl(backupMailtoUrl);
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   return (
@@ -495,6 +464,18 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4" id="consultation-enquiry-form">
+                  {/* Invisible Honeypot anti-spam field */}
+                  <input
+                    type="text"
+                    name="website_hp"
+                    id="website_hp"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                    className="sr-only absolute -left-[9999px] -top-[9999px] w-0 h-0 opacity-0 pointer-events-none"
+                  />
                   {errorMsg && (
                     <div className="p-4 rounded-xl bg-red-950/70 border border-red-700/60 text-red-200 text-xs space-y-3 shadow-lg">
                       <div className="flex items-start gap-2.5 font-medium text-red-300">
