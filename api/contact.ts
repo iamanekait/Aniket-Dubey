@@ -41,11 +41,38 @@ function maskKey(key?: string): string {
   return `${key.slice(0, 4)}...${key.slice(-3)}`;
 }
 
-// Strip surrounding quotes ("..." or '...') and whitespace
+// Strip surrounding quotes ("..." or '...') and whitespace safely without stripping leading quote of display names
 function cleanVal(val?: string): string | undefined {
   if (!val) return undefined;
-  const trimmed = val.trim().replace(/^["']|["']$/g, "").trim();
+  let trimmed = val.trim();
+  // Strip balanced outer quotes repeatedly: ""value"" or "value" or 'value'
+  while (
+    (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2)
+  ) {
+    trimmed = trimmed.slice(1, -1).trim();
+  }
   return trimmed.length > 0 ? trimmed : undefined;
+}
+
+// Normalize From header to guaranteed valid RFC 5322 format: "Display Name" <email@domain>
+function normalizeFrom(rawFrom?: string, defaultUser?: string): string {
+  if (!rawFrom) {
+    return `"Aniket Dubey Business Advisory" <${defaultUser || TARGET_RECIPIENT_EMAIL}>`;
+  }
+  const cleaned = rawFrom.trim();
+  const match = cleaned.match(/^(.*?)\s*<([^>]+)>/);
+  if (match) {
+    const rawName = match[1].replace(/["'\\]/g, "").trim();
+    const emailAddr = match[2].replace(/["'\s\\]/g, "").trim();
+    const displayName = rawName || "Aniket Dubey Business Advisory";
+    return `"${displayName}" <${emailAddr}>`;
+  }
+  const bareEmail = cleaned.replace(/["'\s\\]/g, "");
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bareEmail)) {
+    return `"Aniket Dubey Business Advisory" <${bareEmail}>`;
+  }
+  return cleaned.replace(/\\/g, "").replace(/"{2,}/g, '"');
 }
 
 /**
@@ -131,12 +158,12 @@ async function getRequestBody(req: any): Promise<any> {
       clearTimeout(timeout);
       if (!raw || !raw.trim()) {
         resolve({});
-        return;
-      }
-      try {
-        resolve(JSON.parse(raw));
-      } catch {
-        resolve({});
+      } else {
+        try {
+          resolve(JSON.parse(raw));
+        } catch {
+          resolve({});
+        }
       }
     });
     req.on("error", () => {
@@ -175,7 +202,7 @@ function getSmtpConfig() {
   const host = resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "MAIL_SERVER", "EMAIL_HOST");
   const portRaw = resolveEnv("SMTP_PORT", "MAIL_PORT", "EMAIL_PORT");
   const secureRaw = resolveEnv("SMTP_SECURE", "MAIL_SECURE", "EMAIL_SECURE")?.toLowerCase();
-  const user = resolveEnv(
+  const rawUser = resolveEnv(
     "SMTP_USER",
     "SMTP_USERNAME",
     "MAIL_USER",
@@ -192,20 +219,31 @@ function getSmtpConfig() {
     "GMAIL_APP_PASS",
     "GMAIL_APP_PASSWORD"
   );
-  const from = resolveEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM");
+  const fromRaw = resolveEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM");
 
-  if (!host || !user || !rawPass) {
+  if (!host || !rawUser || !rawPass) {
     return null;
   }
 
-  const port = portRaw ? parseInt(portRaw, 10) : 587;
-  // If explicitly 'true'/'false', respect it; otherwise default: true if 465, false if 587
-  const secure = secureRaw === "true" ? true : secureRaw === "false" ? false : port === 465;
+  // Sanitize port (strip any quotes, spaces, or non-digits)
+  const portDigits = portRaw ? portRaw.replace(/[^0-9]/g, "") : "";
+  const parsedPort = portDigits ? parseInt(portDigits, 10) : NaN;
+  const secure = secureRaw === "true" ? true : secureRaw === "false" ? false : parsedPort === 465;
+  const port = !isNaN(parsedPort) && parsedPort > 0 ? parsedPort : (secure ? 465 : 587);
 
-  // Sanitize password (strips accidental spaces from Google 16-character App Passwords "xxxx xxxx xxxx xxxx")
-  const pass = (host.includes("gmail.com") || user.includes("@gmail.com"))
-    ? rawPass.replace(/\s+/g, "")
-    : rawPass;
+  // Strip any accidental spaces, quotes, or slashes from username
+  const user = rawUser.replace(/[\s"'\\]+/g, "");
+
+  // Sanitize password:
+  // For Gmail/Google Workspace, Google 16-character App Passwords are 16 letters (e.g. "abcd efgh ijkl mnop" or with quotes).
+  // Stripping all whitespace, quotes, and backslashes ensures the clean 16-character key.
+  const isGoogle = host.includes("gmail.com") || user.includes("@gmail.com");
+  const pass = isGoogle
+    ? rawPass.replace(/[\s"'\\]+/g, "")
+    : rawPass.replace(/^["']+|["']+$/g, "").trim();
+
+  // Normalize From header to guaranteed valid RFC 5322 format
+  const from = normalizeFrom(fromRaw, user);
 
   return {
     host,
@@ -213,7 +251,7 @@ function getSmtpConfig() {
     secure,
     user,
     pass,
-    from: from || `"Aniket Dubey Business Advisory" <${user}>`,
+    from,
   };
 }
 
@@ -241,23 +279,40 @@ async function sendViaSmtp(
     `[SMTP Dispatch] Connecting to ${config.host}:${config.port} | Secure: ${config.secure} | User: ${maskUser(config.user)} | From: ${config.from}`
   );
 
-  const transporter = nodemailer.createTransport({
-    host: config.host,
-    port: config.port,
-    secure: config.secure,
-    auth: {
-      user: config.user,
-      pass: config.pass,
-    },
-    // Serverless-optimized connection timeouts to prevent hanging lambdas
-    connectionTimeout: 8000,
-    greetingTimeout: 5000,
-    socketTimeout: 10000,
-    tls: {
-      rejectUnauthorized: false,
-      minVersion: "TLSv1.2",
-    },
-  });
+  const isGmail = config.host.includes("gmail.com") || config.user.includes("@gmail.com");
+
+  const transporter = nodemailer.createTransport(
+    isGmail
+      ? {
+          service: "gmail",
+          auth: {
+            user: config.user,
+            pass: config.pass,
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 6000,
+          socketTimeout: 15000,
+          tls: {
+            rejectUnauthorized: false,
+          },
+        }
+      : {
+          host: config.host,
+          port: config.port,
+          secure: config.secure,
+          auth: {
+            user: config.user,
+            pass: config.pass,
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 6000,
+          socketTimeout: 15000,
+          tls: {
+            rejectUnauthorized: false,
+            minVersion: "TLSv1.2",
+          },
+        }
+  );
 
   try {
     // Explicitly await dispatch
@@ -280,9 +335,16 @@ async function sendViaSmtp(
     const msg = smtpErr.message || String(smtpErr);
     console.error(`[SMTP Failure] Host: ${config.host}:${config.port} | Code: ${code} | Error: ${msg}`);
 
+    let guidance = "";
+    if (code === "EAUTH" || /535|BadCredentials/i.test(msg)) {
+      guidance = isGmail
+        ? ` Google rejected credentials for ${maskUser(config.user)}. Note: Google requires a dedicated 16-character App Password (not your standard login password). In your Google Account, visit Security -> 2-Step Verification -> App Passwords, generate a 16-letter password, and update SMTP_PASS in Vercel.`
+        : " Authentication failed. Verify that SMTP_USER and SMTP_PASS match your email provider's credentials.";
+    }
+
     return {
       success: false,
-      error: msg,
+      error: msg + (guidance ? ` [Fix Action:${guidance}]` : ""),
       errorCode: code,
     };
   }
