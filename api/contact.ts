@@ -22,7 +22,7 @@ interface SubmissionRecord {
 }
 const recentSubmissions = new Map<string, SubmissionRecord>();
 
-// Helper to mask sensitive credentials in server logs
+// Helper to mask sensitive credentials in server logs & diagnostics
 function maskUser(user?: string): string {
   if (!user) return "[NOT SET]";
   const parts = user.split("@");
@@ -39,6 +39,52 @@ function maskKey(key?: string): string {
   if (!key) return "[NOT SET]";
   if (key.length <= 6) return "***";
   return `${key.slice(0, 4)}...${key.slice(-3)}`;
+}
+
+// Strip surrounding quotes ("..." or '...') and whitespace
+function cleanVal(val?: string): string | undefined {
+  if (!val) return undefined;
+  const trimmed = val.trim().replace(/^["']|["']$/g, "").trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * Universal environment variable resolver:
+ * - Direct lookup
+ * - VITE_ and NEXT_PUBLIC_ prefixes
+ * - Case-insensitive match across all process.env keys
+ * - Quote and whitespace stripping
+ */
+function resolveEnv(...candidates: string[]): string | undefined {
+  const envKeys = Object.keys(process.env);
+
+  for (const name of candidates) {
+    // 1. Exact match
+    if (process.env[name]) {
+      const v = cleanVal(process.env[name]);
+      if (v) return v;
+    }
+    // 2. VITE_ prefix
+    const viteKey = `VITE_${name}`;
+    if (process.env[viteKey]) {
+      const v = cleanVal(process.env[viteKey]);
+      if (v) return v;
+    }
+    // 3. Case-insensitive search across all process.env keys
+    const lowerName = name.toLowerCase();
+    const foundKey = envKeys.find(
+      (k) =>
+        k.toLowerCase() === lowerName ||
+        k.toLowerCase() === `vite_${lowerName}` ||
+        k.toLowerCase() === `next_public_${lowerName}`
+    );
+    if (foundKey && process.env[foundKey]) {
+      const v = cleanVal(process.env[foundKey]);
+      if (v) return v;
+    }
+  }
+
+  return undefined;
 }
 
 // Safely parse request body across Vercel serverless, Express, and raw Node.js runtimes without hanging
@@ -117,27 +163,36 @@ function sanitize(str?: string): string {
 }
 
 /**
- * Strict parser for exact SMTP environment variables:
- * - SMTP_HOST
- * - SMTP_PORT
- * - SMTP_SECURE
- * - SMTP_USER
- * - SMTP_PASS
- * - SMTP_FROM
+ * Strict and resilient parser for exact SMTP environment variables:
+ * - SMTP_HOST / SMTP_SERVER / MAIL_HOST
+ * - SMTP_PORT / MAIL_PORT
+ * - SMTP_SECURE / MAIL_SECURE
+ * - SMTP_USER / SMTP_USERNAME / MAIL_USER
+ * - SMTP_PASS / SMTP_PASSWORD / MAIL_PASS / GMAIL_APP_PASS
+ * - SMTP_FROM / MAIL_FROM
  */
 function getSmtpConfig() {
-  const host = process.env.SMTP_HOST?.trim();
-  const portRaw = process.env.SMTP_PORT?.trim();
-  const secureRaw = process.env.SMTP_SECURE?.trim().toLowerCase();
-  const user = (process.env.SMTP_USER || process.env.GMAIL_USER || process.env.EMAIL_USER)?.trim();
-  const rawPass = (
-    process.env.SMTP_PASS ||
-    process.env.SMTP_PASSWORD ||
-    process.env.GMAIL_APP_PASS ||
-    process.env.GMAIL_APP_PASSWORD ||
-    process.env.EMAIL_PASS
-  )?.trim();
-  const from = (process.env.SMTP_FROM || process.env.EMAIL_FROM)?.trim();
+  const host = resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "MAIL_SERVER", "EMAIL_HOST");
+  const portRaw = resolveEnv("SMTP_PORT", "MAIL_PORT", "EMAIL_PORT");
+  const secureRaw = resolveEnv("SMTP_SECURE", "MAIL_SECURE", "EMAIL_SECURE")?.toLowerCase();
+  const user = resolveEnv(
+    "SMTP_USER",
+    "SMTP_USERNAME",
+    "MAIL_USER",
+    "MAIL_USERNAME",
+    "EMAIL_USER",
+    "GMAIL_USER"
+  );
+  const rawPass = resolveEnv(
+    "SMTP_PASS",
+    "SMTP_PASSWORD",
+    "MAIL_PASS",
+    "MAIL_PASSWORD",
+    "EMAIL_PASS",
+    "GMAIL_APP_PASS",
+    "GMAIL_APP_PASSWORD"
+  );
+  const from = resolveEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM");
 
   if (!host || !user || !rawPass) {
     return null;
@@ -242,11 +297,11 @@ async function sendViaResend(
   htmlContent: string,
   plainText: string
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const apiKey = resolveEnv("RESEND_API_KEY");
   if (!apiKey) return { success: false, error: "RESEND_API_KEY is not configured" };
 
   try {
-    const from = process.env.RESEND_FROM?.trim() || "Aniket Dubey Advisory <onboarding@resend.dev>";
+    const from = resolveEnv("RESEND_FROM") || "Aniket Dubey Advisory <onboarding@resend.dev>";
     console.log(`[Resend Dispatch] Sending email via Resend API to ${TARGET_RECIPIENT_EMAIL} (From: ${from})`);
 
     const res = await fetch("https://api.resend.com/emails", {
@@ -288,11 +343,11 @@ async function sendViaBrevo(
   htmlContent: string,
   plainText: string
 ): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const apiKey = process.env.BREVO_API_KEY?.trim();
+  const apiKey = resolveEnv("BREVO_API_KEY");
   if (!apiKey) return { success: false, error: "BREVO_API_KEY is not configured" };
 
   try {
-    const senderEmail = process.env.BREVO_SENDER?.trim() || TARGET_RECIPIENT_EMAIL;
+    const senderEmail = resolveEnv("BREVO_SENDER") || TARGET_RECIPIENT_EMAIL;
     console.log(`[Brevo Dispatch] Sending email via Brevo API to ${TARGET_RECIPIENT_EMAIL} (Sender: ${senderEmail})`);
 
     const res = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -420,8 +475,43 @@ export default async function handler(req: any, res: any) {
     return res.end();
   }
 
+  // GET: Public diagnostic check for verified configuration in Vercel
+  if (req.method === "GET") {
+    const smtp = getSmtpConfig();
+    const envKeys = Object.keys(process.env).filter((k) =>
+      /smtp|mail|email|resend|brevo|sendgrid/i.test(k)
+    );
+
+    return sendJsonResponse(res, 200, {
+      status: "online",
+      endpoint: "/api/contact",
+      targetRecipient: TARGET_RECIPIENT_EMAIL,
+      smtp: {
+        configured: Boolean(smtp),
+        hasHost: Boolean(resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "EMAIL_HOST")),
+        detectedHost: smtp ? smtp.host : undefined,
+        hasPort: Boolean(resolveEnv("SMTP_PORT", "MAIL_PORT", "EMAIL_PORT")),
+        detectedPort: smtp ? smtp.port : undefined,
+        hasSecure: Boolean(resolveEnv("SMTP_SECURE", "MAIL_SECURE", "EMAIL_SECURE")),
+        detectedSecure: smtp ? smtp.secure : undefined,
+        hasUser: Boolean(resolveEnv("SMTP_USER", "SMTP_USERNAME", "MAIL_USER", "EMAIL_USER")),
+        maskedUser: smtp ? maskUser(smtp.user) : undefined,
+        hasPass: Boolean(resolveEnv("SMTP_PASS", "SMTP_PASSWORD", "MAIL_PASS", "EMAIL_PASS")),
+        hasFrom: Boolean(resolveEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM")),
+        detectedFrom: smtp ? smtp.from : undefined,
+        matchingEnvKeysInProcess: envKeys,
+      },
+      resend: {
+        configured: Boolean(resolveEnv("RESEND_API_KEY")),
+      },
+      message: smtp
+        ? "SMTP is configured and ready to dispatch to email@aniketdubey.com."
+        : "SMTP is not yet detected in this environment. In Vercel -> Settings -> Environment Variables, ensure SMTP_HOST, SMTP_USER, and SMTP_PASS are assigned to 'Production', then trigger a Redeploy.",
+    });
+  }
+
   if (req.method !== "POST") {
-    return sendJsonResponse(res, 405, { success: false, error: "Method not allowed. Use POST." });
+    return sendJsonResponse(res, 405, { success: false, error: "Method not allowed. Use POST or GET." });
   }
 
   try {
@@ -646,13 +736,18 @@ Direct reply to this email will respond to: ${enquiry.email}
 
     // Diagnostic logging without exposing secrets
     const smtpCfg = getSmtpConfig();
+    const hasHost = Boolean(resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "EMAIL_HOST"));
+    const hasUser = Boolean(resolveEnv("SMTP_USER", "SMTP_USERNAME", "MAIL_USER", "EMAIL_USER"));
+    const hasPass = Boolean(resolveEnv("SMTP_PASS", "SMTP_PASSWORD", "MAIL_PASS", "EMAIL_PASS"));
+
     console.log(
-      `[Email Config Check] SMTP_HOST: ${smtpCfg?.host || "[NOT SET]"} | ` +
+      `[Email Config Check] SMTP_HOST: ${smtpCfg?.host || (hasHost ? "[FOUND_ALT]" : "[NOT SET]")} | ` +
       `SMTP_PORT: ${smtpCfg?.port || "[NOT SET]"} | ` +
       `SMTP_SECURE: ${smtpCfg ? smtpCfg.secure : "[NOT SET]"} | ` +
       `SMTP_USER: ${maskUser(smtpCfg?.user)} | ` +
-      `RESEND_API_KEY: ${maskKey(process.env.RESEND_API_KEY)} | ` +
-      `BREVO_API_KEY: ${maskKey(process.env.BREVO_API_KEY)}`
+      `SMTP_PASS: ${hasPass ? "[PRESENT]" : "[NOT SET]"} | ` +
+      `RESEND_API_KEY: ${maskKey(resolveEnv("RESEND_API_KEY"))} | ` +
+      `BREVO_API_KEY: ${maskKey(resolveEnv("BREVO_API_KEY"))}`
     );
 
     let delivered = false;
@@ -693,7 +788,7 @@ Direct reply to this email will respond to: ${enquiry.email}
     }
 
     // PRIORITY 2: Resend API (if configured)
-    if (!delivered && process.env.RESEND_API_KEY) {
+    if (!delivered && resolveEnv("RESEND_API_KEY")) {
       const resendRes = await sendViaResend(enquiry, subject, htmlContent, plainText);
       if (resendRes.success) {
         delivered = true;
@@ -724,7 +819,7 @@ Direct reply to this email will respond to: ${enquiry.email}
     }
 
     // PRIORITY 3: Brevo API (if configured)
-    if (!delivered && process.env.BREVO_API_KEY) {
+    if (!delivered && resolveEnv("BREVO_API_KEY")) {
       const brevoRes = await sendViaBrevo(enquiry, subject, htmlContent, plainText);
       if (brevoRes.success) {
         delivered = true;
@@ -802,7 +897,11 @@ Direct reply to this email will respond to: ${enquiry.email}
     const statusCode = isSmtpFailure ? 502 : 503;
     const userErrorMessage = isSmtpFailure
       ? `SMTP delivery to ${TARGET_RECIPIENT_EMAIL} failed (${lastErrorCode}): ${lastError}. Please check your Vercel SMTP credentials.`
-      : `Email delivery service is currently unconfigured or unavailable. Please configure SMTP or Resend credentials in Vercel.`;
+      : `Email delivery service is currently unconfigured or unavailable. In Vercel, ensure SMTP_HOST, SMTP_USER, and SMTP_PASS are set for 'Production' and redeploy.`;
+
+    const envKeys = Object.keys(process.env).filter((k) =>
+      /smtp|mail|email|resend|brevo|sendgrid/i.test(k)
+    );
 
     return sendJsonResponse(res, statusCode, {
       success: false,
@@ -811,6 +910,12 @@ Direct reply to this email will respond to: ${enquiry.email}
       recipient: TARGET_RECIPIENT_EMAIL,
       errorCode: lastErrorCode,
       error: userErrorMessage,
+      diagnostics: {
+        hasHost,
+        hasUser,
+        hasPass,
+        detectedEmailEnvKeys: envKeys,
+      },
       smtpConfig: smtpCfg
         ? {
             host: smtpCfg.host,
