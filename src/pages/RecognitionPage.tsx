@@ -29,6 +29,10 @@ export const RecognitionPage: React.FC = () => {
         keywords="Recognition, Aniket Dubey, Felicitation, Technext Technosoft Pvt Ltd, iWebNext, Global Brand Scaling, 10 Years Experience, Independent IT Contractor, Business Advisory Partner"
         canonicalPath="/recognition"
         ogType="website"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Recognition & Milestones', path: '/recognition' },
+        ]}
         jsonLd={recognitionStructuredData}
       />
 

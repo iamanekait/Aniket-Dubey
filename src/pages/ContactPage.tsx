@@ -22,6 +22,10 @@ export const ContactPage: React.FC<ContactPageProps> = ({ formData, setFormData 
         keywords="Contact Business Consultant, Book Consultation, Schedule Advisory Session, Aniket Dubey Contact, Durgapur Business Office, Phone +91 9932979875"
         canonicalPath="/contact"
         ogType="website"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Contact & Advisory Enquiry', path: '/contact' },
+        ]}
         jsonLd={contactStructuredData}
       />
 

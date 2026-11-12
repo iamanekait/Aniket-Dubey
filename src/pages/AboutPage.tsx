@@ -21,6 +21,10 @@ export const AboutPage: React.FC = () => {
         keywords="About Aniket Dubey, Founder-First Advisory Partner, Business Consultant Biography, Advisory Philosophy, Strategic Business Advisor, Durgapur, West Bengal"
         canonicalPath="/about"
         ogType="profile"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'About Aniket Dubey', path: '/about' },
+        ]}
         jsonLd={aboutStructuredData}
       />
 

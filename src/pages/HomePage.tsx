@@ -12,7 +12,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { Hero } from '../components/Hero';
-import { SEO } from '../components/SEO';
+import { SEO, createCaseStudySEOProps } from '../components/SEO';
 import { getHomeSchema } from '../utils/seoSchemas';
 import {
   SERVICES,
@@ -21,10 +21,12 @@ import {
   FOUNDER_FIRST_ADVANTAGES,
   PORTFOLIO_PROJECTS,
 } from '../data';
+import { PortfolioProject } from '../types';
 
 export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedGalleryCategory, setSelectedGalleryCategory] = useState<string>('All');
+  const [selectedCaseStudyModal, setSelectedCaseStudyModal] = useState<PortfolioProject | null>(null);
 
   const galleryCategories = [
     'All',
@@ -49,6 +51,7 @@ export const HomePage: React.FC = () => {
         keywords="Founder-First Business Advisory, Strategic Business Advisory Partner, Business Consultant, Strategic Content Marketing, Managed IT Services, Technology Strategy, Durgapur, West Bengal, SME Growth, Aniket Dubey"
         canonicalPath="/"
         ogType="website"
+        breadcrumbs={[{ name: 'Home', path: '/' }]}
         jsonLd={homeStructuredData}
       />
 
@@ -222,13 +225,22 @@ export const HomePage: React.FC = () => {
                   </div>
                 </div>
 
-                <Link
-                  to="/capabilities"
-                  className="inline-flex items-center justify-between w-full pt-4 border-t border-[#292929] text-xs font-semibold text-[#D15301] hover:text-[#B94700] group-hover:translate-x-0.5 transition-transform"
-                >
-                  <span>Explore practice capabilities</span>
-                  <ChevronRight className="w-4 h-4" />
-                </Link>
+                <div className="pt-4 border-t border-[#292929] flex flex-col gap-2">
+                  <button
+                    onClick={() => setSelectedCaseStudyModal(project)}
+                    className="inline-flex items-center justify-between w-full text-xs font-semibold text-[#F5F2ED] hover:text-[#D15301] transition-colors py-1 cursor-pointer"
+                  >
+                    <span>View Case Study Blueprint & Metrics</span>
+                    <ChevronRight className="w-4 h-4 text-[#D15301]" />
+                  </button>
+                  <Link
+                    to="/capabilities"
+                    className="inline-flex items-center justify-between w-full text-[11px] text-[#A6A6A6] hover:text-[#D15301] transition-colors"
+                  >
+                    <span>Explore practice capabilities</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -243,6 +255,128 @@ export const HomePage: React.FC = () => {
             </Link>
           </div>
         </div>
+
+        {/* Case Study Detail Modal with Dynamic JSON-LD Injection */}
+        {selectedCaseStudyModal && (
+          <>
+            {/* Dynamic Case-Study-Specific JSON-LD Schema & Metadata Injection */}
+            <SEO
+              {...createCaseStudySEOProps(selectedCaseStudyModal, {
+                pagePath: `/#case-study-${selectedCaseStudyModal.id}`,
+              })}
+            />
+
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="bg-[#080808] border border-[#292929] rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl space-y-6">
+                {/* Header */}
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#121212] border border-[#292929] text-[#D15301]">
+                        {selectedCaseStudyModal.tag}
+                      </span>
+                      <span className="text-xs text-[#A6A6A6] font-medium">
+                        {selectedCaseStudyModal.category}
+                      </span>
+                    </div>
+                    <h3 className="text-xl sm:text-2xl font-bold text-[#F5F2ED] leading-snug">
+                      {selectedCaseStudyModal.title}
+                    </h3>
+                    <p className="text-xs text-[#A6A6A6] mt-1">Client: {selectedCaseStudyModal.clientType}</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedCaseStudyModal(null)}
+                    className="text-[#A6A6A6] hover:text-white p-1 rounded-lg bg-[#121212] border border-[#292929] hover:bg-[#171717] text-sm cursor-pointer shrink-0"
+                    aria-label="Close dialog"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-4 text-xs sm:text-sm">
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#D15301] mb-1">
+                      Business Context
+                    </h4>
+                    <p className="text-[#A6A6A6] leading-relaxed">
+                      {selectedCaseStudyModal.context}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#D15301] mb-1">
+                      The Operational Challenge
+                    </h4>
+                    <p className="text-[#A6A6A6] leading-relaxed">
+                      {selectedCaseStudyModal.challenge}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#D15301] mb-1">
+                      Strategic Advisory Solution
+                    </h4>
+                    <p className="text-[#F5F2ED]/90 leading-relaxed">
+                      {selectedCaseStudyModal.solution}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#D15301] mb-2">
+                      Key Outcomes & Results
+                    </h4>
+                    <div className="space-y-2">
+                      {selectedCaseStudyModal.keyOutcomes.map((outcome, idx) => (
+                        <div key={idx} className="flex items-start gap-2 text-[#F5F2ED]/90">
+                          <CheckCircle2 className="w-4 h-4 text-[#D15301] shrink-0 mt-0.5" />
+                          <span>{outcome}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#D15301] mb-2">
+                      Advisory Frameworks & Tooling Applied
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCaseStudyModal.toolsAndFrameworks.map((tool, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-1 rounded-md bg-[#121212] border border-[#292929] text-[11px] text-[#A6A6A6]"
+                        >
+                          {tool}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="pt-4 border-t border-[#292929] flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <button
+                    onClick={() => setSelectedCaseStudyModal(null)}
+                    className="w-full sm:w-auto px-4 py-2 text-xs font-medium text-[#A6A6A6] hover:text-[#F5F2ED] bg-[#121212] border border-[#292929] hover:bg-[#171717] rounded-lg cursor-pointer"
+                  >
+                    Close Case Study
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedCaseStudyModal(null);
+                      navigate('/contact');
+                    }}
+                    className="w-full sm:w-auto px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-[#D15301] hover:bg-[#B94700] active:scale-95 rounded-lg cursor-pointer shadow-md shadow-[#D15301]/25"
+                  >
+                    Schedule Consultation for Similar Growth
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </section>
 
       {/* Core Practice Areas Overview */}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Briefcase, Layers, Server, Cpu, ArrowUpRight, Check, Sparkles } from 'lucide-react';
 import { SERVICES } from '../data';
 import { ServiceItem } from '../types';
+import { SEO, createServiceSEOProps } from './SEO';
 
 interface ServicesProps {
   onSelectService: (serviceName: string) => void;
@@ -113,11 +114,15 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
 
         {/* Service Scope Modal */}
         {selectedServiceModal && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
-            role="dialog"
-            aria-modal="true"
-          >
+          <>
+            {/* Dynamic Service-Specific JSON-LD Schema & Metadata Injection */}
+            <SEO {...createServiceSEOProps(selectedServiceModal, { pagePath: '/capabilities' })} />
+
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+              role="dialog"
+              aria-modal="true"
+            >
             <div className="bg-[#080808] border border-[#292929] rounded-2xl max-w-xl w-full p-6 sm:p-8 shadow-2xl space-y-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -179,7 +184,8 @@ export const Services: React.FC<ServicesProps> = ({ onSelectService }) => {
               </div>
             </div>
           </div>
-        )}
+        </>
+      )}
       </div>
     </section>
   );

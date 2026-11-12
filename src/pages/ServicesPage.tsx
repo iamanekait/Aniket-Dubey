@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Services } from '../components/Services';
 import { SEO } from '../components/SEO';
 import { getServicesSchema } from '../utils/seoSchemas';
@@ -12,12 +12,15 @@ interface ServicesPageProps {
 
 export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSelectService = (serviceName: string) => {
     onSelectService(serviceName);
     navigate('/contact');
   };
 
+  const isCapabilities = location.pathname.startsWith('/capabilities');
+  const activePath = isCapabilities ? '/capabilities' : '/services';
   const servicesStructuredData = getServicesSchema();
 
   return (
@@ -27,8 +30,12 @@ export const ServicesPage: React.FC<ServicesPageProps> = ({ onSelectService }) =
         title="Capabilities & Services | Aniket Dubey | Founder-First Advisory Partner"
         description="Explore founder-first consulting capabilities: strategic growth planning, content marketing authority engines, managed IT infrastructure, and digital workflow optimization."
         keywords="Founder-First Advisory, Consulting Capabilities, Business Consulting Services, Strategic Content Marketing, Managed IT Services, Technology Strategy, Business Transformation, Durgapur, West Bengal"
-        canonicalPath="/services"
+        canonicalPath={activePath}
         ogType="website"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: isCapabilities ? 'Capabilities' : 'Capabilities & Services', path: activePath },
+        ]}
         jsonLd={servicesStructuredData}
       />
 
