@@ -39,13 +39,14 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
   }, [messages, isOpen]);
 
   const handleSend = async (messageText?: string) => {
-    const textToSend = messageText || input;
-    if (!textToSend.trim() || isLoading) return;
+    const rawText = (messageText || input).trim();
+    if (!rawText || isLoading) return;
+    const textToSend = rawText.slice(0, 2000);
 
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text: textToSend.trim(),
+      text: textToSend,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
@@ -57,16 +58,20 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
       // Secure call to server-side proxy route - never exposes GEMINI_API_KEY to browser
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ message: textToSend }),
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => ({}));
+
+      const replyText = response.ok
+        ? data?.reply || 'Thank you for your question. Please feel free to schedule a direct consultation with Aniket Dubey.'
+        : data?.error || `I'm temporarily unable to process that request right now. You can reach Aniket directly at ${CONSULTANT_INFO.email} or ${CONSULTANT_INFO.formattedPhone}.`;
 
       const assistantMessage: ChatMessage = {
         id: `assistant-${Date.now()}`,
         sender: 'assistant',
-        text: data.reply || 'Thank you for your question. Please feel free to schedule a direct consultation with Aniket Dubey.',
+        text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
@@ -324,6 +329,7 @@ export const AIChatbot: React.FC<AIChatbotProps> = ({ onOpenConsultationForm }) 
               <input
                 type="text"
                 value={input}
+                maxLength={2000}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask about strategy, IT, or booking..."
                 className="flex-1 bg-[#080808] border border-[#292929] rounded-xl px-3 py-2 text-base sm:text-xs text-[#F5F2ED] placeholder-[#A6A6A6]/60 focus:outline-none focus:ring-1 focus:ring-[#D15301]"

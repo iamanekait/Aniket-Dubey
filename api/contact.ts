@@ -1,28 +1,42 @@
 import nodemailer from "nodemailer";
+import {
+  applyCorsAndSecurityHeaders,
+  checkAndMarkDuplicate,
+  checkRateLimit,
+  getTrustedClientIp,
+  MalformedJsonError,
+  parseJsonBodyStrict,
+  PayloadTooLargeError,
+  sendJson,
+} from "./_lib/security";
 
 // Target primary recipient — exclusively email@aniketdubey.com
 const TARGET_RECIPIENT_EMAIL = "email@aniketdubey.com";
+const MAX_CONTACT_BODY_BYTES = 16384;
 
-interface EnquiryPayload {
+const ALLOWED_CONTACT_FIELDS = new Set([
+  "name",
+  "business",
+  "email",
+  "phone",
+  "service",
+  "message",
+  "website_hp",
+  "_rendered_at",
+]);
+
+export interface SanitizedEnquiry {
+  id: string;
   name: string;
-  business?: string;
+  business: string;
   email: string;
-  phone?: string;
-  service?: string;
+  phone: string;
+  service: string;
   message: string;
-  // Anti-spam fields
-  website_hp?: string; // Honeypot field (must be empty)
-  _rendered_at?: number; // Form render timestamp (ms)
+  submittedAt: string;
 }
 
-// In-memory rate limiting and deduplication
-interface SubmissionRecord {
-  timestamp: number;
-  hash: string;
-}
-const recentSubmissions = new Map<string, SubmissionRecord>();
-
-// Helper to mask sensitive credentials in server logs & diagnostics
+// Mask sensitive identifiers in server-side logs (never expose secrets or raw passwords)
 function maskUser(user?: string): string {
   if (!user) return "[NOT SET]";
   const parts = user.split("@");
@@ -35,17 +49,10 @@ function maskUser(user?: string): string {
   return user.length > 4 ? `${user.slice(0, 3)}***` : "***";
 }
 
-function maskKey(key?: string): string {
-  if (!key) return "[NOT SET]";
-  if (key.length <= 6) return "***";
-  return `${key.slice(0, 4)}...${key.slice(-3)}`;
-}
-
-// Strip surrounding quotes ("..." or '...') and whitespace safely without stripping leading quote of display names
+// Strip balanced outer quotes and surrounding whitespace safely
 function cleanVal(val?: string): string | undefined {
   if (!val) return undefined;
   let trimmed = val.trim();
-  // Strip balanced outer quotes repeatedly: ""value"" or "value" or 'value'
   while (
     (trimmed.startsWith('"') && trimmed.endsWith('"') && trimmed.length >= 2) ||
     (trimmed.startsWith("'") && trimmed.endsWith("'") && trimmed.length >= 2)
@@ -55,12 +62,39 @@ function cleanVal(val?: string): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-// Normalize From header to guaranteed valid RFC 5322 format: "Display Name" <email@domain>
+/**
+ * Resolve ONLY private server-side environment variables.
+ * Strictly ignores VITE_* and NEXT_PUBLIC_* prefixes so server secrets
+ * are never read from client-exposed variable namespaces.
+ */
+function resolveServerEnv(...candidates: string[]): string | undefined {
+  const envKeys = Object.keys(process.env);
+  for (const name of candidates) {
+    if (process.env[name]) {
+      const v = cleanVal(process.env[name]);
+      if (v) return v;
+    }
+    const lowerName = name.toLowerCase();
+    const foundKey = envKeys.find(
+      (k) =>
+        k.toLowerCase() === lowerName &&
+        !k.toUpperCase().startsWith("VITE_") &&
+        !k.toUpperCase().startsWith("NEXT_PUBLIC_")
+    );
+    if (foundKey && process.env[foundKey]) {
+      const v = cleanVal(process.env[foundKey]);
+      if (v) return v;
+    }
+  }
+  return undefined;
+}
+
+// Normalize From header to guaranteed valid RFC 5322 format owned by application
 function normalizeFrom(rawFrom?: string, defaultUser?: string): string {
   if (!rawFrom) {
     return `"Aniket Dubey Business Advisory" <${defaultUser || TARGET_RECIPIENT_EMAIL}>`;
   }
-  const cleaned = rawFrom.trim();
+  const cleaned = rawFrom.replace(/[\r\n\0]/g, " ").trim();
   const match = cleaned.match(/^(.*?)\s*<([^>]+)>/);
   if (match) {
     const rawName = match[1].replace(/["'\\]/g, "").trim();
@@ -72,616 +106,59 @@ function normalizeFrom(rawFrom?: string, defaultUser?: string): string {
   if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(bareEmail)) {
     return `"Aniket Dubey Business Advisory" <${bareEmail}>`;
   }
-  return cleaned.replace(/\\/g, "").replace(/"{2,}/g, '"');
+  return `"Aniket Dubey Business Advisory" <${defaultUser || TARGET_RECIPIENT_EMAIL}>`;
 }
 
 /**
- * Universal environment variable resolver:
- * - Direct lookup
- * - VITE_ and NEXT_PUBLIC_ prefixes
- * - Case-insensitive match across all process.env keys
- * - Quote and whitespace stripping
+ * Reusable HTML & attribute escaping utilities to prevent HTML injection in emails.
  */
-function resolveEnv(...candidates: string[]): string | undefined {
-  const envKeys = Object.keys(process.env);
-
-  for (const name of candidates) {
-    // 1. Exact match
-    if (process.env[name]) {
-      const v = cleanVal(process.env[name]);
-      if (v) return v;
-    }
-    // 2. VITE_ prefix
-    const viteKey = `VITE_${name}`;
-    if (process.env[viteKey]) {
-      const v = cleanVal(process.env[viteKey]);
-      if (v) return v;
-    }
-    // 3. Case-insensitive search across all process.env keys
-    const lowerName = name.toLowerCase();
-    const foundKey = envKeys.find(
-      (k) =>
-        k.toLowerCase() === lowerName ||
-        k.toLowerCase() === `vite_${lowerName}` ||
-        k.toLowerCase() === `next_public_${lowerName}`
-    );
-    if (foundKey && process.env[foundKey]) {
-      const v = cleanVal(process.env[foundKey]);
-      if (v) return v;
-    }
-  }
-
-  return undefined;
+export function escapeHtml(input: string): string {
+  return String(input)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-// Safely parse request body across Vercel serverless, Express, and raw Node.js runtimes without hanging
-async function getRequestBody(req: any): Promise<any> {
-  // 1. If already parsed as an object (standard Express / Vercel with json body)
-  if (req.body && typeof req.body === "object" && !Buffer.isBuffer(req.body)) {
-    return req.body;
-  }
-  // 2. If body is a string
-  if (typeof req.body === "string" && req.body.trim().length > 0) {
-    try {
-      return JSON.parse(req.body);
-    } catch {
-      return {};
-    }
-  }
-  // 3. If body is a Buffer
-  if (Buffer.isBuffer(req.body)) {
-    try {
-      return JSON.parse(req.body.toString("utf-8"));
-    } catch {
-      return {};
-    }
-  }
-  // 4. If stream has already ended or not readable, do not wait
-  if (req.readableEnded || req.complete || typeof req.on !== "function") {
-    return {};
-  }
-  // 5. If stream is readable, read chunks with a safety timeout
-  return new Promise((resolve) => {
-    let raw = "";
-    const timeout = setTimeout(() => {
-      try {
-        resolve(raw ? JSON.parse(raw) : {});
-      } catch {
-        resolve({});
-      }
-    }, 2000);
-
-    req.on("data", (chunk: any) => {
-      raw += chunk;
-    });
-    req.on("end", () => {
-      clearTimeout(timeout);
-      if (!raw || !raw.trim()) {
-        resolve({});
-      } else {
-        try {
-          resolve(JSON.parse(raw));
-        } catch {
-          resolve({});
-        }
-      }
-    });
-    req.on("error", () => {
-      clearTimeout(timeout);
-      resolve({});
-    });
-  });
+export function escapeHtmlAttr(input: string): string {
+  return escapeHtml(input).replace(/`/g, "&#96;");
 }
 
-// Universal response helper compatible with both Vercel helper and raw Node ServerResponse
-function sendJsonResponse(res: any, status: number, data: any) {
-  if (typeof res.status === "function" && typeof res.json === "function") {
-    return res.status(status).json(data);
-  }
-  res.statusCode = status;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.end(JSON.stringify(data));
+// Sanitize header-bound single-line fields (eliminates CRLF / null-byte injection)
+export function sanitizeHeaderText(str: string, maxLen: number): string {
+  return str.replace(/[\r\n\0\t]+/g, " ").replace(/\s{2,}/g, " ").trim().slice(0, maxLen);
 }
 
-// Sanitize string to prevent email injection / header tampering
-function sanitize(str?: string): string {
-  if (!str) return "";
-  return String(str).replace(/[\r\n]/g, " ").trim();
+// Strict email format validation preventing header injection and angle-bracket spoofing
+const STRICT_EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/;
+const PHONE_ALLOWED_REGEX = /^[+0-9()\-\s.]{6,30}$/;
+
+function isSafeTelValue(phone: string): boolean {
+  return PHONE_ALLOWED_REGEX.test(phone);
+}
+
+function formatSafeTelHref(phone: string): string | null {
+  if (!isSafeTelValue(phone)) return null;
+  const normalized = phone.replace(/[^+0-9]/g, "");
+  if (normalized.length < 6) return null;
+  return `tel:${normalized}`;
 }
 
 /**
- * Strict and resilient parser for exact SMTP environment variables:
- * - SMTP_HOST / SMTP_SERVER / MAIL_HOST
- * - SMTP_PORT / MAIL_PORT
- * - SMTP_SECURE / MAIL_SECURE
- * - SMTP_USER / SMTP_USERNAME / MAIL_USER
- * - SMTP_PASS / SMTP_PASSWORD / MAIL_PASS / GMAIL_APP_PASS
- * - SMTP_FROM / MAIL_FROM
+ * Builds plain-text and HTML email bodies with complete HTML escaping and
+ * validated href URI schemes (`mailto:` and `tel:` only).
  */
-function getSmtpConfig() {
-  const host = resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "MAIL_SERVER", "EMAIL_HOST");
-  const portRaw = resolveEnv("SMTP_PORT", "MAIL_PORT", "EMAIL_PORT");
-  const secureRaw = resolveEnv("SMTP_SECURE", "MAIL_SECURE", "EMAIL_SECURE")?.toLowerCase();
-  const rawUser = resolveEnv(
-    "SMTP_USER",
-    "SMTP_USERNAME",
-    "MAIL_USER",
-    "MAIL_USERNAME",
-    "EMAIL_USER",
-    "GMAIL_USER"
-  );
-  const rawPass = resolveEnv(
-    "SMTP_PASS",
-    "SMTP_PASSWORD",
-    "MAIL_PASS",
-    "MAIL_PASSWORD",
-    "EMAIL_PASS",
-    "GMAIL_APP_PASS",
-    "GMAIL_APP_PASSWORD"
-  );
-  const fromRaw = resolveEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM");
-
-  if (!host || !rawUser || !rawPass) {
-    return null;
-  }
-
-  // Sanitize port (strip any quotes, spaces, or non-digits)
-  const portDigits = portRaw ? portRaw.replace(/[^0-9]/g, "") : "";
-  const parsedPort = portDigits ? parseInt(portDigits, 10) : NaN;
-  const secure = secureRaw === "true" ? true : secureRaw === "false" ? false : parsedPort === 465;
-  const port = !isNaN(parsedPort) && parsedPort > 0 ? parsedPort : (secure ? 465 : 587);
-
-  // Strip any accidental spaces, quotes, or slashes from username
-  const user = rawUser.replace(/[\s"'\\]+/g, "");
-
-  // Sanitize password:
-  // For Gmail/Google Workspace, Google 16-character App Passwords are 16 letters (e.g. "abcd efgh ijkl mnop" or with quotes).
-  // Stripping all whitespace, quotes, and backslashes ensures the clean 16-character key.
-  const isGoogle = host.includes("gmail.com") || user.includes("@gmail.com");
-  const pass = isGoogle
-    ? rawPass.replace(/[\s"'\\]+/g, "")
-    : rawPass.replace(/^["']+|["']+$/g, "").trim();
-
-  // Normalize From header to guaranteed valid RFC 5322 format
-  const from = normalizeFrom(fromRaw, user);
-
-  return {
-    host,
-    port,
-    secure,
-    user,
-    pass,
-    from,
-  };
-}
-
-/**
- * 1. Primary SMTP Dispatcher via Nodemailer
- */
-async function sendViaSmtp(
-  enquiry: any,
-  subject: string,
-  htmlContent: string,
-  plainText: string
-): Promise<{ success: boolean; messageId?: string; error?: string; errorCode?: string }> {
-  const config = getSmtpConfig();
-
-  if (!config) {
-    return {
-      success: false,
-      error: "SMTP credentials not configured (requires SMTP_HOST, SMTP_USER, and SMTP_PASS)",
-      errorCode: "CONFIG_MISSING",
-    };
-  }
-
-  // Safe server-side diagnostic logging (no passwords exposed)
-  console.log(
-    `[SMTP Dispatch] Connecting to ${config.host}:${config.port} | Secure: ${config.secure} | User: ${maskUser(config.user)} | From: ${config.from}`
+export function buildContactEmailTemplates(
+  enquiry: SanitizedEnquiry,
+  clientIp: string
+): { subject: string; plainText: string; htmlContent: string; mailtoUrl: string } {
+  const subject = sanitizeHeaderText(
+    `[New Consultation Enquiry] ${enquiry.name} (${enquiry.business}) - ${enquiry.service} [Ref: ${enquiry.id}]`,
+    220
   );
 
-  const isGmail = config.host.includes("gmail.com") || config.user.includes("@gmail.com");
-
-  const transporter = nodemailer.createTransport(
-    isGmail
-      ? {
-          service: "gmail",
-          auth: {
-            user: config.user,
-            pass: config.pass,
-          },
-          connectionTimeout: 10000,
-          greetingTimeout: 6000,
-          socketTimeout: 15000,
-          tls: {
-            rejectUnauthorized: false,
-          },
-        }
-      : {
-          host: config.host,
-          port: config.port,
-          secure: config.secure,
-          auth: {
-            user: config.user,
-            pass: config.pass,
-          },
-          connectionTimeout: 10000,
-          greetingTimeout: 6000,
-          socketTimeout: 15000,
-          tls: {
-            rejectUnauthorized: false,
-            minVersion: "TLSv1.2",
-          },
-        }
-  );
-
-  try {
-    // Explicitly await dispatch
-    const info = await transporter.sendMail({
-      from: config.from,
-      to: TARGET_RECIPIENT_EMAIL,
-      replyTo: enquiry.email,
-      subject,
-      text: plainText,
-      html: htmlContent,
-    });
-
-    console.log(`[SMTP Success] Email accepted by ${config.host}. Message-ID: ${info.messageId}`);
-    return {
-      success: true,
-      messageId: info.messageId,
-    };
-  } catch (smtpErr: any) {
-    const code = smtpErr.code || "SMTP_SEND_FAILED";
-    const msg = smtpErr.message || String(smtpErr);
-    console.error(`[SMTP Failure] Host: ${config.host}:${config.port} | Code: ${code} | Error: ${msg}`);
-
-    let guidance = "";
-    if (code === "EAUTH" || /535|BadCredentials/i.test(msg)) {
-      guidance = isGmail
-        ? ` Google rejected credentials for ${maskUser(config.user)}. Note: Google requires a dedicated 16-character App Password (not your standard login password). In your Google Account, visit Security -> 2-Step Verification -> App Passwords, generate a 16-letter password, and update SMTP_PASS in Vercel.`
-        : " Authentication failed. Verify that SMTP_USER and SMTP_PASS match your email provider's credentials.";
-    }
-
-    return {
-      success: false,
-      error: msg + (guidance ? ` [Fix Action:${guidance}]` : ""),
-      errorCode: code,
-    };
-  }
-}
-
-/**
- * 2. Secondary Provider: Resend API (HTTP Port 443)
- */
-async function sendViaResend(
-  enquiry: any,
-  subject: string,
-  htmlContent: string,
-  plainText: string
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const apiKey = resolveEnv("RESEND_API_KEY");
-  if (!apiKey) return { success: false, error: "RESEND_API_KEY is not configured" };
-
-  try {
-    const from = resolveEnv("RESEND_FROM") || "Aniket Dubey Advisory <onboarding@resend.dev>";
-    console.log(`[Resend Dispatch] Sending email via Resend API to ${TARGET_RECIPIENT_EMAIL} (From: ${from})`);
-
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [TARGET_RECIPIENT_EMAIL],
-        reply_to: enquiry.email,
-        subject,
-        text: plainText,
-        html: htmlContent,
-      }),
-    });
-
-    const resData: any = await res.json().catch(() => ({}));
-    if (res.ok) {
-      console.log(`[Resend Success] Email delivered. ID: ${resData.id || "ok"}`);
-      return { success: true, messageId: resData.id };
-    }
-    const errDetail = resData.message || resData.error || `HTTP ${res.status}`;
-    console.error(`[Resend Error] API responded with error: ${errDetail}`);
-    return { success: false, error: errDetail };
-  } catch (err: any) {
-    console.error("[Resend Error] Network/fetch failure:", err.message || err);
-    return { success: false, error: err.message || "Network failure" };
-  }
-}
-
-/**
- * 3. Secondary Provider: Brevo / Sendinblue API (HTTP Port 443)
- */
-async function sendViaBrevo(
-  enquiry: any,
-  subject: string,
-  htmlContent: string,
-  plainText: string
-): Promise<{ success: boolean; messageId?: string; error?: string }> {
-  const apiKey = resolveEnv("BREVO_API_KEY");
-  if (!apiKey) return { success: false, error: "BREVO_API_KEY is not configured" };
-
-  try {
-    const senderEmail = resolveEnv("BREVO_SENDER") || TARGET_RECIPIENT_EMAIL;
-    console.log(`[Brevo Dispatch] Sending email via Brevo API to ${TARGET_RECIPIENT_EMAIL} (Sender: ${senderEmail})`);
-
-    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-key": apiKey,
-      },
-      body: JSON.stringify({
-        sender: { name: "Aniket Dubey Advisory Portal", email: senderEmail },
-        to: [{ email: TARGET_RECIPIENT_EMAIL, name: "Aniket Dubey" }],
-        replyTo: { email: enquiry.email, name: enquiry.name },
-        subject,
-        htmlContent,
-        textContent: plainText,
-      }),
-    });
-
-    const resData: any = await res.json().catch(() => ({}));
-    if (res.ok) {
-      console.log(`[Brevo Success] Email delivered. MessageId: ${resData.messageId || "ok"}`);
-      return { success: true, messageId: resData.messageId };
-    }
-    const errDetail = resData.message || `HTTP ${res.status}`;
-    console.error(`[Brevo Error] API responded with error: ${errDetail}`);
-    return { success: false, error: errDetail };
-  } catch (err: any) {
-    console.error("[Brevo Error] Network/fetch failure:", err.message || err);
-    return { success: false, error: err.message || "Network failure" };
-  }
-}
-
-/**
- * 4. Automated Server-Side Web Relay Fallback
- */
-async function sendViaRelay(
-  enquiry: any,
-  subject: string
-): Promise<{ success: boolean; needsActivation: boolean; message: string }> {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
-    const relayResponse = await fetch(`https://formsubmit.co/ajax/${TARGET_RECIPIENT_EMAIL}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Referer: "https://aniketdubey.com/contact",
-        Origin: "https://aniketdubey.com",
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-      },
-      body: JSON.stringify({
-        _subject: subject,
-        _replyto: enquiry.email,
-        _captcha: "false",
-        _template: "table",
-        "Reference ID": enquiry.id,
-        "Client Name": enquiry.name,
-        "Company / Organization": enquiry.business || "Individual",
-        "Client Email": enquiry.email,
-        "Contact Phone": enquiry.phone || "Not provided",
-        "Service Required": enquiry.service,
-        "Objectives & Message": enquiry.message,
-        "Destination Inbox": TARGET_RECIPIENT_EMAIL,
-        "Submission Time (UTC)": new Date(enquiry.submittedAt).toUTCString(),
-      }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-
-    const rawText = await relayResponse.text().catch(() => "");
-    let data: any = null;
-    try {
-      data = JSON.parse(rawText);
-    } catch {
-      // Body may be plain text or HTML
-    }
-
-    const needsActivation = Boolean(
-      (data?.message && typeof data.message === "string" && data.message.toLowerCase().includes("activation")) ||
-      rawText.toLowerCase().includes("needs activation") ||
-      rawText.toLowerCase().includes("activate your form") ||
-      rawText.toLowerCase().includes("activate form")
-    );
-
-    const success = Boolean(
-      (data?.success === true || data?.success === "true") && !needsActivation
-    );
-
-    console.log(
-      `[Relay Dispatch] Response: success=${success}, needsActivation=${needsActivation}, text=${rawText.slice(0, 100)}`
-    );
-
-    return {
-      success,
-      needsActivation,
-      message: data?.message || rawText.slice(0, 200) || "",
-    };
-  } catch (relayErr: any) {
-    console.error("[Relay Error] Failed:", relayErr?.message || relayErr);
-    return { success: false, needsActivation: false, message: relayErr?.message || "Relay error" };
-  }
-}
-
-export default async function handler(req: any, res: any) {
-  // Safe CORS configuration for custom domains & previews
-  const incomingOrigin = req.headers?.origin || "*";
-  res.setHeader("Access-Control-Allow-Origin", incomingOrigin);
-  if (incomingOrigin !== "*") {
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-  }
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
-  if (req.method === "OPTIONS") {
-    if (typeof res.status === "function") {
-      return res.status(200).end();
-    }
-    res.statusCode = 200;
-    return res.end();
-  }
-
-  // GET: Public diagnostic check for verified configuration in Vercel
-  if (req.method === "GET") {
-    const smtp = getSmtpConfig();
-    const envKeys = Object.keys(process.env).filter((k) =>
-      /smtp|mail|email|resend|brevo|sendgrid/i.test(k)
-    );
-
-    return sendJsonResponse(res, 200, {
-      status: "online",
-      endpoint: "/api/contact",
-      targetRecipient: TARGET_RECIPIENT_EMAIL,
-      smtp: {
-        configured: Boolean(smtp),
-        hasHost: Boolean(resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "EMAIL_HOST")),
-        detectedHost: smtp ? smtp.host : undefined,
-        hasPort: Boolean(resolveEnv("SMTP_PORT", "MAIL_PORT", "EMAIL_PORT")),
-        detectedPort: smtp ? smtp.port : undefined,
-        hasSecure: Boolean(resolveEnv("SMTP_SECURE", "MAIL_SECURE", "EMAIL_SECURE")),
-        detectedSecure: smtp ? smtp.secure : undefined,
-        hasUser: Boolean(resolveEnv("SMTP_USER", "SMTP_USERNAME", "MAIL_USER", "EMAIL_USER")),
-        maskedUser: smtp ? maskUser(smtp.user) : undefined,
-        hasPass: Boolean(resolveEnv("SMTP_PASS", "SMTP_PASSWORD", "MAIL_PASS", "EMAIL_PASS")),
-        hasFrom: Boolean(resolveEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM")),
-        detectedFrom: smtp ? smtp.from : undefined,
-        matchingEnvKeysInProcess: envKeys,
-      },
-      resend: {
-        configured: Boolean(resolveEnv("RESEND_API_KEY")),
-      },
-      message: smtp
-        ? "SMTP is configured and ready to dispatch to email@aniketdubey.com."
-        : "SMTP is not yet detected in this environment. In Vercel -> Settings -> Environment Variables, ensure SMTP_HOST, SMTP_USER, and SMTP_PASS are assigned to 'Production', then trigger a Redeploy.",
-    });
-  }
-
-  if (req.method !== "POST") {
-    return sendJsonResponse(res, 405, { success: false, error: "Method not allowed. Use POST or GET." });
-  }
-
-  try {
-    const body: EnquiryPayload = await getRequestBody(req);
-    const { name, business, email, phone, service, message, website_hp, _rendered_at } = body;
-
-    // 1. Anti-spam: Honeypot check
-    if (website_hp && String(website_hp).trim().length > 0) {
-      console.warn(`[Anti-Spam] Honeypot triggered from IP: ${req.headers["x-forwarded-for"] || req.socket?.remoteAddress}`);
-      // Silent rejection to trick spam bots without dispatching email
-      return sendJsonResponse(res, 200, {
-        success: true,
-        referenceId: `SPM-${Date.now()}`,
-        message: "Enquiry received.",
-      });
-    }
-
-    // 2. Anti-spam: Submission speed check (bots submit in under 1.2 seconds)
-    if (_rendered_at && typeof _rendered_at === "number") {
-      const elapsed = Date.now() - _rendered_at;
-      if (elapsed > 0 && elapsed < 1200) {
-        console.warn(`[Anti-Spam] Submission too fast (${elapsed}ms). Suspected bot.`);
-        return sendJsonResponse(res, 400, {
-          success: false,
-          error: "Form submitted unnaturally quickly. Please try again.",
-        });
-      }
-    }
-
-    // 3. Validation
-    if (!name || !name.trim()) {
-      return sendJsonResponse(res, 400, {
-        success: false,
-        error: "Please provide your Full Name.",
-      });
-    }
-
-    if (!email || !email.trim()) {
-      return sendJsonResponse(res, 400, {
-        success: false,
-        error: "Please provide your Email Address.",
-      });
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const cleanEmail = String(email).trim().toLowerCase();
-    if (!emailRegex.test(cleanEmail) || cleanEmail.length > 100) {
-      return sendJsonResponse(res, 400, {
-        success: false,
-        error: "Please provide a valid email address.",
-      });
-    }
-
-    if (!message || !message.trim() || message.trim().length < 10) {
-      return sendJsonResponse(res, 400, {
-        success: false,
-        error: "Please provide a brief message describing your business objectives (at least 10 characters).",
-      });
-    }
-
-    // 4. Rate Limiting & Duplicate Submission Prevention
-    const clientIp = String(req.headers["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
-    const submissionHash = `${cleanEmail}|${message.trim().slice(0, 60)}`;
-    const now = Date.now();
-
-    const previousSubmission = recentSubmissions.get(clientIp);
-    if (previousSubmission) {
-      // Cooldown: prevent multiple submissions within 8 seconds from same IP
-      if (now - previousSubmission.timestamp < 8000) {
-        return sendJsonResponse(res, 429, {
-          success: false,
-          error: "Please wait a moment before submitting another request.",
-        });
-      }
-      // Deduplication: prevent identical message resubmission within 60 seconds
-      if (previousSubmission.hash === submissionHash && now - previousSubmission.timestamp < 60000) {
-        return sendJsonResponse(res, 409, {
-          success: false,
-          error: "Duplicate submission detected. Your enquiry has already been transmitted.",
-        });
-      }
-    }
-    recentSubmissions.set(clientIp, { timestamp: now, hash: submissionHash });
-
-    // Clean up old rate limit records
-    if (recentSubmissions.size > 200) {
-      for (const [key, val] of recentSubmissions.entries()) {
-        if (now - val.timestamp > 300000) {
-          recentSubmissions.delete(key);
-        }
-      }
-    }
-
-    const id = `ENQ-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
-    const enquiry = {
-      id,
-      name: sanitize(name),
-      business: sanitize(business) || "Individual",
-      email: cleanEmail,
-      phone: sanitize(phone) || "Not provided",
-      service: sanitize(service) || "General Strategic Consulting",
-      message: String(message).trim().slice(0, 4000),
-      submittedAt: new Date().toISOString(),
-    };
-
-    const subject = `[New Consultation Enquiry] ${enquiry.name} (${enquiry.business}) - ${enquiry.service} [Ref: ${enquiry.id}]`;
-
-    const plainText = `NEW CONSULTATION ENQUIRY — DUBEY CONGLOMERATE
+  const plainText = `NEW CONSULTATION ENQUIRY — DUBEY CONGLOMERATE
 ============================================================
 Reference ID:    ${enquiry.id}
 Date & Time:     ${new Date(enquiry.submittedAt).toUTCString()}
@@ -708,8 +185,29 @@ Website: aniketdubey.com (Dubey Conglomerate)
 Direct reply to this email will respond to: ${enquiry.email}
 `;
 
-    const htmlContent = `
-<!DOCTYPE html>
+  const escId = escapeHtml(enquiry.id);
+  const escName = escapeHtml(enquiry.name);
+  const escBusiness = escapeHtml(enquiry.business);
+  const escEmail = escapeHtml(enquiry.email);
+  const escPhone = escapeHtml(enquiry.phone);
+  const escService = escapeHtml(enquiry.service);
+  const escMessage = escapeHtml(enquiry.message);
+  const escRecipient = escapeHtml(TARGET_RECIPIENT_EMAIL);
+
+  const safeMailtoHref = STRICT_EMAIL_REGEX.test(enquiry.email)
+    ? `mailto:${escapeHtmlAttr(encodeURIComponent(enquiry.email).replace(/%40/g, "@"))}`
+    : null;
+  const safeTelHref = formatSafeTelHref(enquiry.phone);
+
+  const emailCellHtml = safeMailtoHref
+    ? `<a href="${safeMailtoHref}" style="color: #D15301; text-decoration: none; font-weight: 600;">${escEmail}</a>`
+    : `<span style="color: #F5F2ED;">${escEmail}</span>`;
+
+  const phoneCellHtml = safeTelHref
+    ? `<a href="${escapeHtmlAttr(safeTelHref)}" style="color: #D15301; text-decoration: none;">${escPhone}</a>`
+    : `<span style="color: #F5F2ED;">${escPhone}</span>`;
+
+  const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -736,36 +234,36 @@ Direct reply to this email will respond to: ${enquiry.email}
     <div class="header">
       <h1>New Consultation Enquiry</h1>
       <p>Dubey Conglomerate — Aniket Dubey Advisory Platform</p>
-      <span class="badge">REF: ${enquiry.id}</span>
+      <span class="badge">REF: ${escId}</span>
     </div>
     <div class="content">
       <div class="row">
         <div class="label">Client Name</div>
-        <div class="value">${enquiry.name}</div>
+        <div class="value">${escName}</div>
       </div>
       <div class="row">
         <div class="label">Company / Organization</div>
-        <div class="value">${enquiry.business}</div>
+        <div class="value">${escBusiness}</div>
       </div>
       <div class="row">
         <div class="label">Client Email</div>
-        <div class="value"><a href="mailto:${enquiry.email}" style="color: #D15301; text-decoration: none; font-weight: 600;">${enquiry.email}</a></div>
+        <div class="value">${emailCellHtml}</div>
       </div>
       <div class="row">
         <div class="label">Contact Phone</div>
-        <div class="value"><a href="tel:${enquiry.phone}" style="color: #D15301; text-decoration: none;">${enquiry.phone}</a></div>
+        <div class="value">${phoneCellHtml}</div>
       </div>
       <div class="row">
         <div class="label">Primary Service Required</div>
-        <div class="value" style="color: #FFA86B; font-weight: 700;">${enquiry.service}</div>
+        <div class="value" style="color: #FFA86B; font-weight: 700;">${escService}</div>
       </div>
       <div class="row">
-        <div class="label">Business Overview & Objectives</div>
-        <div class="msg-box">${enquiry.message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+        <div class="label">Business Overview &amp; Objectives</div>
+        <div class="msg-box">${escMessage}</div>
       </div>
       <div class="recipients">
         <strong style="color: #F5F2ED;">Direct Notification Destination:</strong><br/>
-        ${TARGET_RECIPIENT_EMAIL}
+        ${escRecipient}
       </div>
     </div>
     <div class="footer">
@@ -776,12 +274,11 @@ Direct reply to this email will respond to: ${enquiry.email}
 </html>
 `;
 
-    // Prepare direct mailto backup URL
-    const mailtoSubject = encodeURIComponent(
-      `Consultation Request: ${enquiry.name} - ${enquiry.service} [Ref: ${enquiry.id}]`
-    );
-    const mailtoBody = encodeURIComponent(
-      `Consultation Request Details:\n` +
+  const mailtoSubject = encodeURIComponent(
+    `Consultation Request: ${enquiry.name} - ${enquiry.service} [Ref: ${enquiry.id}]`
+  );
+  const mailtoBody = encodeURIComponent(
+    `Consultation Request Details:\n` +
       `----------------------------------------\n` +
       `Reference ID: ${enquiry.id}\n` +
       `Full Name: ${enquiry.name}\n` +
@@ -793,42 +290,403 @@ Direct reply to this email will respond to: ${enquiry.email}
       `Business Overview & Objectives:\n${enquiry.message}\n` +
       `----------------------------------------\n` +
       `Sent via Dubey Conglomerate Portal (aniketdubey.com)`
-    );
-    const mailtoUrl = `mailto:${TARGET_RECIPIENT_EMAIL}?subject=${mailtoSubject}&body=${mailtoBody}`;
+  );
+  const mailtoUrl = `mailto:${TARGET_RECIPIENT_EMAIL}?subject=${mailtoSubject}&body=${mailtoBody}`;
 
-    // Diagnostic logging without exposing secrets
+  return { subject, plainText, htmlContent, mailtoUrl };
+}
+
+function getSmtpConfig() {
+  const host = resolveServerEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "MAIL_SERVER", "EMAIL_HOST");
+  const portRaw = resolveServerEnv("SMTP_PORT", "MAIL_PORT", "EMAIL_PORT");
+  const secureRaw = resolveServerEnv("SMTP_SECURE", "MAIL_SECURE", "EMAIL_SECURE")?.toLowerCase();
+  const rawUser = resolveServerEnv(
+    "SMTP_USER",
+    "SMTP_USERNAME",
+    "MAIL_USER",
+    "MAIL_USERNAME",
+    "EMAIL_USER",
+    "GMAIL_USER"
+  );
+  const rawPass = resolveServerEnv(
+    "SMTP_PASS",
+    "SMTP_PASSWORD",
+    "MAIL_PASS",
+    "MAIL_PASSWORD",
+    "EMAIL_PASS",
+    "GMAIL_APP_PASS",
+    "GMAIL_APP_PASSWORD"
+  );
+  const fromRaw = resolveServerEnv("SMTP_FROM", "MAIL_FROM", "EMAIL_FROM");
+
+  if (!host || !rawUser || !rawPass) {
+    return null;
+  }
+
+  const portDigits = portRaw ? portRaw.replace(/[^0-9]/g, "") : "";
+  const parsedPort = portDigits ? parseInt(portDigits, 10) : NaN;
+  const secure = secureRaw === "true" ? true : secureRaw === "false" ? false : parsedPort === 465;
+  const port = !isNaN(parsedPort) && parsedPort > 0 && parsedPort <= 65535 ? parsedPort : secure ? 465 : 587;
+
+  const user = rawUser.replace(/[\s"'\\]+/g, "");
+  const isGoogle = host.includes("gmail.com") || user.includes("@gmail.com");
+  const pass = isGoogle
+    ? rawPass.replace(/[\s"'\\]+/g, "")
+    : rawPass.replace(/^["']+|["']+$/g, "").trim();
+
+  const from = normalizeFrom(fromRaw, user);
+
+  return { host, port, secure, user, pass, from };
+}
+
+/**
+ * 1. Primary SMTP Dispatcher via Nodemailer (with strict TLS certificate verification)
+ */
+async function sendViaSmtp(
+  enquiry: SanitizedEnquiry,
+  subject: string,
+  htmlContent: string,
+  plainText: string
+): Promise<{ success: boolean; messageId?: string; errorCode?: string }> {
+  const config = getSmtpConfig();
+  if (!config) {
+    return { success: false, errorCode: "CONFIG_MISSING" };
+  }
+
+  console.log(
+    `[SMTP Dispatch] Connecting to ${config.host}:${config.port} | Secure: ${config.secure} | User: ${maskUser(config.user)}`
+  );
+
+  const isGmail = config.host.includes("gmail.com") || config.user.includes("@gmail.com");
+
+  const transporter = nodemailer.createTransport(
+    isGmail
+      ? {
+          service: "gmail",
+          auth: {
+            user: config.user,
+            pass: config.pass,
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 6000,
+          socketTimeout: 15000,
+          tls: {
+            rejectUnauthorized: true,
+            minVersion: "TLSv1.2",
+          },
+        }
+      : {
+          host: config.host,
+          port: config.port,
+          secure: config.secure,
+          auth: {
+            user: config.user,
+            pass: config.pass,
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 6000,
+          socketTimeout: 15000,
+          tls: {
+            rejectUnauthorized: true,
+            minVersion: "TLSv1.2",
+          },
+        }
+  );
+
+  try {
+    const info = await transporter.sendMail({
+      from: config.from,
+      to: TARGET_RECIPIENT_EMAIL,
+      replyTo: enquiry.email,
+      subject,
+      text: plainText,
+      html: htmlContent,
+    });
+
+    console.log(`[SMTP Success] Accepted by ${config.host}. Message-ID: ${info.messageId || "ok"}`);
+    return { success: true, messageId: info.messageId };
+  } catch (smtpErr: any) {
+    const code = String(smtpErr?.code || "SMTP_SEND_FAILED");
+    const msg = String(smtpErr?.message || "Unknown SMTP error").slice(0, 180);
+    console.error(`[SMTP Failure] Host: ${config.host}:${config.port} | Code: ${code} | Msg: ${msg}`);
+    return { success: false, errorCode: code };
+  }
+}
+
+/**
+ * 2. Secondary Provider: Resend API (HTTPS)
+ */
+async function sendViaResend(
+  enquiry: SanitizedEnquiry,
+  subject: string,
+  htmlContent: string,
+  plainText: string
+): Promise<{ success: boolean; messageId?: string; errorCode?: string }> {
+  const apiKey = resolveServerEnv("RESEND_API_KEY");
+  if (!apiKey) return { success: false, errorCode: "RESEND_NOT_CONFIGURED" };
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const from = resolveServerEnv("RESEND_FROM") || "Aniket Dubey Advisory <onboarding@resend.dev>";
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        from,
+        to: [TARGET_RECIPIENT_EMAIL],
+        reply_to: enquiry.email,
+        subject,
+        text: plainText,
+        html: htmlContent,
+      }),
+      signal: controller.signal,
+    });
+
+    const resData: any = await res.json().catch(() => ({}));
+    if (res.ok) {
+      console.log(`[Resend Success] Delivered ID: ${resData.id || "ok"}`);
+      return { success: true, messageId: resData.id };
+    }
+    console.error(`[Resend Failure] HTTP ${res.status}`);
+    return { success: false, errorCode: "RESEND_ERROR" };
+  } catch (err: any) {
+    console.error("[Resend Error] Network/timeout:", err?.name || "Error");
+    return { success: false, errorCode: "RESEND_NETWORK" };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * 3. Secondary Provider: Brevo API (HTTPS)
+ */
+async function sendViaBrevo(
+  enquiry: SanitizedEnquiry,
+  subject: string,
+  htmlContent: string,
+  plainText: string
+): Promise<{ success: boolean; messageId?: string; errorCode?: string }> {
+  const apiKey = resolveServerEnv("BREVO_API_KEY");
+  if (!apiKey) return { success: false, errorCode: "BREVO_NOT_CONFIGURED" };
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const senderEmail = resolveServerEnv("BREVO_SENDER") || TARGET_RECIPIENT_EMAIL;
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": apiKey,
+      },
+      body: JSON.stringify({
+        sender: { name: "Aniket Dubey Advisory Portal", email: senderEmail },
+        to: [{ email: TARGET_RECIPIENT_EMAIL, name: "Aniket Dubey" }],
+        replyTo: { email: enquiry.email, name: enquiry.name },
+        subject,
+        htmlContent,
+        textContent: plainText,
+      }),
+      signal: controller.signal,
+    });
+
+    const resData: any = await res.json().catch(() => ({}));
+    if (res.ok) {
+      console.log(`[Brevo Success] Delivered MessageId: ${resData.messageId || "ok"}`);
+      return { success: true, messageId: resData.messageId };
+    }
+    console.error(`[Brevo Failure] HTTP ${res.status}`);
+    return { success: false, errorCode: "BREVO_ERROR" };
+  } catch (err: any) {
+    console.error("[Brevo Error] Network/timeout:", err?.name || "Error");
+    return { success: false, errorCode: "BREVO_NETWORK" };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export default async function handler(req: any, res: any) {
+  // 1. Strict allowlisted CORS & security headers
+  const { allowed, isPreflight } = applyCorsAndSecurityHeaders(req, res, ["POST", "OPTIONS"]);
+  if (!allowed || isPreflight) return;
+
+  // Public GET diagnostics strictly removed; only POST is supported
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST, OPTIONS");
+    return sendJson(res, 405, { success: false, error: "Method not allowed. Use POST." });
+  }
+
+  try {
+    // 2. Strict JSON parsing & size limit (16 KB)
+    let body: Record<string, unknown>;
+    try {
+      body = await parseJsonBodyStrict(req, MAX_CONTACT_BODY_BYTES);
+    } catch (err) {
+      if (err instanceof PayloadTooLargeError) {
+        return sendJson(res, 413, { success: false, error: "Request body exceeds maximum allowed size." });
+      }
+      if (err instanceof MalformedJsonError) {
+        return sendJson(res, 400, { success: false, error: "Malformed JSON request body." });
+      }
+      throw err;
+    }
+
+    // Reject unexpected payload fields
+    for (const key of Object.keys(body)) {
+      if (!ALLOWED_CONTACT_FIELDS.has(key)) {
+        return sendJson(res, 400, { success: false, error: "Unexpected field in contact request." });
+      }
+    }
+
+    const { name, business, email, phone, service, message, website_hp, _rendered_at } = body;
+
+    // Type checks for all supplied fields
+    if (
+      (name !== undefined && typeof name !== "string") ||
+      (business !== undefined && typeof business !== "string") ||
+      (email !== undefined && typeof email !== "string") ||
+      (phone !== undefined && typeof phone !== "string") ||
+      (service !== undefined && typeof service !== "string") ||
+      (message !== undefined && typeof message !== "string") ||
+      (website_hp !== undefined && typeof website_hp !== "string") ||
+      (_rendered_at !== undefined && typeof _rendered_at !== "number")
+    ) {
+      return sendJson(res, 400, { success: false, error: "Invalid field data type in submission." });
+    }
+
+    const clientIp = getTrustedClientIp(req);
+
+    // 3. Anti-spam: Honeypot check
+    if (typeof website_hp === "string" && website_hp.trim().length > 0) {
+      console.warn(`[Anti-Spam] Honeypot triggered from IP hash`);
+      return sendJson(res, 200, {
+        success: true,
+        referenceId: `SPM-${Date.now()}`,
+        message: "Enquiry received.",
+      });
+    }
+
+    // 4. Anti-spam: Minimum form render delay check (1.2s)
+    if (typeof _rendered_at === "number" && Number.isFinite(_rendered_at)) {
+      const elapsed = Date.now() - _rendered_at;
+      if (elapsed >= 0 && elapsed < 1200) {
+        console.warn(`[Anti-Spam] Submission too fast (${elapsed}ms).`);
+        return sendJson(res, 400, {
+          success: false,
+          error: "Form submitted too quickly. Please wait a moment and try again.",
+        });
+      }
+    }
+
+    // 5. Server-side validation & length caps
+    const cleanName = typeof name === "string" ? sanitizeHeaderText(name, 100) : "";
+    if (cleanName.length < 2 || cleanName.length > 100) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Please provide your Full Name (2 to 100 characters).",
+      });
+    }
+
+    const rawBusiness = typeof business === "string" ? sanitizeHeaderText(business, 120) : "";
+    if (typeof business === "string" && business.trim().length > 120) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Business or Company name must not exceed 120 characters.",
+      });
+    }
+
+    const cleanEmail = typeof email === "string" ? sanitizeHeaderText(email, 100).toLowerCase() : "";
+    if (!cleanEmail || cleanEmail.length > 100 || !STRICT_EMAIL_REGEX.test(cleanEmail)) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Please provide a valid email address.",
+      });
+    }
+
+    const rawPhone = typeof phone === "string" ? sanitizeHeaderText(phone, 30) : "";
+    if (rawPhone && !isSafeTelValue(rawPhone)) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Please provide a valid contact phone number (digits, spaces, +, -, parentheses).",
+      });
+    }
+
+    const cleanService = typeof service === "string" && service.trim()
+      ? sanitizeHeaderText(service, 120)
+      : "General Strategic Consulting";
+    if (typeof service === "string" && service.trim().length > 120) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Service selection must not exceed 120 characters.",
+      });
+    }
+
+    const cleanMessage = typeof message === "string" ? message.replace(/\0/g, "").trim() : "";
+    if (cleanMessage.length < 10) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Please provide a brief message describing your business objectives (at least 10 characters).",
+      });
+    }
+    if (cleanMessage.length > 4000) {
+      return sendJson(res, 400, {
+        success: false,
+        error: "Message must not exceed 4000 characters.",
+      });
+    }
+
+    // 6. Distributed Rate Limiting (max 5 requests / 60s per trusted IP) & Duplicate Check (60s TTL)
+    const rate = await checkRateLimit("contact", clientIp, 5, 60);
+    if (!rate.allowed) {
+      res.setHeader("Retry-After", String(rate.retryAfterSeconds));
+      return sendJson(res, 429, {
+        success: false,
+        error: "Too many consultation requests sent recently. Please wait a minute before trying again.",
+      });
+    }
+
+    const duplicateFingerprint = `${cleanEmail}|${cleanMessage.slice(0, 120)}`;
+    const isDuplicate = await checkAndMarkDuplicate("contact", duplicateFingerprint, 60);
+    if (isDuplicate) {
+      return sendJson(res, 409, {
+        success: false,
+        error: "Duplicate submission detected. Your enquiry has already been transmitted.",
+      });
+    }
+
+    // 7. Build escaped email templates
+    const id = `ENQ-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
+    const enquiry: SanitizedEnquiry = {
+      id,
+      name: cleanName,
+      business: rawBusiness || "Individual",
+      email: cleanEmail,
+      phone: rawPhone || "Not provided",
+      service: cleanService,
+      message: cleanMessage,
+      submittedAt: new Date().toISOString(),
+    };
+
+    const { subject, plainText, htmlContent, mailtoUrl } = buildContactEmailTemplates(
+      enquiry,
+      clientIp
+    );
+
     const smtpCfg = getSmtpConfig();
-    const hasHost = Boolean(resolveEnv("SMTP_HOST", "SMTP_SERVER", "MAIL_HOST", "EMAIL_HOST"));
-    const hasUser = Boolean(resolveEnv("SMTP_USER", "SMTP_USERNAME", "MAIL_USER", "EMAIL_USER"));
-    const hasPass = Boolean(resolveEnv("SMTP_PASS", "SMTP_PASSWORD", "MAIL_PASS", "EMAIL_PASS"));
 
-    console.log(
-      `[Email Config Check] SMTP_HOST: ${smtpCfg?.host || (hasHost ? "[FOUND_ALT]" : "[NOT SET]")} | ` +
-      `SMTP_PORT: ${smtpCfg?.port || "[NOT SET]"} | ` +
-      `SMTP_SECURE: ${smtpCfg ? smtpCfg.secure : "[NOT SET]"} | ` +
-      `SMTP_USER: ${maskUser(smtpCfg?.user)} | ` +
-      `SMTP_PASS: ${hasPass ? "[PRESENT]" : "[NOT SET]"} | ` +
-      `RESEND_API_KEY: ${maskKey(resolveEnv("RESEND_API_KEY"))} | ` +
-      `BREVO_API_KEY: ${maskKey(resolveEnv("BREVO_API_KEY"))}`
-    );
-
-    let delivered = false;
-    let providerUsed = "";
-    let lastError = "";
-    let lastErrorCode = "";
-
-    // PRIORITY 1: SMTP via Nodemailer (Matches user's Vercel production env vars)
+    // 8. Email delivery via server-side providers only (SMTP -> Resend -> Brevo)
     if (smtpCfg) {
       const smtpRes = await sendViaSmtp(enquiry, subject, htmlContent, plainText);
       if (smtpRes.success) {
-        delivered = true;
-        providerUsed = "smtp";
-        console.log(`[Enquiry Delivered] Successfully delivered ${enquiry.id} via SMTP to ${TARGET_RECIPIENT_EMAIL}`);
-        return sendJsonResponse(res, 200, {
+        return sendJson(res, 200, {
           success: true,
           delivered: true,
-          provider: "smtp",
-          messageId: smtpRes.messageId,
           referenceId: enquiry.id,
           recipient: TARGET_RECIPIENT_EMAIL,
           mailtoUrl,
@@ -843,23 +701,15 @@ Direct reply to this email will respond to: ${enquiry.email}
           },
           message: `Your consultation request has been delivered to ${TARGET_RECIPIENT_EMAIL}. Aniket Dubey will review your business requirements personally.`,
         });
-      } else {
-        lastError = smtpRes.error || "SMTP delivery failure";
-        lastErrorCode = smtpRes.errorCode || "SMTP_ERROR";
       }
     }
 
-    // PRIORITY 2: Resend API (if configured)
-    if (!delivered && resolveEnv("RESEND_API_KEY")) {
+    if (resolveServerEnv("RESEND_API_KEY")) {
       const resendRes = await sendViaResend(enquiry, subject, htmlContent, plainText);
       if (resendRes.success) {
-        delivered = true;
-        providerUsed = "resend";
-        return sendJsonResponse(res, 200, {
+        return sendJson(res, 200, {
           success: true,
           delivered: true,
-          provider: "resend",
-          messageId: resendRes.messageId,
           referenceId: enquiry.id,
           recipient: TARGET_RECIPIENT_EMAIL,
           mailtoUrl,
@@ -874,23 +724,15 @@ Direct reply to this email will respond to: ${enquiry.email}
           },
           message: `Your consultation request has been delivered to ${TARGET_RECIPIENT_EMAIL}. Aniket Dubey will review your business requirements personally.`,
         });
-      } else {
-        lastError = resendRes.error || "Resend delivery failure";
-        lastErrorCode = "RESEND_ERROR";
       }
     }
 
-    // PRIORITY 3: Brevo API (if configured)
-    if (!delivered && resolveEnv("BREVO_API_KEY")) {
+    if (resolveServerEnv("BREVO_API_KEY")) {
       const brevoRes = await sendViaBrevo(enquiry, subject, htmlContent, plainText);
       if (brevoRes.success) {
-        delivered = true;
-        providerUsed = "brevo";
-        return sendJsonResponse(res, 200, {
+        return sendJson(res, 200, {
           success: true,
           delivered: true,
-          provider: "brevo",
-          messageId: brevoRes.messageId,
           referenceId: enquiry.id,
           recipient: TARGET_RECIPIENT_EMAIL,
           mailtoUrl,
@@ -905,96 +747,25 @@ Direct reply to this email will respond to: ${enquiry.email}
           },
           message: `Your consultation request has been delivered to ${TARGET_RECIPIENT_EMAIL}. Aniket Dubey will review your business requirements personally.`,
         });
-      } else {
-        lastError = brevoRes.error || "Brevo delivery failure";
-        lastErrorCode = "BREVO_ERROR";
       }
     }
 
-    // PRIORITY 4: Relay Fallback (FormSubmit with browser headers)
-    if (!delivered && !smtpCfg) {
-      console.log(`[Relay Fallback] No SMTP or API keys configured. Attempting server relay to ${TARGET_RECIPIENT_EMAIL}...`);
-      const relayRes = await sendViaRelay(enquiry, subject);
-      if (relayRes.success) {
-        return sendJsonResponse(res, 200, {
-          success: true,
-          delivered: true,
-          provider: "relay",
-          referenceId: enquiry.id,
-          recipient: TARGET_RECIPIENT_EMAIL,
-          mailtoUrl,
-          enquiry: {
-            id: enquiry.id,
-            name: enquiry.name,
-            business: enquiry.business,
-            email: enquiry.email,
-            phone: enquiry.phone,
-            service: enquiry.service,
-            submittedAt: enquiry.submittedAt,
-          },
-          message: `Your consultation request has been delivered to ${TARGET_RECIPIENT_EMAIL}. Aniket Dubey will review your business requirements personally.`,
-        });
-      } else if (relayRes.needsActivation) {
-        return sendJsonResponse(res, 202, {
-          success: true,
-          delivered: false,
-          needsActivation: true,
-          referenceId: enquiry.id,
-          recipient: TARGET_RECIPIENT_EMAIL,
-          mailtoUrl,
-          message: `Enquiry recorded! FormSubmit has sent a one-time activation confirmation email to ${TARGET_RECIPIENT_EMAIL}. Please check your inbox and click 'Activate Form' once to enable automatic forwarding.`,
-        });
-      } else {
-        lastError = relayRes.message || "Relay failure";
-        lastErrorCode = "RELAY_ERROR";
-      }
-    }
-
-    // STRICT HONESTY: If email was NOT delivered, NEVER return HTTP 200
-    console.error(
-      `[Enquiry Delivery Failed] Could not deliver ${enquiry.id} to ${TARGET_RECIPIENT_EMAIL}. Reason: [${lastErrorCode}] ${lastError}`
-    );
-
-    const isSmtpFailure = Boolean(smtpCfg);
-    const statusCode = isSmtpFailure ? 502 : 503;
-    const userErrorMessage = isSmtpFailure
-      ? `SMTP delivery to ${TARGET_RECIPIENT_EMAIL} failed (${lastErrorCode}): ${lastError}. Please check your Vercel SMTP credentials.`
-      : `Email delivery service is currently unconfigured or unavailable. In Vercel, ensure SMTP_HOST, SMTP_USER, and SMTP_PASS are set for 'Production' and redeploy.`;
-
-    const envKeys = Object.keys(process.env).filter((k) =>
-      /smtp|mail|email|resend|brevo|sendgrid/i.test(k)
-    );
-
-    return sendJsonResponse(res, statusCode, {
+    // 9. Delivery failed or no mail provider configured: never return HTTP 200 and never expose internal infra details
+    console.error(`[Enquiry Delivery Failed] Reference ${enquiry.id} could not be dispatched.`);
+    return sendJson(res, 503, {
       success: false,
       delivered: false,
       referenceId: enquiry.id,
       recipient: TARGET_RECIPIENT_EMAIL,
-      errorCode: lastErrorCode,
-      error: userErrorMessage,
-      diagnostics: {
-        hasHost,
-        hasUser,
-        hasPass,
-        detectedEmailEnvKeys: envKeys,
-      },
-      smtpConfig: smtpCfg
-        ? {
-            host: smtpCfg.host,
-            port: smtpCfg.port,
-            secure: smtpCfg.secure,
-            user: maskUser(smtpCfg.user),
-            from: smtpCfg.from,
-          }
-        : undefined,
+      error: `We could not automatically dispatch your request right now. Please click 'Launch Email App' below or email ${TARGET_RECIPIENT_EMAIL} directly.`,
       mailtoUrl,
-      hint: `You can deliver this enquiry immediately by clicking 'Send Copy via Email Client' below or contacting email@aniketdubey.com directly.`,
     });
-  } catch (error: any) {
-    console.error("[Fatal Server Error in /api/contact]:", error);
-    return sendJsonResponse(res, 500, {
+  } catch (error) {
+    console.error("[Server Error in /api/contact]:", error instanceof Error ? error.name : "Error");
+    return sendJson(res, 500, {
       success: false,
-      error: "An internal server error occurred while processing your enquiry. Please reach out directly at email@aniketdubey.com or +91 9932979875.",
+      error:
+        "An internal server error occurred while processing your enquiry. Please reach out directly at email@aniketdubey.com or +91 9932979875.",
     });
   }
 }

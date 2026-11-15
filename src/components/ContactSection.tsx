@@ -22,12 +22,6 @@ interface ContactSectionProps {
   setFormData: React.Dispatch<React.SetStateAction<ContactFormData>>;
 }
 
-// Ensure aniketdubey.2012@gmail.com is never displayed or exposed after form submission
-const scrubSecondaryEmail = (text?: string): string => {
-  if (!text) return '';
-  return text.replace(/aniketdubey\.?2012@gmail\.com/gi, 'email@aniketdubey.com');
-};
-
 export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFormData }) => {
   const [submitting, setSubmitting] = useState(false);
   const [honeypot, setHoneypot] = useState('');
@@ -39,7 +33,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     recipients?: string[];
     mailtoUrl?: string;
     submittedData?: ContactFormData;
-    needsActivation?: boolean;
     delivered?: boolean;
   } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -100,16 +93,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
     const snapshot: ContactFormData = { ...formData };
     setSubmitting(true);
 
-    const safeSnapshotEmail = /aniketdubey\.?2012@gmail\.com/i.test(snapshot.email)
-      ? 'email@aniketdubey.com'
-      : snapshot.email;
-
     const mailtoSubject = encodeURIComponent(`Consultation Request: ${snapshot.name} - ${snapshot.service}`);
     const mailtoBody = encodeURIComponent(
       `Consultation Request Details:\n\n` +
         `Full Name: ${snapshot.name}\n` +
         `Company: ${snapshot.business || 'Not specified'}\n` +
-        `Email: ${safeSnapshotEmail}\n` +
+        `Email: ${snapshot.email}\n` +
         `Phone: ${snapshot.phone || 'Not provided'}\n` +
         `Service Required: ${snapshot.service}\n\n` +
         `Message & Objectives:\n${snapshot.message}\n\n` +
@@ -145,7 +134,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
           success: true,
           delivered: true,
           referenceId: data.referenceId,
-          needsActivation: false,
           message:
             data.message ||
             'Your consultation request has been delivered to email@aniketdubey.com. Aniket Dubey will review your business requirements personally.',
@@ -166,43 +154,19 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
         setHoneypot('');
         renderTimeRef.current = Date.now();
       }
-      // CASE 2: 202 Accepted — Pending one-time inbox activation
-      else if (response.status === 202 || data?.needsActivation) {
-        setSubmitResult({
-          success: true,
-          delivered: false,
-          referenceId: data?.referenceId || `ENQ-${Date.now()}`,
-          needsActivation: true,
-          message:
-            data?.message ||
-            'Enquiry recorded! A one-time activation confirmation email was sent to email@aniketdubey.com. Please check your inbox and click "Activate Form" once to enable automatic forwarding.',
-          recipients: ['email@aniketdubey.com'],
-          mailtoUrl: data?.mailtoUrl || backupMailtoUrl,
-          submittedData: snapshot,
-        });
-        // Clear form
-        setFormData({
-          name: '',
-          business: '',
-          email: '',
-          phone: '',
-          service: 'General Strategic Consulting',
-          message: '',
-        });
-      }
-      // CASE 3: 429 Rate Limit
+      // CASE 2: 429 Rate Limit
       else if (response.status === 429) {
         setErrorMsg(data?.error || 'Please wait a few seconds before submitting another request.');
       }
-      // CASE 4: 409 Duplicate
+      // CASE 3: 409 Duplicate
       else if (response.status === 409) {
         setErrorMsg(data?.error || 'Duplicate submission detected. Your enquiry has already been transmitted.');
       }
-      // CASE 5: 503 / 500 / Delivery failure
+      // CASE 4: Validation / Delivery failure
       else {
         const errorDetail =
           data?.error ||
-          'Automated email dispatch is currently unconfigured on the server. Please launch your email client with all details pre-filled or contact email@aniketdubey.com directly.';
+          'We could not automatically dispatch your request right now. Please launch your email client with all details pre-filled or contact email@aniketdubey.com directly.';
         setErrorMsg(errorDetail);
         setFallbackMailtoUrl(data?.mailtoUrl || backupMailtoUrl);
       }
@@ -376,23 +340,8 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                   </div>
 
                   <p className="text-xs sm:text-sm text-[#F5F2ED]/90 leading-relaxed bg-[#121212] p-3.5 rounded-lg border border-[#292929]">
-                    {scrubSecondaryEmail(submitResult.message)}
+                    {submitResult.message}
                   </p>
-
-                  {submitResult.needsActivation && (
-                    <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-500/50 text-amber-200 text-xs space-y-2.5 shadow-lg">
-                      <div className="flex items-center gap-2 font-bold text-amber-300">
-                        <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
-                        <span>One-Time Form Activation Required in Inbox</span>
-                      </div>
-                      <p className="leading-relaxed text-amber-100/95 text-xs">
-                        FormSubmit sent a one-time activation email to <strong>email@aniketdubey.com</strong>. Please check your Inbox and Spam/Junk folder for an email from <em>FormSubmit</em> and click <strong>"Activate Form"</strong>. After clicking it once, all future submissions will reach your inbox automatically.
-                      </p>
-                      <p className="leading-relaxed text-amber-200/90 text-[11px] pt-1 border-t border-amber-500/20">
-                        To deliver this enquiry right now, you can also click <strong>"Send Copy via Email Client"</strong> below to open your mail app with all details pre-filled.
-                      </p>
-                    </div>
-                  )}
 
                   {/* Summary receipt box */}
                   {submitResult.submittedData && (
@@ -413,9 +362,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         <div>
                           <span className="text-[#A6A6A6] block text-[10px] uppercase">Email</span>
                           <span className="font-medium text-white">
-                            {/aniketdubey\.?2012@gmail\.com/i.test(submitResult.submittedData.email)
-                              ? 'email@aniketdubey.com'
-                              : scrubSecondaryEmail(submitResult.submittedData.email)}
+                            {submitResult.submittedData.email}
                           </span>
                         </div>
                         <div>
@@ -534,6 +481,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         id="form-name"
                         name="name"
                         required
+                        maxLength={100}
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="e.g. Rahul Sharma"
@@ -550,6 +498,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         type="text"
                         id="form-business"
                         name="business"
+                        maxLength={120}
                         value={formData.business}
                         onChange={handleChange}
                         placeholder="e.g. Apex Tech Solutions"
@@ -569,6 +518,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         id="form-email"
                         name="email"
                         required
+                        maxLength={100}
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="name@company.com"
@@ -585,6 +535,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                         type="tel"
                         id="form-phone"
                         name="phone"
+                        maxLength={30}
                         value={formData.phone}
                         onChange={handleChange}
                         placeholder="+91 98765 43210"
@@ -624,6 +575,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ formData, setFor
                       id="form-message"
                       name="message"
                       required
+                      maxLength={4000}
                       rows={4}
                       value={formData.message}
                       onChange={handleChange}

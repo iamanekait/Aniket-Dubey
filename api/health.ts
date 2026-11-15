@@ -1,15 +1,15 @@
-export default function handler(req: any, res: any) {
-  const data = {
-    status: "healthy",
-    consultant: "Aniket Dubey",
-    service: "Business Consulting & Managed IT Services",
-    recipients: ["email@aniketdubey.com"],
-  };
+import { applyCorsAndSecurityHeaders, sendJson } from "./_lib/security";
 
-  if (typeof res.status === "function" && typeof res.json === "function") {
-    return res.status(200).json(data);
+export default function handler(req: any, res: any) {
+  const { allowed, isPreflight } = applyCorsAndSecurityHeaders(req, res, ["GET", "OPTIONS"]);
+  if (!allowed || isPreflight) return;
+
+  if (req.method !== "GET") {
+    res.setHeader("Allow", "GET, OPTIONS");
+    return sendJson(res, 405, { status: "error", error: "Method not allowed. Use GET." });
   }
-  res.statusCode = 200;
-  res.setHeader("Content-Type", "application/json; charset=utf-8");
-  res.end(JSON.stringify(data));
+
+  return sendJson(res, 200, {
+    status: "healthy",
+  });
 }
