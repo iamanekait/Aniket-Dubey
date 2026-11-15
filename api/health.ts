@@ -1,4 +1,4 @@
-import { applyCorsAndSecurityHeaders, sendJson } from "./_lib/security";
+import { applyCorsAndSecurityHeaders, sendJson } from "./_lib/security.js";
 
 export default function handler(req: any, res: any) {
   const { allowed, isPreflight } = applyCorsAndSecurityHeaders(req, res, ["GET", "OPTIONS"]);

@@ -30,6 +30,19 @@
       ]
     },
     {
+      "source": "/((?!api/).*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://www.aniketdubey.com"
+        },
+        {
+          "key": "Vary",
+          "value": "Origin"
+        }
+      ]
+    },
+    {
       "source": "/api/(.*)",
       "headers": [
         {

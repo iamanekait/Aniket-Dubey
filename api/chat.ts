@@ -7,7 +7,7 @@ import {
   parseJsonBodyStrict,
   PayloadTooLargeError,
   sendJson,
-} from "./_lib/security";
+} from "./_lib/security.js";
 
 const MAX_CHAT_BODY_BYTES = 8192;
 const MAX_CHAT_MESSAGE_LENGTH = 2000;

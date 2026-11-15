@@ -8,7 +8,7 @@ import {
   parseJsonBodyStrict,
   PayloadTooLargeError,
   sendJson,
-} from "./_lib/security";
+} from "./_lib/security.js";
 
 // Target primary recipient — exclusively email@aniketdubey.com
 const TARGET_RECIPIENT_EMAIL = "email@aniketdubey.com";
