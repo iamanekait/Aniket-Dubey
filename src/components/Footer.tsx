@@ -175,12 +175,12 @@ export const Footer: React.FC = () => {
           <p className="text-xs text-[#A6A6A6]">
             Developed by{' '}
             <a
-              href="https://dubeyconglomerate.vercel.app/"
+              href="https://www.linkedin.com/in/aniketdubey1996/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-[#D15301] hover:text-[#B94700] font-semibold underline underline-offset-4 decoration-[#D15301]/40 hover:decoration-[#D15301] transition-colors"
             >
-              Dubey Conglomerate
+              Aniket Dubey
             </a>
           </p>
 

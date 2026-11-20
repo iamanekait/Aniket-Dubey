@@ -1,4 +1,4 @@
-import { ServiceItem, ApproachStep, PortfolioProject } from './types';
+import { ServiceItem, ApproachStep, PortfolioProject, FaqItem } from './types';
 
 export const CONSULTANT_INFO = {
   name: "Aniket Dubey",
@@ -383,3 +383,43 @@ export const TARGET_AUDIENCE_PILLARS = [
     description: "Needing proactive technology maintenance, cloud resilience, and security governance without the exorbitant overhead of an internal IT department."
   }
 ];
+
+export const CONTACT_FAQS: FaqItem[] = [
+  {
+    category: "Consultation Process",
+    question: "How do I schedule an initial consultation with Aniket Dubey?",
+    answer:
+      "You can submit your business details through the consultation form on this page, book a direct 1-on-1 slot via the online Zoom Scheduler (scheduler.zoom.us/aniketdubey/consultation), or contact Aniket directly by phone at +91 99329 79875 or email at email@aniketdubey.com. Aniket personally reviews your requirements before the exploratory call."
+  },
+  {
+    category: "Services & Scope",
+    question: "What core advisory and technology services can I enquire about?",
+    answer:
+      "Aniket Dubey provides four integrated practice areas: Founder & Business Advisory (growth strategy, unit economics, and operational bottleneck removal), Strategic Content Marketing (founder-led authority positioning and inbound lead funnels), Managed IT Services (24/7 proactive infrastructure oversight, cloud management, backups, and cybersecurity baselines), and Business & Technology Strategy (SaaS stack optimization and digital workflow automation)."
+  },
+  {
+    category: "Locations Served",
+    question: "Do you consult exclusively in Durgapur and West Bengal, or do you work remotely?",
+    answer:
+      "While Aniket's office is located in Uttarpally, Benachity, Durgapur, West Bengal for in-person advisory across the region, he provides comprehensive remote strategic consulting pan-India and internationally, backed by over 10 years of global brand scaling experience across North American markets."
+  },
+  {
+    category: "Engagement Model",
+    question: "Will I work directly with Aniket Dubey or be handed off to an account manager?",
+    answer:
+      "You work directly with Aniket Dubey from initial discovery through execution governance. There are no junior delegates or account manager handoffs—every diagnostic audit, strategic roadmap, and technology review is personally authored."
+  },
+  {
+    category: "Pricing & Frameworks",
+    question: "How are consulting engagements structured and priced?",
+    answer:
+      "Every business has distinct operational constraints and growth goals, so engagements are tailored rather than sold as one-size-fits-all packages. Following an initial exploratory discussion to evaluate your requirements using the 4-step Understand, Analyze, Strategize, and Scale methodology, you receive a customized scope and commercial proposal."
+  },
+  {
+    category: "Response Time",
+    question: "How quickly will I receive a response after submitting an enquiry?",
+    answer:
+      "Consultation enquiries submitted via the contact form or sent to email@aniketdubey.com are typically reviewed and answered within 1 to 2 business days. For urgent business or managed IT matters, you may call +91 99329 79875 Monday through Saturday."
+  }
+];
+

@@ -4,8 +4,9 @@ import {
   PORTFOLIO_PROJECTS,
   WHY_ANIKET_CONTENT,
   WHY_WORK_WITH_ANIKET,
+  CONTACT_FAQS,
 } from '../data';
-import { ServiceItem, PortfolioProject } from '../types';
+import { ServiceItem, PortfolioProject, FaqItem } from '../types';
 
 export const BASE_URL = 'https://aniketdubey.com';
 export const LOGO_URL =
@@ -239,7 +240,42 @@ export const getRecognitionSchema = () => ({
 });
 
 /**
- * Contact Page Schema
+ * Generates Schema.org FAQPage structured data from consulting FAQ entries.
+ */
+export const getContactFAQSchema = (
+  faqs: FaqItem[] = CONTACT_FAQS,
+  pagePath: string = '/contact'
+) => {
+  const cleanPath = pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
+  const pageUrl = cleanPath === '/' ? `${BASE_URL}/` : `${BASE_URL}${cleanPath}`;
+
+  return {
+    '@type': 'FAQPage',
+    '@id': `${pageUrl}#faqpage`,
+    url: pageUrl,
+    name: 'Frequently Asked Questions — Business Advisory & Managed IT Consultation',
+    description:
+      'Answers to common inquiries about scheduling a consultation, advisory scope, remote availability, pricing, and response times with Aniket Dubey.',
+    inLanguage: 'en-IN',
+    isPartOf: {
+      '@id': `${BASE_URL}/#website`,
+    },
+    about: {
+      '@id': `${BASE_URL}/#person`,
+    },
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+};
+
+/**
+ * Contact Page Schema (includes Person, ContactPage, ProfessionalService, and FAQPage)
  */
 export const getContactSchema = () => ({
   '@context': 'https://schema.org',
@@ -276,6 +312,7 @@ export const getContactSchema = () => ({
       },
       inLanguage: 'en-IN',
     },
+    getContactFAQSchema(CONTACT_FAQS, '/contact'),
   ],
 });
 

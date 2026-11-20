@@ -43,3 +43,10 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
 }
+
+export interface FaqItem {
+  question: string;
+  answer: string;
+  category?: string;
+}
+

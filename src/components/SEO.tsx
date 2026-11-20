@@ -7,6 +7,7 @@ import {
   LOGO_URL,
   getServiceDetailSchema,
   getCaseStudyDetailSchema,
+  getContactFAQSchema,
   createServiceSEOProps,
   createCaseStudySEOProps,
   injectDynamicSEOData,
@@ -15,6 +16,7 @@ import {
 export {
   getServiceDetailSchema,
   getCaseStudyDetailSchema,
+  getContactFAQSchema,
   createServiceSEOProps,
   createCaseStudySEOProps,
   injectDynamicSEOData,
